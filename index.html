@@ -1699,6 +1699,111 @@
       transform:scale(.97);
     }
 
+
+/* FINANCE+ V2.6 — Dashboard inteligente */
+#homeContent{max-width:1200px;margin:0 auto;padding-bottom:8px}
+.fp-dash-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:8px 0 18px}
+.fp-dash-head h1{margin:0 0 4px;font-size:27px;letter-spacing:-.03em}
+.fp-mode-switch{display:grid;grid-template-columns:1fr 1fr;padding:4px;background:#151d1b;border:1px solid #28322f;border-radius:15px;min-width:250px}
+.fp-mode-switch button{border:0;background:transparent;color:#a9b2af;font-weight:800;font-size:12px;padding:12px 17px;border-radius:11px}
+.fp-mode-switch button.active{background:linear-gradient(135deg,#0ca765,#18cf7f);color:#fff;box-shadow:0 5px 18px rgba(12,167,101,.22)}
+
+.fp-smart-balance{position:relative;display:grid;grid-template-columns:minmax(280px,.9fr) minmax(360px,1.1fr);gap:20px;min-height:205px;padding:28px;border-radius:24px;border:1px solid rgba(22,215,137,.28);background:linear-gradient(110deg,rgba(7,40,29,.95),rgba(8,20,17,.96));overflow:hidden;transition:.25s ease}
+.fp-smart-balance.status-warning{border-color:rgba(245,166,35,.38);background:linear-gradient(110deg,rgba(48,32,7,.82),rgba(18,18,12,.96))}
+.fp-smart-balance.status-negative{border-color:rgba(235,68,72,.42);background:linear-gradient(110deg,rgba(55,14,16,.82),rgba(20,13,14,.96))}
+.fp-card-kicker{font-weight:800;font-size:14px;letter-spacing:.02em;color:#f3f6f5}
+.fp-info-dot{display:inline-grid;place-items:center;width:19px;height:19px;border:1px solid #63706c;border-radius:50%;font-size:11px;color:#a9b3af;margin-left:5px}
+.fp-smart-balance-value{font-size:48px;line-height:1;font-weight:900;margin:23px 0 15px;letter-spacing:-.045em;color:#18d98c}
+.status-warning .fp-smart-balance-value{color:#f1a62b}
+.status-negative .fp-smart-balance-value{color:#ef4d54}
+.fp-smart-trend{font-size:13px;color:#18d98c;font-weight:700}
+.status-warning .fp-smart-trend{color:#f1a62b}
+.status-negative .fp-smart-trend{color:#ef4d54}
+.fp-smart-projection{margin-top:8px;font-size:12px;color:#a8b3af}
+.fp-smart-chart-wrap{position:relative;display:flex;align-items:center;min-height:145px}
+#smartBalanceChart{width:100%;height:150px;overflow:visible}
+#smartBalanceLine{stroke:#18d98c;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+#smartBalanceDot{fill:#fff;stroke:#18d98c;stroke-width:5;vector-effect:non-scaling-stroke}
+.status-warning #smartBalanceLine,.status-warning #smartBalanceDot{stroke:#f1a62b}
+.status-negative #smartBalanceLine,.status-negative #smartBalanceDot{stroke:#ef4d54}
+.fp-chart-base{stroke:#394540;stroke-width:1;stroke-dasharray:4 6}
+.fp-chart-empty{position:absolute;inset:0;display:grid;place-items:center;color:#798681;font-size:12px}
+
+.fp-dashboard-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:13px}
+.fp-metric-card{display:grid;grid-template-columns:50px 1fr;gap:13px;text-align:left;padding:18px;border-radius:18px;border:1px solid #28332f;background:linear-gradient(145deg,#151b1a,#101514);color:#fff}
+.fp-metric-card:hover,.fp-card-button:hover{border-color:#385149;transform:translateY(-1px)}
+.fp-metric-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:50%;font-size:25px;font-weight:800}
+.metric-income .fp-metric-icon{background:#159d5d}.metric-paid .fp-metric-icon{background:#cf383e}.metric-available .fp-metric-icon{background:#2c73d4}
+.fp-metric-card span,.fp-detail-top span{display:block;color:#e4e8e6;font-size:12px;font-weight:800}
+.fp-metric-card strong{display:block;font-size:22px;margin:6px 0 3px}
+.metric-income strong{color:#1fd17e}.metric-paid strong{color:#ef454d}.metric-available strong{color:#4e94ed}
+.fp-metric-card small,.fp-detail-card small{color:#98a39f}
+
+.fp-dashboard-duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px}
+.fp-detail-card{text-align:left;padding:20px;border-radius:18px;border:1px solid #28332f;background:linear-gradient(145deg,#161c1b,#101514);color:#fff}
+.fp-detail-top{display:grid;grid-template-columns:48px 1fr;gap:13px;align-items:start}
+.fp-detail-icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:800}
+.fp-detail-icon.payable{background:#e97910}.fp-detail-icon.invoices{background:#8751d5}
+.fp-detail-top strong{display:block;font-size:25px;margin:5px 0 3px;color:#f18b20}
+#dashInvoicesCard .fp-detail-top strong{color:#9f6ce5}
+.fp-detail-split{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #2b3431;border-bottom:1px solid #2b3431;margin-top:16px;padding:13px 0;gap:16px}
+.fp-detail-split>div+div{border-left:1px solid #2b3431;padding-left:16px}
+.fp-detail-split strong{display:block;margin-top:5px;font-size:15px}
+.fp-detail-link{display:flex;justify-content:space-between;align-items:center;color:#b6bfbc;padding-top:13px;font-size:12px}
+
+.fp-dashboard-lower{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px}
+.fp-panel{border:1px solid #28332f;border-radius:18px;background:linear-gradient(145deg,#151b1a,#101514);overflow:hidden}
+.fp-panel-title{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px 18px;border-bottom:1px solid #27312e;font-size:12px;font-weight:800}
+.fp-panel-title button{border:0;background:none;color:#18d98c;font-size:12px}
+.fp-section-icon{color:#18d98c;margin-right:5px}
+.fp-upcoming-list{padding:4px 16px 12px}
+.fp-upcoming-list .dashboard-list-row{border:0!important;border-bottom:1px solid #252e2b!important;border-radius:0!important;padding:12px 2px!important;background:none!important}
+.fp-upcoming-list .dashboard-list-row:last-child{border-bottom:0!important}
+.fp-upcoming-date{min-width:42px;text-align:center;border-right:1px solid #303a37;padding-right:9px}
+.fp-upcoming-date b{display:block;font-size:18px}.fp-upcoming-date small{font-size:9px;color:#9ba5a1;text-transform:uppercase}
+.fp-upcoming-main{flex:1;min-width:0}.fp-upcoming-main strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fp-upcoming-main small{color:#929d99}
+.fp-upcoming-amount{text-align:right}.fp-upcoming-amount strong{font-size:13px}.fp-upcoming-amount small{display:block;margin-top:4px;font-size:9px;border-radius:999px;padding:3px 7px;background:#26312d;color:#aeb8b4}
+.fp-upcoming-amount .late{background:#6a1318;color:#fff}.fp-upcoming-amount .soon{background:#604111;color:#ffd07a}.fp-upcoming-amount .ok{background:#103b27;color:#4be39b}
+
+.fp-bar-chart{display:flex;align-items:end;justify-content:center;gap:44px;height:235px;padding:25px 20px 12px;border-bottom:1px solid #27312e}
+.fp-bar-column{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;width:120px;height:100%}
+.fp-bar-value{font-size:12px;font-weight:800;margin-bottom:7px}
+.fp-bar-track{width:100%;height:155px;display:flex;align-items:flex-end;background:transparent;border-radius:6px 6px 0 0}
+.fp-bar-fill{width:100%;height:2%;min-height:4px;border-radius:6px 6px 0 0;transition:height .45s ease}
+.fp-bar-fill.income{background:linear-gradient(#32d778,#129b57)}
+.fp-bar-fill.paid{background:linear-gradient(#ee5157,#bb252b)}
+.fp-bar-column>span{font-size:11px;color:#b4bdb9;margin-top:8px}
+.fp-panel-footer{display:block;width:100%;border:0;background:transparent;color:#18d98c;padding:14px;font-size:12px}
+
+.fp-month-summary{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;margin-top:13px;padding:18px 22px;border:1px solid #28332f;border-radius:18px;background:linear-gradient(145deg,#151b1a,#101514)}
+.fp-progress-ring{--p:0;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#18d98c calc(var(--p)*1%),#323c39 0);position:relative}
+.fp-progress-ring:after{content:"";position:absolute;width:55px;height:55px;border-radius:50%;background:#131918}
+.fp-progress-ring span{position:relative;z-index:1;font-size:18px;font-weight:900}
+.fp-month-summary-copy{display:flex;flex-direction:column;gap:4px}.fp-month-summary-copy>strong{font-size:13px}.fp-month-summary-copy>span{font-size:12px;color:#b3bcb8}.fp-month-summary-copy div{font-size:12px;color:#a9b2ae}.fp-month-summary-copy b{color:#18d98c}
+.fp-month-summary button{border:1px solid #29332f;background:#202725;color:#f1f4f3;border-radius:11px;padding:12px 15px}
+
+@media(max-width:800px){
+  .fp-dash-head{align-items:flex-start}.fp-dash-head h1{font-size:23px}
+  .fp-mode-switch{min-width:210px}
+  .fp-smart-balance{grid-template-columns:1fr;min-height:auto;padding:21px}
+  .fp-smart-balance-value{font-size:39px}
+  .fp-smart-chart-wrap{min-height:110px}.fp-smart-chart-wrap svg{height:110px!important}
+  .fp-dashboard-metrics{grid-template-columns:1fr 1fr}
+  .fp-dashboard-metrics .fp-metric-card:last-child{grid-column:1/-1}
+  .fp-dashboard-duo,.fp-dashboard-lower{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .fp-dash-head{display:block}.fp-mode-switch{margin-top:13px;width:100%;min-width:0}
+  .fp-dashboard-metrics{grid-template-columns:1fr}
+  .fp-dashboard-metrics .fp-metric-card:last-child{grid-column:auto}
+  .fp-metric-card{padding:14px;grid-template-columns:43px 1fr}.fp-metric-icon{width:39px;height:39px}
+  .fp-smart-balance{padding:18px;border-radius:19px}.fp-smart-balance-value{font-size:34px;margin:16px 0 10px}
+  .fp-detail-card{padding:16px}.fp-detail-top strong{font-size:21px}
+  .fp-month-summary{grid-template-columns:auto 1fr;padding:15px}.fp-month-summary button{grid-column:1/-1}
+  .fp-progress-ring{width:64px;height:64px}.fp-progress-ring:after{width:46px;height:46px}
+  .fp-bar-chart{height:210px;gap:24px}.fp-bar-column{width:100px}.fp-bar-track{height:135px}
+}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -1875,79 +1980,127 @@
           <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
       </div>
     </header>
+
 <div id="homeContent">
-      <div id="appModeBanner" class="mode-banner">
-        <div><strong id="appModeBannerTitle">Modo Avançado</strong><br><span id="appModeBannerText">Controle financeiro completo.</span></div>
-        <button id="appModeSettingsBtn" class="btn" type="button">Configurar</button>
-      </div>
-
-    <section class="grid summary-grid">
-      <article class="card hero">
-        <div class="label hero-card">Saldo do mês</div>
-        <div id="monthBalance" class="value">R$ 0,00</div>
-        <div class="hero-row">
-          <div class="hero-stat"><div class="label">Receitas</div><strong id="heroIncome">R$ 0,00</strong></div>
-          <div class="hero-stat"><div class="label">Despesas pagas</div><strong id="heroPaid">R$ 0,00</strong></div>
-          <div class="hero-stat"><div class="label">A pagar</div><strong id="heroPending">R$ 0,00</strong></div>
-        </div>
-      </article>
-      <article class="card"><div class="label">Já pago</div><div id="cardPaid" class="mini-value paid">R$ 0,00</div></article>
-      <article class="card"><div class="label">Falta pagar</div><div id="cardPending" class="mini-value pending">R$ 0,00</div></article>
-      <article class="card"><div class="label">Vencendo em 7 dias</div><div id="cardDueSoon" class="mini-value pending">R$ 0,00</div></article>
-      <article class="card"><div class="label">Atrasadas</div><div id="cardLate" class="mini-value late">R$ 0,00</div></article>
-    </section>
-
-    <section class="grid content-grid">
-      <article class="card">
-        <div class="section-title">
-          <div>
-            <h2>Contas do mês</h2>
-            <div class="month-nav">
-              <button id="prevMonthBtn" class="btn" type="button" aria-label="Mês anterior">‹</button>
-              <strong id="currentMonthLabel"></strong><span id="syncStatus" class="label">Sincronizado</span>
-              <button id="nextMonthBtn" class="btn" type="button" aria-label="Próximo mês">›</button>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="refreshBillsBtn" class="btn" type="button">Sincronizar</button><button id="newBillBtn" class="btn btn-primary" type="button">+ Nova conta</button></div>
-        </div>
-        <div id="activeFilterStrip" class="filter-strip hidden">
-          <div>Filtro: <span id="activeFilterName" class="filter-name"></span></div>
-          <button id="clearDashboardFilter" class="btn" type="button">Mostrar todas</button>
-        </div>
-        <div class="bill-list" id="billList">
-          <div class="empty-state">Carregando contas...</div>
-        </div>
-      </article>
-
-      <aside class="side-stack">
-        <article class="card">
-          <div class="section-title"><h2>Próximos vencimentos</h2></div>
-<div class="bill-list" id="upcomingList"><div class="empty-state">Nenhum vencimento carregado.</div></div>
-        </article>
-        <article class="card">
-          <div class="section-title"><h2>Ações rápidas</h2></div>
-          <div class="quick-actions">
-            <button id="quickNewBill" class="btn btn-primary" type="button">+ Conta</button>
-            <button id="quickNewCard" class="btn" type="button">+ Cartão</button>
-            <button id="quickNewIncome" class="btn" type="button">+ Receita</button>
-            <button class="btn" type="button">Relatório</button>
-          </div>
-        </article>
-      </aside>
-    </section>
-
-    <section class="card" style="margin-top:14px">
-      <div class="section-title">
-        <div><h2>Visão financeira</h2><div class="label">Receitas e despesas registradas</div></div>
-      </div>
-      <div class="grid finance-grid">
-        <div class="finance-box"><div class="label">Receitas</div><div id="financeIncome" class="mini-value paid">R$ 0,00</div></div>
-        <div class="finance-box"><div class="label">Despesas pagas</div><div id="financePaid" class="mini-value">R$ 0,00</div></div>
-        <div class="finance-box"><div class="label">Saldo</div><div id="financeBalance" class="mini-value paid">R$ 0,00</div></div>
-      </div>
-    </section>
-
+  <section class="fp-dash-head">
+    <div>
+      <h1 id="dashboardGreeting">Olá! 👋</h1>
+      <div class="label">Aqui está o resumo da sua vida financeira.</div>
     </div>
+    <div class="fp-mode-switch" aria-label="Modo do aplicativo">
+      <button id="dashModeBasic" type="button">BÁSICO</button>
+      <button id="dashModeAdvanced" type="button">AVANÇADO</button>
+    </div>
+  </section>
+
+  <section id="smartBalanceCard" class="fp-smart-balance status-positive">
+    <div class="fp-smart-balance-copy">
+      <div class="fp-card-kicker">SALDO DO MÊS <span class="fp-info-dot" title="Receitas recebidas menos pagamentos realizados no mês">i</span></div>
+      <div id="smartBalanceValue" class="fp-smart-balance-value">R$ 0,00</div>
+      <div id="smartBalanceTrend" class="fp-smart-trend">Calculando evolução...</div>
+      <div id="smartBalanceProjection" class="fp-smart-projection">Previsão no fim do mês: —</div>
+    </div>
+    <div class="fp-smart-chart-wrap" aria-label="Evolução do saldo no mês">
+      <svg id="smartBalanceChart" viewBox="0 0 440 150" preserveAspectRatio="none" role="img">
+        <defs>
+          <linearGradient id="smartAreaGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop id="smartAreaStop1" offset="0%" stop-color="#18d98c" stop-opacity=".34"/>
+            <stop id="smartAreaStop2" offset="100%" stop-color="#18d98c" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="125" x2="440" y2="125" class="fp-chart-base"/>
+        <path id="smartBalanceArea" d="" fill="url(#smartAreaGradient)"/>
+        <polyline id="smartBalanceLine" points="" fill="none"/>
+        <circle id="smartBalanceDot" cx="0" cy="0" r="5"/>
+      </svg>
+      <div id="smartBalanceChartEmpty" class="fp-chart-empty hidden">Adicione movimentações para visualizar a evolução.</div>
+    </div>
+  </section>
+
+  <section class="fp-dashboard-metrics">
+    <button id="dashIncomeMetric" class="fp-metric-card metric-income" type="button">
+      <div class="fp-metric-icon">↓</div>
+      <div><span>RECEITAS</span><strong id="dashIncomeValue">R$ 0,00</strong><small>Este mês</small></div>
+    </button>
+    <button id="dashPaidMetric" class="fp-metric-card metric-paid" type="button">
+      <div class="fp-metric-icon">↑</div>
+      <div><span>DESPESAS PAGAS</span><strong id="dashPaidValue">R$ 0,00</strong><small>Este mês</small></div>
+    </button>
+    <button id="dashAvailableMetric" class="fp-metric-card metric-available" type="button">
+      <div class="fp-metric-icon">▣</div>
+      <div><span>DISPONÍVEL</span><strong id="dashAvailableValue">R$ 0,00</strong><small>Disponível para usar</small></div>
+    </button>
+  </section>
+
+  <section class="fp-dashboard-duo">
+    <button id="dashPayableCard" class="fp-detail-card fp-card-button" type="button">
+      <div class="fp-detail-top">
+        <div class="fp-detail-icon payable">▤</div>
+        <div><span>A PAGAR</span><strong id="dashPayableValue">R$ 0,00</strong><small id="dashPayableCount">0 contas pendentes</small></div>
+      </div>
+      <div class="fp-detail-split">
+        <div><small>Vencem hoje</small><strong id="dashDueToday">R$ 0,00</strong></div>
+        <div><small>Próximos 7 dias</small><strong id="dashDue7">R$ 0,00</strong></div>
+      </div>
+      <div class="fp-detail-link">Ver todas as contas <span>›</span></div>
+    </button>
+
+    <button id="dashInvoicesCard" class="fp-detail-card fp-card-button" type="button">
+      <div class="fp-detail-top">
+        <div class="fp-detail-icon invoices">▣</div>
+        <div><span>FATURAS EM ABERTO</span><strong id="dashInvoicesValue">R$ 0,00</strong><small id="dashInvoicesCount">0 faturas abertas</small></div>
+      </div>
+      <div class="fp-detail-split">
+        <div><small>Próximo vencimento</small><strong id="dashInvoiceNextDate">—</strong></div>
+        <div><small>Valor</small><strong id="dashInvoiceNextValue">R$ 0,00</strong></div>
+      </div>
+      <div class="fp-detail-link">Ver cartões e faturas <span>›</span></div>
+    </button>
+  </section>
+
+  <section class="fp-dashboard-lower">
+    <article class="fp-panel">
+      <div class="fp-panel-title">
+        <div><span class="fp-section-icon">▣</span> PRÓXIMOS VENCIMENTOS</div>
+        <button id="dashSeeCalendar" type="button">Ver todos ›</button>
+      </div>
+      <div id="dashboardUpcomingList" class="fp-upcoming-list">
+        <div class="cards-empty">Nenhum compromisso em aberto no mês.</div>
+      </div>
+    </article>
+
+    <article class="fp-panel">
+      <div class="fp-panel-title">
+        <div><span class="fp-section-icon">▥</span> RECEITAS X DESPESAS (MÊS)</div>
+      </div>
+      <div class="fp-bar-chart">
+        <div class="fp-bar-column">
+          <div id="dashIncomeBarValue" class="fp-bar-value">R$ 0,00</div>
+          <div class="fp-bar-track"><div id="dashIncomeBar" class="fp-bar-fill income"></div></div>
+          <span>Receitas</span>
+        </div>
+        <div class="fp-bar-column">
+          <div id="dashPaidBarValue" class="fp-bar-value">R$ 0,00</div>
+          <div class="fp-bar-track"><div id="dashPaidBar" class="fp-bar-fill paid"></div></div>
+          <span>Despesas pagas</span>
+        </div>
+      </div>
+      <button id="dashSeeReports" class="fp-panel-footer" type="button">Ver relatório completo ›</button>
+    </article>
+  </section>
+
+  <section class="fp-month-summary">
+    <div class="fp-progress-ring" id="dashUsageRing" style="--p:0">
+      <span id="dashUsagePct">0%</span>
+    </div>
+    <div class="fp-month-summary-copy">
+      <strong>RESUMO DO MÊS</strong>
+      <span id="dashUsageText">Você ainda não utilizou sua renda mensal.</span>
+      <div><b id="dashUsagePaid">R$ 0,00</b> de <span id="dashUsageIncome">R$ 0,00</span></div>
+    </div>
+    <button id="dashMonthDetails" type="button">Detalhes do mês ›</button>
+  </section>
+</div>
 
 
     <div id="menuContent" class="view-hidden">
@@ -2841,6 +2994,7 @@
       applyDashboardFilter();
       renderUpcoming(currentBills);
       updateSummary(currentBills, currentIncomes, currentMonthPayments);
+      refreshDashboardV26();
     }
 
     function scheduleServerRefresh(){
@@ -3597,6 +3751,7 @@
         renderAppMode();
       }else{
         home.classList.remove('view-hidden');
+        refreshDashboardV26();
         document.getElementById(view === 'accounts' ? 'navAccounts' : 'navHome').classList.add('active');
         if(view === 'accounts') document.getElementById('billList')?.scrollIntoView({behavior:'smooth',block:'start'});
       }
@@ -4052,40 +4207,208 @@ function syncModeButtonsV251(){
       doc.save(`FINANCE_PLUS_RELATORIO_${safePeriod}.pdf`);
     }
 
-    async function refreshDashboardV18(){
+
+    function getDashboardMonthDates(){
+      const y=currentMonth.getFullYear(), m=currentMonth.getMonth();
+      const last=new Date(y,m+1,0).getDate();
+      return {y,m,last};
+    }
+
+    function dashboardStatusByNumbers(income, paid, projection){
+      if(projection < 0 || (income > 0 && paid > income)) return 'negative';
+      const usage = income > 0 ? paid/income : 0;
+      if((projection >= 0 && projection < income*0.15) || usage >= 0.75) return 'warning';
+      return 'positive';
+    }
+
+    function setSmartDashboardStatus(status){
+      const card=document.getElementById('smartBalanceCard');
+      if(!card) return;
+      card.classList.remove('status-positive','status-warning','status-negative');
+      card.classList.add(`status-${status}`);
+      const colors={positive:'#18d98c',warning:'#f1a62b',negative:'#ef4d54'};
+      const c=colors[status]||colors.positive;
+      document.getElementById('smartAreaStop1')?.setAttribute('stop-color',c);
+      document.getElementById('smartAreaStop2')?.setAttribute('stop-color',c);
+    }
+
+    function renderSmartBalanceChart(daily, status){
+      const line=document.getElementById('smartBalanceLine');
+      const area=document.getElementById('smartBalanceArea');
+      const dot=document.getElementById('smartBalanceDot');
+      const empty=document.getElementById('smartBalanceChartEmpty');
+      if(!line||!area||!dot) return;
+
+      if(!daily.length || daily.every(x=>Math.abs(x.value)<0.001)){
+        line.setAttribute('points','');
+        area.setAttribute('d','');
+        dot.setAttribute('cx','0'); dot.setAttribute('cy','0');
+        empty?.classList.remove('hidden');
+        return;
+      }
+      empty?.classList.add('hidden');
+
+      const W=440,H=150,padY=18,baseY=125;
+      const values=daily.map(x=>x.value);
+      let min=Math.min(0,...values), max=Math.max(0,...values);
+      if(max===min){max=min+1}
+      const range=max-min;
+      const yOf=v=>padY+(max-v)/range*(baseY-padY);
+      const xOf=i=>daily.length===1?W/2:(i/(daily.length-1))*W;
+
+      const pts=daily.map((x,i)=>[xOf(i),yOf(x.value)]);
+      const points=pts.map(p=>`${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+      line.setAttribute('points',points);
+
+      const d=`M ${pts[0][0].toFixed(1)} ${baseY} L `+
+        pts.map(p=>`${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' L ')+
+        ` L ${pts[pts.length-1][0].toFixed(1)} ${baseY} Z`;
+      area.setAttribute('d',d);
+
+      const last=pts[pts.length-1];
+      dot.setAttribute('cx',last[0]); dot.setAttribute('cy',last[1]);
+    }
+
+    function dashboardMonthName(){
+      return monthFmt.format(currentMonth).replace(/^\w/,c=>c.toUpperCase());
+    }
+
+    function setDashboardModeState(){
+      const mode=getAppMode();
+      document.getElementById('dashModeBasic')?.classList.toggle('active',mode==='basic');
+      document.getElementById('dashModeAdvanced')?.classList.toggle('active',mode==='advanced');
+    }
+
+    async function refreshDashboardV26(){
       if(!currentUser) return;
       const {start,end}=monthBounds(currentMonth);
-      const [incRes,payRes,invRes,billRes]=await Promise.all([
+      const prevDate=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1);
+      const prevBounds=monthBounds(prevDate);
+
+      const [incRes,payRes,invRes,billRes,prevIncRes,prevPayRes]=await Promise.all([
         supabaseClient.from('incomes').select('*').eq('user_id',currentUser.id).gte('received_date',start).lte('received_date',end),
         supabaseClient.from('payments').select('*').eq('user_id',currentUser.id).gte('paid_at',`${start}T00:00:00`).lte('paid_at',`${end}T23:59:59`),
         supabaseClient.from('card_invoices').select('*,cards(name)').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end),
-        supabaseClient.from('bills').select('*').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end)
+        supabaseClient.from('bills').select('*').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end),
+        supabaseClient.from('incomes').select('amount').eq('user_id',currentUser.id).gte('received_date',prevBounds.start).lte('received_date',prevBounds.end),
+        supabaseClient.from('payments').select('amount').eq('user_id',currentUser.id).gte('paid_at',`${prevBounds.start}T00:00:00`).lte('paid_at',`${prevBounds.end}T23:59:59`)
       ]);
+
       if(incRes.error||payRes.error||invRes.error||billRes.error) return;
 
-      const income=(incRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
-      const paid=(payRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
-      const openInv=(invRes.data||[]).filter(x=>!['pago','cancelado'].includes(x.status)).reduce((s,x)=>s+Number(x.amount||0),0);
+      const incomes=incRes.data||[], payments=payRes.data||[], invoices=invRes.data||[], bills=billRes.data||[];
+      const income=incomes.reduce((s,x)=>s+Number(x.amount||0),0);
+      const paid=payments.reduce((s,x)=>s+Number(x.amount||0),0);
+      const balance=income-paid;
+      const prevIncome=(prevIncRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
+      const prevPaid=(prevPayRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
+      const prevBalance=prevIncome-prevPaid;
+
+      const openBills=bills.filter(x=>!['pago','cancelado'].includes(computedStatus(x)));
+      const openInvoices=invoices.filter(x=>!['pago','cancelado'].includes(x.status));
+      const payable=openBills.reduce((s,x)=>s+Number(x.amount||0),0);
+      const openInv=openInvoices.reduce((s,x)=>s+Number(x.amount||0),0);
+      const projection=balance-payable-openInv;
+      const status=dashboardStatusByNumbers(income,paid,projection);
+      setSmartDashboardStatus(status);
+
+      const displayName=currentUser?.user_metadata?.name || currentUser?.email?.split('@')[0] || '';
+      const greeting=document.getElementById('dashboardGreeting');
+      if(greeting) greeting.textContent=`Olá${displayName?`, ${displayName}`:''}! 👋`;
+
+      document.getElementById('smartBalanceValue').textContent=brl.format(balance);
+      document.getElementById('smartBalanceProjection').textContent=`Previsão no fim do mês: ${brl.format(projection)}`;
+
+      let trendText='Sem comparação suficiente com o mês passado';
+      if(Math.abs(prevBalance)>0.01){
+        const pct=((balance-prevBalance)/Math.abs(prevBalance))*100;
+        const arrow=pct>=0?'↑':'↓';
+        const descriptor=status==='negative'?'Situação negativa':status==='warning'?'Atenção':'Positivo';
+        trendText=`${descriptor} ${arrow} ${Math.abs(pct).toFixed(1).replace('.',',')}% em relação ao mês passado`;
+      }else if(balance>0){
+        trendText=status==='warning'?'Atenção: acompanhe os próximos vencimentos':'Positivo neste mês';
+      }else if(balance<0){
+        trendText='Saldo negativo neste mês';
+      }
+      document.getElementById('smartBalanceTrend').textContent=trendText;
+
       document.getElementById('dashIncomeValue').textContent=brl.format(income);
-      document.getElementById('dashCardsValue').textContent=brl.format(openInv);
-      const bal=document.getElementById('dashBalanceValue');
-      bal.textContent=brl.format(income-paid);
-      bal.className=`mini-value ${income-paid>=0?'paid':'late'}`;
+      document.getElementById('dashPaidValue').textContent=brl.format(paid);
+      document.getElementById('dashAvailableValue').textContent=brl.format(balance);
+      document.getElementById('dashPayableValue').textContent=brl.format(payable);
+      document.getElementById('dashPayableCount').textContent=`${openBills.length} ${openBills.length===1?'conta pendente':'contas pendentes'}`;
+      document.getElementById('dashInvoicesValue').textContent=brl.format(openInv);
+      document.getElementById('dashInvoicesCount').textContent=`${openInvoices.length} ${openInvoices.length===1?'fatura aberta':'faturas abertas'}`;
+
+      const today=todayISO();
+      const dueToday=openBills.filter(x=>x.due_date===today).reduce((s,x)=>s+Number(x.amount||0),0);
+      const due7=openBills.filter(x=>{const d=dateDiffDays(today,x.due_date);return d>=0&&d<=7}).reduce((s,x)=>s+Number(x.amount||0),0);
+      document.getElementById('dashDueToday').textContent=brl.format(dueToday);
+      document.getElementById('dashDue7').textContent=brl.format(due7);
+
+      const nextInvoice=[...openInvoices].filter(x=>x.due_date).sort((a,b)=>a.due_date.localeCompare(b.due_date))[0];
+      document.getElementById('dashInvoiceNextDate').textContent=nextInvoice?formatDateBR(nextInvoice.due_date):'—';
+      document.getElementById('dashInvoiceNextValue').textContent=nextInvoice?brl.format(Number(nextInvoice.amount||0)):brl.format(0);
+
+      const maxBar=Math.max(income,paid,1);
+      document.getElementById('dashIncomeBar').style.height=`${Math.max(income?6:2,(income/maxBar)*100)}%`;
+      document.getElementById('dashPaidBar').style.height=`${Math.max(paid?6:2,(paid/maxBar)*100)}%`;
+      document.getElementById('dashIncomeBarValue').textContent=brl.format(income);
+      document.getElementById('dashPaidBarValue').textContent=brl.format(paid);
+
+      const usage=income>0?Math.min(999,(paid/income)*100):0;
+      const ring=Math.min(100,usage);
+      document.getElementById('dashUsageRing').style.setProperty('--p',ring.toFixed(1));
+      document.getElementById('dashUsagePct').textContent=`${Math.round(usage)}%`;
+      document.getElementById('dashUsageText').textContent=income>0
+        ? `Você já utilizou ${Math.round(usage)}% da sua renda mensal.`
+        : 'Cadastre receitas para acompanhar o comprometimento da renda.';
+      document.getElementById('dashUsagePaid').textContent=brl.format(paid);
+      document.getElementById('dashUsageIncome').textContent=brl.format(income);
+
+      // Linha de evolução diária: receitas acumuladas - pagamentos acumulados.
+      const {last}=getDashboardMonthDates();
+      const byDayIncome={}, byDayPaid={};
+      incomes.forEach(x=>{const d=Number(String(x.received_date).slice(8,10));byDayIncome[d]=(byDayIncome[d]||0)+Number(x.amount||0)});
+      payments.forEach(x=>{const d=Number(String(x.paid_at).slice(8,10));byDayPaid[d]=(byDayPaid[d]||0)+Number(x.amount||0)});
+      const todayDate=new Date();
+      const sameCurrent=todayDate.getFullYear()===currentMonth.getFullYear()&&todayDate.getMonth()===currentMonth.getMonth();
+      const endDay=sameCurrent?Math.min(todayDate.getDate(),last):last;
+      let cumulative=0; const daily=[];
+      for(let d=1;d<=endDay;d++){
+        cumulative+=(byDayIncome[d]||0)-(byDayPaid[d]||0);
+        daily.push({day:d,value:cumulative});
+      }
+      renderSmartBalanceChart(daily,status);
 
       const items=[];
-      (billRes.data||[]).filter(x=>!['pago','cancelado'].includes(x.status)).forEach(x=>items.push({date:x.due_date,type:'Conta',name:x.name,amount:Number(x.amount||0),view:'bills'}));
-      (invRes.data||[]).filter(x=>!['pago','cancelado'].includes(x.status)).forEach(x=>items.push({date:x.due_date,type:'Fatura',name:x.cards?.name||'Cartão',amount:Number(x.amount||0),view:'cards'}));
-      items.sort((a,b)=>a.date.localeCompare(b.date));
+      openBills.forEach(x=>items.push({date:x.due_date,type:'Conta',name:x.name,amount:Number(x.amount||0),view:'accounts'}));
+      openInvoices.forEach(x=>items.push({date:x.due_date,type:'Fatura',name:x.cards?.name||'Cartão',amount:Number(x.amount||0),view:'cards'}));
+      items.sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
       const box=document.getElementById('dashboardUpcomingList');
-      const top=items.slice(0,5);
+      const top=items.slice(0,4);
       box.innerHTML=top.length?'':'<div class="cards-empty">Nenhum compromisso em aberto no mês.</div>';
       top.forEach(x=>{
         const row=document.createElement('div');
         row.className='dashboard-list-row';
-        row.innerHTML=`<div><strong>${escapeHtml(x.name)}</strong><div class="label">${x.type} • ${formatDateBR(x.date)}</div></div><strong>${brl.format(x.amount)}</strong>`;
+        const dt=x.date?new Date(`${x.date}T12:00:00`):null;
+        const day=dt?String(dt.getDate()).padStart(2,'0'):'--';
+        const mon=dt?dt.toLocaleDateString('pt-BR',{month:'short'}).replace('.','').toUpperCase():'';
+        const diff=x.date?dateDiffDays(today,x.date):99;
+        const badge=diff<0?['VENCIDA','late']:diff===0?['VENCE HOJE','late']:diff===1?['AMANHÃ','soon']:diff<=7?[`EM ${diff} DIAS`,'soon']:[`EM ${diff} DIAS`,'ok'];
+        row.innerHTML=`
+          <div class="fp-upcoming-date"><b>${day}</b><small>${mon}</small></div>
+          <div class="fp-upcoming-main"><strong>${escapeHtml(x.name)}</strong><small>${x.type}</small></div>
+          <div class="fp-upcoming-amount"><strong>${brl.format(x.amount)}</strong><small class="${badge[1]}">${badge[0]}</small></div>`;
         row.addEventListener('click',()=>showView(x.view));
         box.appendChild(row);
       });
+
+      setDashboardModeState();
+    }
+
+    async function refreshDashboardV18(){
+      return refreshDashboardV26();
     }
 
     function reportBounds(){
@@ -4743,7 +5066,20 @@ document.getElementById('basicInvoiceForm')?.addEventListener('submit',saveBasic
 document.querySelectorAll('[data-menu-view]').forEach(btn=>{
       btn.addEventListener('click',()=>showView(btn.dataset.menuView));
     });
-document.getElementById('reportMonthlyBtn').addEventListener('click',async()=>{
+
+    // FINANCE+ V2.6 — Dashboard
+    document.getElementById('dashModeBasic')?.addEventListener('click',()=>{setAppMode('basic');setDashboardModeState();refreshDashboardV26();});
+    document.getElementById('dashModeAdvanced')?.addEventListener('click',()=>{setAppMode('advanced');setDashboardModeState();refreshDashboardV26();});
+    document.getElementById('dashIncomeMetric')?.addEventListener('click',()=>showView('income'));
+    document.getElementById('dashPaidMetric')?.addEventListener('click',()=>showView('reports'));
+    document.getElementById('dashAvailableMetric')?.addEventListener('click',()=>showView('reports'));
+    document.getElementById('dashPayableCard')?.addEventListener('click',()=>showView('accounts'));
+    document.getElementById('dashInvoicesCard')?.addEventListener('click',()=>showView('cards'));
+    document.getElementById('dashSeeCalendar')?.addEventListener('click',()=>showView('calendar'));
+    document.getElementById('dashSeeReports')?.addEventListener('click',()=>showView('reports'));
+    document.getElementById('dashMonthDetails')?.addEventListener('click',()=>showView('reports'));
+
+    document.getElementById('reportMonthlyBtn').addEventListener('click',async()=>{
       reportMode='monthly';
       document.getElementById('reportMonthlyBtn').classList.add('active');
       document.getElementById('reportAnnualBtn').classList.remove('active');
@@ -5058,13 +5394,7 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
     document.getElementById('resetPeriodBtn')?.addEventListener('click',resetFinancialPeriod);
 
     document.getElementById('downloadReportPdfBtn')?.addEventListener('click',downloadReportPDF);
-
-    document.getElementById('dashCardIncome')?.addEventListener('click',()=>showView('income'));
-    document.getElementById('dashCardCards')?.addEventListener('click',()=>showView('cards'));
-    document.getElementById('dashCardBalance')?.addEventListener('click',()=>showView('reports'));
-    document.getElementById('dashOpenCalendarBtn')?.addEventListener('click',()=>showView('calendar'));
-
-    document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasicInvoiceModal);
+document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasicInvoiceModal);
     document.getElementById('closeBasicInvoiceModal')?.addEventListener('click',closeBasicInvoiceModal);
     document.getElementById('basicInvoiceForm')?.addEventListener('submit',saveBasicInvoice);
     document.getElementById('basicInvoiceCard')?.addEventListener('change',updateBasicInvoiceDueDate);
