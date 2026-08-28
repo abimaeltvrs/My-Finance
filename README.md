@@ -1,15 +1,15 @@
-# FINANCE+ V1.4.1
+# FINANCE+ V1.4.2
 
-Correções:
-- Removido botão duplicado "+ Receita".
-- Estabilizado o salvamento das compras no cartão.
-- O Realtime não recarrega a área de cartões durante o processamento da compra.
-- A compra é exibida usando o retorno confirmado do Supabase.
-- Após finalizar compra + fatura, é feita uma única sincronização definitiva.
-- Consulta das parcelas usa exatamente o mês de referência da fatura.
+Melhoria de faturas:
+- Fatura agora é clicável.
+- Ao clicar, abre os detalhes da fatura.
+- Mostra todas as compras/parcelas lançadas naquela fatura.
+- Exibe descrição, data, número da parcela, observação e valor.
+- Exibe total da fatura.
+- Botão Pagar fatura continua independente.
 
 ## SQL
-Não há SQL novo obrigatório nesta versão.
+Não há SQL novo obrigatório.
 
 ## Commit changes
-FINANCE+ V1.4.1 - corrigir receita duplicada e compras do cartão
+FINANCE+ V1.4.2 - mostrar itens ao abrir a fatura

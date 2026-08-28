@@ -159,6 +159,7 @@
     .card-number-box{border:1px solid var(--border);border-radius:11px;padding:9px}
     .invoice-list,.purchase-list{display:grid;gap:10px}
     .invoice-row,.purchase-row{border:1px solid var(--border);border-radius:13px;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .invoice-row.clickable{cursor:pointer;transition:.18s ease}.invoice-row.clickable:hover{transform:translateY(-1px);border-color:rgba(0,196,140,.45)}
     .invoice-actions{display:flex;gap:8px;flex-wrap:wrap}
     .cards-empty{padding:22px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:14px}
 
@@ -640,6 +641,23 @@
           <button class="btn btn-primary" type="submit">Salvar compra</button>
         </div>
       </form>
+    </section>
+  </div>
+
+  <div id="invoiceDetailModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <section class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="invoiceDetailTitle">Detalhes da fatura</h2>
+          <div id="invoiceDetailSubtitle" class="label"></div>
+        </div>
+        <button id="closeInvoiceDetailModal" class="btn" type="button">Fechar</button>
+      </div>
+      <div id="invoiceDetailItems" class="purchase-list"></div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:12px">
+        <strong>Total da fatura</strong>
+        <strong id="invoiceDetailTotal" class="pending">R$ 0,00</strong>
+      </div>
     </section>
   </div>
 
@@ -1673,7 +1691,8 @@
       el.innerHTML='';
       currentIncomes.forEach(income=>{
         const row=document.createElement('div');
-        row.className='invoice-row';
+        row.className='invoice-row clickable';
+        row.addEventListener('click',()=>openInvoiceDetail(inv));
         row.innerHTML=`
           <div>
             <strong>${escapeHtml(income.description)}</strong>
@@ -1835,6 +1854,55 @@
       document.getElementById('cardsAvailableLimit').textContent=brl.format(availableTotal);
     }
 
+
+    async function openInvoiceDetail(invoice){
+      const card=currentCards.find(c=>c.id===invoice.card_id);
+      document.getElementById('invoiceDetailTitle').textContent=`Fatura • ${card?.name||'Cartão'}`;
+      const [y,m]=invoice.reference_month.split('-').map(Number);
+      const monthLabel=monthFmt.format(new Date(y,m-1,1)).replace(/^\w/,c=>c.toUpperCase());
+      document.getElementById('invoiceDetailSubtitle').textContent=`${monthLabel} • vencimento ${formatDateBR(invoice.due_date)}`;
+      document.getElementById('invoiceDetailTotal').textContent=brl.format(Number(invoice.amount||0));
+      const list=document.getElementById('invoiceDetailItems');
+      list.innerHTML='<div class="cards-empty">Carregando itens...</div>';
+      document.getElementById('invoiceDetailModal').classList.remove('hidden');
+
+      const res=await supabaseClient.from('card_transactions')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .eq('card_id',invoice.card_id)
+        .eq('reference_month',invoice.reference_month)
+        .order('purchase_date',{ascending:false});
+
+      if(res.error){
+        list.innerHTML=`<div class="cards-empty">Erro ao carregar itens: ${escapeHtml(res.error.message)}</div>`;
+        return;
+      }
+
+      const items=res.data||[];
+      if(!items.length){
+        list.innerHTML='<div class="cards-empty">Nenhum item encontrado nesta fatura.</div>';
+        return;
+      }
+
+      list.innerHTML='';
+      items.forEach(tx=>{
+        const row=document.createElement('div');
+        row.className='purchase-row';
+        row.innerHTML=`
+          <div>
+            <strong>${escapeHtml(tx.description)}</strong>
+            <div class="label">${formatDateBR(tx.purchase_date)}${Number(tx.installments_total)>1?` • parcela ${tx.installment_number}/${tx.installments_total}`:''}</div>
+            ${tx.notes?`<div class="label">${escapeHtml(tx.notes)}</div>`:''}
+          </div>
+          <strong>${brl.format(Number(tx.amount||0))}</strong>`;
+        list.appendChild(row);
+      });
+    }
+
+    function closeInvoiceDetail(){
+      document.getElementById('invoiceDetailModal').classList.add('hidden');
+    }
+
     function renderInvoices(){
       const el=document.getElementById('invoiceList');
       const total=currentInvoices.reduce((s,x)=>s+Number(x.amount||0),0);
@@ -1859,7 +1927,7 @@
         if(!paid){
           const btn=document.createElement('button');
           btn.className='btn btn-primary'; btn.type='button'; btn.textContent='Pagar fatura';
-          btn.addEventListener('click',()=>openInvoicePayment(inv,card));
+          btn.addEventListener('click',(e)=>{e.stopPropagation();openInvoicePayment(inv,card);});
           actions.appendChild(btn);
         }
         row.appendChild(actions);
@@ -1928,6 +1996,7 @@
     document.getElementById('purchaseDate').addEventListener('change',showPurchaseInvoiceMonth);
     document.getElementById('purchaseCard').addEventListener('change',showPurchaseInvoiceMonth);
 
+    document.getElementById('closeInvoiceDetailModal').addEventListener('click',closeInvoiceDetail);
     document.getElementById('closeInvoicePaymentModal').addEventListener('click',closeInvoicePaymentModal);
     document.getElementById('cancelInvoicePaymentBtn').addEventListener('click',closeInvoicePaymentModal);
 
