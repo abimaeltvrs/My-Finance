@@ -1382,6 +1382,121 @@
       .fp-nav-label{font-size:11px!important}
     }
 
+
+    /* FINANCE+ V2.4.2 — barra inferior estruturalmente corrigida */
+    #bottomNav.fp-bottom-nav{
+      position:fixed!important;
+      left:0!important;
+      right:0!important;
+      bottom:0!important;
+      z-index:10000!important;
+      width:100%!important;
+      max-width:none!important;
+      height:calc(74px + env(safe-area-inset-bottom,0px))!important;
+      margin:0!important;
+      padding:5px 2px calc(5px + env(safe-area-inset-bottom,0px))!important;
+      display:grid!important;
+      grid-template-columns:repeat(8,minmax(0,1fr))!important;
+      grid-template-rows:1fr!important;
+      align-items:stretch!important;
+      gap:0!important;
+      overflow:hidden!important;
+      background:rgba(4,14,12,.985)!important;
+      border:0!important;
+      border-top:1px solid #1d2a27!important;
+      border-radius:0!important;
+      box-shadow:0 -8px 24px rgba(0,0,0,.30)!important;
+      white-space:nowrap!important;
+    }
+
+    #bottomNav.fp-bottom-nav > button{
+      all:unset;
+      box-sizing:border-box!important;
+      width:100%!important;
+      min-width:0!important;
+      height:62px!important;
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:4px!important;
+      padding:4px 0!important;
+      margin:0!important;
+      border-radius:11px!important;
+      color:#909d99!important;
+      cursor:pointer!important;
+      overflow:hidden!important;
+      white-space:nowrap!important;
+      text-align:center!important;
+      font-family:inherit!important;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    #bottomNav.fp-bottom-nav > button.active{
+      color:#08d98b!important;
+      background:rgba(5,207,132,.12)!important;
+    }
+
+    #bottomNav .fp-nav-icon{
+      display:flex!important;
+      width:20px!important;
+      height:20px!important;
+      min-width:20px!important;
+      flex:0 0 20px!important;
+      align-items:center!important;
+      justify-content:center!important;
+      color:inherit!important;
+    }
+    #bottomNav .fp-nav-icon svg{
+      display:block!important;
+      width:20px!important;
+      height:20px!important;
+      fill:none!important;
+      stroke:currentColor!important;
+      stroke-width:1.9!important;
+      stroke-linecap:round!important;
+      stroke-linejoin:round!important;
+    }
+    #bottomNav .fp-nav-label{
+      display:block!important;
+      width:100%!important;
+      max-width:100%!important;
+      min-width:0!important;
+      margin:0!important;
+      padding:0!important;
+      color:inherit!important;
+      font-size:7.4px!important;
+      font-weight:700!important;
+      line-height:1!important;
+      white-space:nowrap!important;
+      overflow:hidden!important;
+      text-overflow:clip!important;
+      text-align:center!important;
+    }
+
+    body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))!important}
+
+    @media(max-width:380px){
+      #bottomNav .fp-nav-label{font-size:6.5px!important}
+      #bottomNav .fp-nav-icon,
+      #bottomNav .fp-nav-icon svg{width:18px!important;height:18px!important;min-width:18px!important}
+    }
+
+    @media(min-width:900px){
+      #bottomNav.fp-bottom-nav{
+        left:50%!important;
+        right:auto!important;
+        transform:translateX(-50%)!important;
+        width:min(100%,1180px)!important;
+        border-radius:18px 18px 0 0!important;
+      }
+      #bottomNav.fp-bottom-nav > button{
+        flex-direction:row!important;
+        gap:7px!important;
+      }
+      #bottomNav .fp-nav-label{font-size:11px!important;width:auto!important}
+    }
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
@@ -1777,45 +1892,36 @@
         </article>
         <aside class="card">
           <div class="section-title"><h2>Compras e parcelas</h2></div>
-          <div id="purchaseList" class="advanced-only" class="purchase-list">
-  <nav id="bottomNav" class="fp-bottom-nav" aria-label="Navegação principal">
-    <button type="button" data-bottom-view="home" aria-label="Início">
-      <span class="fp-nav-icon" data-icon="home"></span><span class="fp-nav-label">Início</span>
-    </button>
-    <button type="button" data-bottom-view="bills" aria-label="Contas">
-      <span class="fp-nav-icon" data-icon="bills"></span><span class="fp-nav-label">Contas</span>
-    </button>
-    <button type="button" data-bottom-view="cards" aria-label="Cartões">
-      <span class="fp-nav-icon" data-icon="cards"></span><span class="fp-nav-label">Cartões</span>
-    </button>
-    <button type="button" data-bottom-view="incomes" aria-label="Receitas">
-      <span class="fp-nav-icon" data-icon="income"></span><span class="fp-nav-label">Receitas</span>
-    </button>
-    <button type="button" data-bottom-view="calendar" aria-label="Calendário">
-      <span class="fp-nav-icon" data-icon="calendar"></span><span class="fp-nav-label">Calendário</span>
-    </button>
-    <button type="button" data-bottom-view="reports" aria-label="Relatórios">
-      <span class="fp-nav-icon" data-icon="reports"></span><span class="fp-nav-label">Relatórios</span>
-    </button>
-    <button type="button" data-bottom-view="profile" aria-label="Perfil">
-      <span class="fp-nav-icon" data-icon="user"></span><span class="fp-nav-label">Perfil</span>
-    </button>
-    <button type="button" data-bottom-view="settings" aria-label="Configurações">
-      <span class="fp-nav-icon" data-icon="settings"></span><span class="fp-nav-label">Config.</span>
-    </button>
-  </nav>
-</div>
+          <div id="purchaseList" class="purchase-list advanced-only"><div class="cards-empty">Nenhuma compra.</div></div>
         </aside>
       </section>
     </div>
 
-    <nav class="nav" aria-label="Navegação principal">
-      <button id="navHome" class="active" type="button"><span class="ui-icon"></span>Início</button>
-      <button id="navAccounts" type="button">Contas</button>
-      <button id="navCards" type="button"><span class="ui-icon"></span>Cartões</button>
-      <button id="navCalendar" type="button"><span class="ui-icon"></span>Agenda</button>
-      <button id="navReports" type="button"><span class="ui-icon"></span>Relatórios</button>
-      <button id="navMore" type="button"><span class="ui-icon"></span>Receitas</button>
+    <nav id="bottomNav" class="fp-bottom-nav" aria-label="Navegação principal">
+      <button id="navHome" type="button" data-bottom-view="home" aria-label="Início">
+        <span class="fp-nav-icon" data-icon="home"></span><span class="fp-nav-label">Início</span>
+      </button>
+      <button id="navAccounts" type="button" data-bottom-view="accounts" aria-label="Contas">
+        <span class="fp-nav-icon" data-icon="bills"></span><span class="fp-nav-label">Contas</span>
+      </button>
+      <button id="navCards" type="button" data-bottom-view="cards" aria-label="Cartões">
+        <span class="fp-nav-icon" data-icon="cards"></span><span class="fp-nav-label">Cartões</span>
+      </button>
+      <button id="navMore" type="button" data-bottom-view="income" aria-label="Receitas">
+        <span class="fp-nav-icon" data-icon="income"></span><span class="fp-nav-label">Receitas</span>
+      </button>
+      <button id="navCalendar" type="button" data-bottom-view="calendar" aria-label="Calendário">
+        <span class="fp-nav-icon" data-icon="calendar"></span><span class="fp-nav-label">Calendário</span>
+      </button>
+      <button id="navReports" type="button" data-bottom-view="reports" aria-label="Relatórios">
+        <span class="fp-nav-icon" data-icon="reports"></span><span class="fp-nav-label">Relatórios</span>
+      </button>
+      <button id="navProfile" type="button" data-bottom-view="profile" aria-label="Perfil">
+        <span class="fp-nav-icon" data-icon="user"></span><span class="fp-nav-label">Perfil</span>
+      </button>
+      <button id="navSettings" type="button" data-bottom-view="settings" aria-label="Configurações">
+        <span class="fp-nav-icon" data-icon="settings"></span><span class="fp-nav-label">Config.</span>
+      </button>
     </nav>
   </main>
 
@@ -3179,7 +3285,7 @@
       const menu = document.getElementById('menuContent');
       const profile = document.getElementById('profileContent');
       const settings = document.getElementById('settingsContent');
-      document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('#bottomNav button').forEach(b=>b.classList.remove('active'));
 
       home.classList.add('view-hidden');
       cards.classList.add('view-hidden');
@@ -3246,7 +3352,7 @@
 
     function applyNavigationIcons(){
       document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=ICONS[el.dataset.icon]||'';});
-      const map={navHome:'home',navBills:'bills',navCards:'cards',navMore:'income',navCalendar:'calendar',navReports:'reports',navProfile:'user',navSettings:'settings',headerNotifyBtn:'bell'};
+      const map={navHome:'home',navAccounts:'bills',navCards:'cards',navMore:'income',navCalendar:'calendar',navReports:'reports',navProfile:'user',navSettings:'settings',headerNotifyBtn:'bell'};
       Object.entries(map).forEach(([id,name])=>{
         const b=document.getElementById(id);
         if(b){
@@ -3336,15 +3442,14 @@
     }
 
 
-
-    function initBottomNavV241(){
+    function initBottomNavV242(){
       const nav=document.getElementById('bottomNav');
       if(!nav || nav.dataset.ready==='1') return;
       nav.dataset.ready='1';
 
       nav.querySelectorAll('[data-icon]').forEach(el=>{
-        const name=el.dataset.icon;
-        if(ICONS[name]) el.innerHTML=ICONS[name];
+        const svg=ICONS[el.dataset.icon];
+        if(svg) el.innerHTML=svg;
       });
 
       nav.querySelectorAll('[data-bottom-view]').forEach(btn=>{
@@ -3362,11 +3467,8 @@
         btn.classList.toggle('active',active);
         if(active && btn.animate){
           btn.animate(
-            [
-              {transform:'translateY(1px) scale(.96)',opacity:.78},
-              {transform:'translateY(-1px) scale(1)',opacity:1}
-            ],
-            {duration:170,easing:'ease-out'}
+            [{transform:'translateY(1px)',opacity:.82},{transform:'translateY(-1px)',opacity:1}],
+            {duration:160,easing:'ease-out'}
           );
         }
       });
@@ -4672,7 +4774,7 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
       try{ applyV21VisualIdentity(); }catch(e){ console.warn(e); }
       try{ applyAppMode(); }catch(e){ console.warn(e); }
       try{ syncSidebarActive('home'); }catch(e){ console.warn(e); }
-      try{ initBottomNavV241(); setBottomNavActive('home'); }catch(e){ console.warn(e); }
+      try{ initBottomNavV242(); setBottomNavActive('home'); }catch(e){ console.warn(e); }
     }
 
 </script>

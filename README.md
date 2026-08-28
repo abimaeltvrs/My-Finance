@@ -1,30 +1,26 @@
-# FINANCE+ V2.4.1 — Correção definitiva da barra inferior
+# FINANCE+ V2.4.2 — Correção estrutural do menu inferior
+
+## Problema encontrado
+A barra nova estava sendo inserida dentro da área “Compras e parcelas”.
+Ao mesmo tempo, o menu antigo continuava no rodapé. Por isso o celular ainda mostrava:
+- poucos ícones,
+- Receitas em uma segunda linha,
+- Perfil e Configurações ausentes.
 
 ## Correção
-A barra inferior foi reconstruída do zero para eliminar conflitos com CSS antigo.
-
-## Menu inferior
-- 8 opções na mesma linha.
-- Início, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Config.
-- Ícone visível em todas as opções.
-- Nome abaixo do ícone.
-- Nenhuma quebra de linha.
+- Menu antigo removido.
+- Barra nova movida para o local correto, fora do conteúdo das telas.
+- Existe agora apenas uma barra inferior.
+- 8 itens em uma única linha:
+  Início, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Config.
+- Ícones SVG são carregados diretamente em cada item.
+- Barra fixa em toda a aplicação.
+- Sem quebra de linha.
 - Sem rolagem horizontal.
-- Barra fixa e sempre visível.
-- Destaque verde na opção ativa.
-- Pequena animação ao trocar de tela.
-
-## Dashboard
-- Card de saldo mais compacto.
-- Cards de indicadores menores.
-- Menos espaço desperdiçado no celular.
-- Cabeçalho compacto.
-
-## Cache
-- Novo cache `finance-plus-v2-4-1-fixed-bottom-nav`.
+- Área Compras e parcelas restaurada.
 
 ## SQL
 Não há SQL novo.
 
 ## Commit changes
-FINANCE+ V2.4.1 - corrigir definitivamente menu inferior
+FINANCE+ V2.4.2 - corrigir estrutura real do menu inferior
