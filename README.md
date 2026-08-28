@@ -1,40 +1,30 @@
-# FINANCE+ V2.4 — Interface aprovada
+# FINANCE+ V2.4.1 — Correção definitiva da barra inferior
 
-Esta versão aplica o visual aprovado no mockup.
+## Correção
+A barra inferior foi reconstruída do zero para eliminar conflitos com CSS antigo.
 
-## Barra inferior
-- 8 opções visíveis simultaneamente:
-  Início, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Config.
-- Todos os ícones ficam na mesma linha.
-- Nenhuma opção quebra linha.
-- Não existe rolagem horizontal no menu.
-- Barra fixa na parte inferior em toda a navegação.
-- Item selecionado recebe fundo verde suave e indicador superior.
-- Animação curta na troca de tela.
-
-## Cabeçalho
-- Logo FINANCE+.
-- Botão de notificações.
-- Botão de menu.
-- Cabeçalho compacto inspirado no mockup aprovado.
+## Menu inferior
+- 8 opções na mesma linha.
+- Início, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Config.
+- Ícone visível em todas as opções.
+- Nome abaixo do ícone.
+- Nenhuma quebra de linha.
+- Sem rolagem horizontal.
+- Barra fixa e sempre visível.
+- Destaque verde na opção ativa.
+- Pequena animação ao trocar de tela.
 
 ## Dashboard
-- Fundo grafite profundo.
-- Card principal de saldo em verde escuro/esmeralda.
-- Cards de indicadores compactos.
-- Próximos vencimentos em lista.
-- Identidade por cores:
-  verde = positivo/pago,
-  laranja = pendente,
-  vermelho = atrasado,
-  azul = fatura/calendário.
+- Card de saldo mais compacto.
+- Cards de indicadores menores.
+- Menos espaço desperdiçado no celular.
+- Cabeçalho compacto.
 
-## Web
-- A mesma navegação inferior permanece disponível também no desktop.
-- O menu lateral da versão anterior foi removido para manter uma única linguagem de navegação.
+## Cache
+- Novo cache `finance-plus-v2-4-1-fixed-bottom-nav`.
 
 ## SQL
 Não há SQL novo.
 
 ## Commit changes
-FINANCE+ V2.4 - aplicar interface aprovada e menu inferior com 8 icones
+FINANCE+ V2.4.1 - corrigir definitivamente menu inferior
