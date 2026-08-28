@@ -647,7 +647,7 @@
     .fp-fab:active{transform:translateX(-50%) scale(.96)}
 
     /* Desktop shell / sidebar */
-    .fp-desktop-sidebar{display:none}
+    .fp-desktop-sidebar{display:none!important}
     @media(min-width:1000px){
       body{padding-bottom:28px!important}
       .app-shell{
@@ -987,6 +987,213 @@
       body{padding-bottom:100px!important}
     }
 
+
+    /* FINANCE+ V2.4 — visual aprovado */
+    :root{
+      --fp-bg:#04100e;
+      --fp-surface:#0d1715;
+      --fp-surface-2:#101b19;
+      --fp-border:#1f2c29;
+      --fp-green:#05cf84;
+      --fp-green-2:#14e69a;
+      --fp-orange:#ffac20;
+      --fp-red:#ff4e49;
+      --fp-blue:#36a2ff;
+      --fp-purple:#8d59e8;
+      --fp-text:#f5f7f6;
+      --fp-muted:#9aa7a4;
+    }
+    body{
+      background:
+        radial-gradient(circle at 50% -8%,rgba(0,200,122,.12),transparent 26%),
+        linear-gradient(180deg,#03100d,#06120f 60%,#04100e)!important;
+    }
+    .app-shell{
+      max-width:1180px!important;
+      margin:0 auto!important;
+      display:block!important;
+      padding-left:18px!important;
+      padding-right:18px!important;
+    }
+    .topbar{
+      position:relative;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:space-between!important;
+      gap:12px!important;
+      margin-bottom:14px!important;
+      padding-top:max(12px,var(--safe-top))!important;
+    }
+    .topbar .brand{display:flex!important;align-items:center!important;gap:12px!important}
+    .fp-brand-mark{width:58px!important;height:58px!important}
+    .topbar .brand>span:last-child{font-size:28px!important;font-weight:900!important}
+    .topbar .tagline{font-size:13px!important;color:#9aa7a4!important}
+    .topbar>div:last-child{display:flex!important;gap:9px!important;align-items:center!important}
+    #headerNotifyBtn,#openMainMenuBtn{
+      width:48px!important;height:48px!important;
+      min-width:48px!important;padding:0!important;
+      border-radius:50%!important;
+      background:#0b1614!important;
+      border:1px solid #1c2a27!important;
+    }
+    #openMainMenuBtn .menu-text{display:none!important}
+    #logoutBtn{display:none!important}
+    .card{
+      background:linear-gradient(180deg,#0f1a18,#0b1513)!important;
+      border:1px solid #1e2a28!important;
+      border-radius:20px!important;
+    }
+    .hero-card{
+      background:
+        radial-gradient(circle at 78% 24%,rgba(0,255,171,.16),transparent 22%),
+        linear-gradient(135deg,#067752 0%,#056d4a 45%,#064b38 100%)!important;
+      padding:28px!important;
+      min-height:235px;
+      border-radius:20px!important;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-card:before{
+      content:"";
+      position:absolute;inset:auto 0 0 0;height:48%;
+      background:
+        linear-gradient(transparent,rgba(0,0,0,.05)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 160'%3E%3Cpath d='M0 130 C70 110 95 128 140 98 S220 115 265 75 S340 92 390 55 S485 72 600 25' fill='none' stroke='%2314e69a' stroke-opacity='.42' stroke-width='3'/%3E%3C/svg%3E") center/cover no-repeat;
+      pointer-events:none;
+    }
+    .hero-card .mini-value,.hero-card .balance,.hero-card [class*="value"]{
+      font-size:clamp(34px,7vw,54px)!important;
+      font-weight:900!important;
+      letter-spacing:-.04em!important;
+      position:relative;z-index:1;
+    }
+    .dashboard-secondary{
+      display:grid!important;
+      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      gap:10px!important;
+    }
+    .dashboard-secondary .card,.dashboard-secondary article{
+      min-height:122px!important;
+      padding:16px!important;
+      border-radius:17px!important;
+    }
+    .dashboard-secondary .card::before,.dashboard-secondary article::before{display:none!important}
+    .dashboard-secondary .mini-value{font-size:20px!important;margin-top:12px!important}
+    #dashboardUpcomingList .dashboard-list-row{
+      min-height:74px!important;
+      padding:13px 14px!important;
+      border:0!important;
+      border-bottom:1px solid #1a2724!important;
+      border-radius:0!important;
+      background:transparent!important;
+    }
+    #dashboardUpcomingList .dashboard-list-row:last-child{border-bottom:0!important}
+    .menu-card{background:#0d1715!important}
+    .mobile-bottom-nav{
+      position:fixed!important;
+      left:0!important;
+      right:0!important;
+      transform:none!important;
+      bottom:0!important;
+      width:100%!important;
+      max-width:none!important;
+      height:82px!important;
+      padding:7px 8px calc(7px + var(--safe-bottom))!important;
+      border-radius:0!important;
+      border:0!important;
+      border-top:1px solid #1b2825!important;
+      background:rgba(5,15,13,.97)!important;
+      box-shadow:0 -12px 30px rgba(0,0,0,.28)!important;
+      backdrop-filter:blur(16px)!important;
+      -webkit-backdrop-filter:blur(16px)!important;
+      display:grid!important;
+      grid-template-columns:repeat(8,minmax(0,1fr))!important;
+      gap:0!important;
+      overflow:hidden!important;
+      white-space:nowrap!important;
+      z-index:999!important;
+    }
+    .mobile-bottom-nav button{
+      min-width:0!important;
+      width:auto!important;
+      height:68px!important;
+      padding:6px 1px!important;
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:5px!important;
+      background:transparent!important;
+      border:0!important;
+      border-radius:14px!important;
+      color:#97a39f!important;
+      overflow:hidden!important;
+      white-space:nowrap!important;
+      font-size:9px!important;
+      line-height:1!important;
+      font-weight:650!important;
+    }
+    .mobile-bottom-nav button span:last-child{
+      max-width:100%!important;
+      overflow:hidden!important;
+      text-overflow:clip!important;
+      white-space:nowrap!important;
+    }
+    .mobile-bottom-nav button .ui-icon{
+      width:22px!important;height:22px!important;flex:0 0 22px!important;
+    }
+    .mobile-bottom-nav button.active{
+      color:var(--fp-green)!important;
+      background:linear-gradient(180deg,rgba(0,207,132,.18),rgba(0,207,132,.08))!important;
+      position:relative;
+    }
+    .mobile-bottom-nav button.active:before{
+      content:"";
+      position:absolute;top:0;left:12%;right:12%;height:2px;
+      background:var(--fp-green);
+      border-radius:0 0 3px 3px;
+    }
+    .calendar-day{background:#0a1513!important}
+    .calendar-day.today{background:rgba(5,207,132,.1)!important}
+    body{padding-bottom:calc(95px + var(--safe-bottom))!important}
+
+    @media(max-width:600px){
+      .app-shell{padding-left:12px!important;padding-right:12px!important}
+      .topbar .brand>span:last-child{font-size:24px!important}
+      .fp-brand-mark{width:52px!important;height:52px!important}
+      .dashboard-secondary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+      .dashboard-secondary article:last-child{grid-column:auto!important}
+      .mobile-bottom-nav{
+        height:78px!important;
+        padding-left:2px!important;padding-right:2px!important;
+      }
+      .mobile-bottom-nav button{
+        font-size:7.8px!important;
+        gap:4px!important;
+        padding-left:0!important;padding-right:0!important;
+      }
+      .mobile-bottom-nav button .ui-icon{width:20px!important;height:20px!important}
+      .hero-card{padding:22px!important;min-height:210px!important}
+    }
+    @media(max-width:390px){
+      .mobile-bottom-nav button{font-size:7px!important}
+      .mobile-bottom-nav button .ui-icon{width:19px!important;height:19px!important}
+    }
+    @media(min-width:1000px){
+      .mobile-bottom-nav{
+        left:50%!important;right:auto!important;
+        transform:translateX(-50%)!important;
+        width:min(100%,1180px)!important;
+        border-radius:18px 18px 0 0!important;
+        grid-template-columns:repeat(8,1fr)!important;
+      }
+      .mobile-bottom-nav button{
+        flex-direction:row!important;
+        gap:7px!important;
+        font-size:11px!important;
+      }
+    }
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
@@ -1088,53 +1295,12 @@
         <div class="tagline">Sua vida financeira organizada.</div>
       </div>
       <div class="top-actions">
-        <button id="openMainMenuBtn" class="btn" type="button">☰ Menu</button>
+        <button id="headerNotifyBtn" class="btn icon-btn" type="button" aria-label="Notificações"><span class="ui-icon" data-icon="bell"></span></button>
+          <button id="openMainMenuBtn" class="btn" type="button">☰ Menu</button>
           <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
       </div>
     </header>
-    <section class="fp-cover" aria-label="Capa FINANCE+">
-      <div class="fp-cover-bg" aria-hidden="true">
-        <span class="fp-orb fp-orb-a"></span>
-        <span class="fp-orb fp-orb-b"></span>
-        <svg class="fp-cover-chart" viewBox="0 0 520 150" preserveAspectRatio="none">
-          <path d="M0 125 C50 112,72 120,112 91 S180 105,218 78 S286 86,326 56 S390 67,430 42 S485 43,520 18" fill="none"/>
-        </svg>
-      </div>
-      <div class="fp-cover-content">
-        <div class="fp-cover-copy">
-          <div class="fp-cover-kicker">FINANCE+</div>
-          <h1>Seu dinheiro.<br><span>Sob controle.</span></h1>
-          <p>Organize receitas, contas, cartões e objetivos em uma única visão.</p>
-          <div class="fp-cover-badges">
-            <span>● Visão mensal</span>
-            <span>● Calendário financeiro</span>
-            <span>● Relatórios</span>
-          </div>
-        </div>
-        <div class="fp-cover-emblem">
-          <div class="fp-cover-logo"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
-  <rect x="5" y="5" width="54" height="54" rx="17" fill="url(#fpLogoBg)"/>
-  <path d="M18 19h18c8 0 13 4.2 13 10.6S44 40.3 36 40.3h-7.5V51H18V19Z" fill="#061711"/>
-  <path d="M28.5 29.7H36c2.7 0 4.2-1.2 4.2-3.2s-1.5-3.2-4.2-3.2h-7.5v6.4Z" fill="#17E596"/>
-  <path d="M34 45h5.5v6H34zM42 40h5.5v11H42zM26 47h5.5v4H26z" fill="#17E596"/>
-  <path d="M45.5 13.5v8M41.5 17.5h8" stroke="#E9FFF6" stroke-width="3" stroke-linecap="round"/>
-  <defs>
-    <linearGradient id="fpLogoBg" x1="10" y1="8" x2="56" y2="57" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#1BE59A"/>
-      <stop offset="1" stop-color="#00A968"/>
-    </linearGradient>
-  </defs>
-</svg></div>
-          <div class="fp-cover-mini">
-            <span>Saldo organizado</span>
-            <strong>FINANCE+</strong>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    <div id="homeContent">
+<div id="homeContent">
       <div id="appModeBanner" class="mode-banner">
         <div><strong id="appModeBannerTitle">Modo Avançado</strong><br><span id="appModeBannerText">Controle financeiro completo.</span></div>
         <button id="appModeSettingsBtn" class="btn" type="button">Configurar</button>
@@ -1740,6 +1906,7 @@
       income:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>`,
       menu:`<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>`,
       user:`<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>`,
+      bell:`<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>`,
       settings:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a7 7 0 0 0-1.7-1L14.5 3h-5L9 6a7 7 0 0 0-1.7 1L5 6 3 9.5 5.1 11a7 7 0 0 0 0 2L3 14.5 5 18l2.3-1a7 7 0 0 0 1.7 1l.5 3h5l.5-3a7 7 0 0 0 1.7-1l2.3 1 2-3.5-2.1-1.5a7 7 0 0 0 .1-1z"/></svg>`,
       logout:`<svg viewBox="0 0 24 24"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9"/></svg>`,
       plus:`<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`,
@@ -2873,7 +3040,7 @@
 
     function applyNavigationIcons(){
       document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=ICONS[el.dataset.icon]||'';});
-      const map={navHome:'home',navBills:'bills',navCards:'cards',navMore:'income',navCalendar:'calendar',navReports:'reports',navProfile:'user',navSettings:'settings'};
+      const map={navHome:'home',navBills:'bills',navCards:'cards',navMore:'income',navCalendar:'calendar',navReports:'reports',navProfile:'user',navSettings:'settings',headerNotifyBtn:'bell'};
       Object.entries(map).forEach(([id,name])=>{
         const b=document.getElementById(id);
         if(b){
@@ -2938,59 +3105,30 @@
       });
     }
 
-
-    function getBottomNav(){
-      return document.querySelector('.mobile-bottom-nav');
-    }
-
     function setBottomNavActive(view){
-      const nav=getBottomNav();
+      const nav=document.querySelector('.mobile-bottom-nav');
       if(!nav) return;
-
-      const buttons=[...nav.querySelectorAll('[data-bottom-view]')];
-      buttons.forEach(btn=>{
-        btn.classList.toggle('active',btn.dataset.bottomView===view);
-      });
-
-      const active=buttons.find(btn=>btn.dataset.bottomView===view);
-      if(active){
-        nav.classList.add('nav-moving');
-        try{
-          active.scrollIntoView({
-            behavior:'smooth',
-            block:'nearest',
-            inline:'center'
-          });
-        }catch(e){
-          const target=active.offsetLeft-(nav.clientWidth-active.offsetWidth)/2;
-          nav.scrollTo({left:Math.max(0,target),behavior:'smooth'});
-        }
-        clearTimeout(window.__financeNavAnimTimer);
-        window.__financeNavAnimTimer=setTimeout(()=>nav.classList.remove('nav-moving'),320);
-      }
-    }
-
-    function initBottomNavigationV23(){
-      const nav=getBottomNav();
-      if(!nav || nav.dataset.v23Ready==='1') return;
-      nav.dataset.v23Ready='1';
-
       nav.querySelectorAll('[data-bottom-view]').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          const view=btn.dataset.bottomView;
-          showView(view);
-          setBottomNavActive(view);
-        });
+        const active=btn.dataset.bottomView===view;
+        btn.classList.toggle('active',active);
+        if(active){
+          btn.animate(
+            [{transform:'translateY(2px)',opacity:.75},{transform:'translateY(0)',opacity:1}],
+            {duration:180,easing:'ease-out'}
+          );
+        }
       });
-
-      // swipe/scroll feedback
-      let scrollTimer=null;
-      nav.addEventListener('scroll',()=>{
-        nav.classList.add('nav-moving');
-        clearTimeout(scrollTimer);
-        scrollTimer=setTimeout(()=>nav.classList.remove('nav-moving'),150);
-      },{passive:true});
     }
+
+    function initBottomNavigationV24(){
+      const nav=document.querySelector('.mobile-bottom-nav');
+      if(!nav || nav.dataset.v24Ready==='1') return;
+      nav.dataset.v24Ready='1';
+      nav.querySelectorAll('[data-bottom-view]').forEach(btn=>{
+        btn.addEventListener('click',()=>showView(btn.dataset.bottomView));
+      });
+    }
+
 
     function getAppMode(){
       return localStorage.getItem('financePlusMode') || 'advanced';
@@ -3975,6 +4113,7 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
     document.getElementById('basicInvoiceMonth')?.addEventListener('change',updateBasicInvoiceDueDate);
     document.getElementById('appModeSettingsBtn')?.addEventListener('click',()=>showView('settings'));
 
+    document.getElementById('headerNotifyBtn')?.addEventListener('click',()=>showToast('Nenhuma nova notificação.'));
     document.getElementById('openMainMenuBtn')?.addEventListener('click',()=>showView('menu'));
     document.querySelectorAll('[data-menu-view]').forEach(btn=>{
       btn.addEventListener('click',()=>showView(btn.dataset.menuView));
@@ -4291,7 +4430,7 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
       try{ applyV21VisualIdentity(); }catch(e){ console.warn(e); }
       try{ applyAppMode(); }catch(e){ console.warn(e); }
       try{ syncSidebarActive('home'); }catch(e){ console.warn(e); }
-      try{ initBottomNavigationV23(); setBottomNavActive('home'); }catch(e){ console.warn(e); }
+      try{ initBottomNavigationV24(); setBottomNavActive('home'); }catch(e){ console.warn(e); }
     }
 
 </script>

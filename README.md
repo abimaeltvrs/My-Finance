@@ -1,31 +1,40 @@
-# FINANCE+ V2.3 — Barra inferior fixa completa
+# FINANCE+ V2.4 — Interface aprovada
 
-## Menu inferior
-- Todos os principais itens agora ficam na barra inferior:
-  Início, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Configurações.
-- Nenhum item quebra de linha.
-- Todos os ícones permanecem na mesma linha.
-- A barra inferior fica fixa e visível durante toda a navegação.
-- Quando os itens não cabem na tela, a barra passa a ter rolagem horizontal suave.
-- Ao trocar de tela, o item ativo é automaticamente centralizado.
-- Há animação suave durante a troca das opções.
+Esta versão aplica o visual aprovado no mockup.
 
-## Android / iOS
-- Barra adaptada à largura disponível.
-- Safe area inferior do iPhone preservada.
-- Rolagem horizontal por toque/swipe.
-- Barra não desaparece ao mudar de página.
+## Barra inferior
+- 8 opções visíveis simultaneamente:
+  Início, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Config.
+- Todos os ícones ficam na mesma linha.
+- Nenhuma opção quebra linha.
+- Não existe rolagem horizontal no menu.
+- Barra fixa na parte inferior em toda a navegação.
+- Item selecionado recebe fundo verde suave e indicador superior.
+- Animação curta na troca de tela.
+
+## Cabeçalho
+- Logo FINANCE+.
+- Botão de notificações.
+- Botão de menu.
+- Cabeçalho compacto inspirado no mockup aprovado.
+
+## Dashboard
+- Fundo grafite profundo.
+- Card principal de saldo em verde escuro/esmeralda.
+- Cards de indicadores compactos.
+- Próximos vencimentos em lista.
+- Identidade por cores:
+  verde = positivo/pago,
+  laranja = pendente,
+  vermelho = atrasado,
+  azul = fatura/calendário.
 
 ## Web
-- A mesma barra inferior continua visível no desktop.
-- Os itens ficam em linha única.
-
-## Alterações
-- O botão flutuante central foi removido para evitar sobreposição.
-- Todas as opções principais passam a fazer parte da mesma navegação inferior.
+- A mesma navegação inferior permanece disponível também no desktop.
+- O menu lateral da versão anterior foi removido para manter uma única linguagem de navegação.
 
 ## SQL
 Não há SQL novo.
 
 ## Commit changes
-FINANCE+ V2.3 - menu inferior fixo completo e animado
+FINANCE+ V2.4 - aplicar interface aprovada e menu inferior com 8 icones
