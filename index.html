@@ -566,6 +566,7 @@
               <option value="semanal">Semanal</option>
               <option value="anual">Anual</option>
             </select>
+            <div class="label" style="margin-top:6px">A recorrência gera automaticamente os próximos lançamentos e evita duplicidades.</div>
           </div>
           <div class="field">
             <label for="billReminder">Lembrete</label>
@@ -937,6 +938,7 @@
     let editingPaymentId = null;
     let editingBillId = null;
     let currentBills = [];
+    const RECURRENCE_MONTHS_AHEAD = 12;
     let currentPaymentByBill = new Map();
     let currentIncomes = [];
     let editingIncomeId = null;
@@ -1524,6 +1526,117 @@
       loadMonthData();
     });
 
+
+    function isoDateUTC(date){
+      return `${date.getUTCFullYear()}-${String(date.getUTCMonth()+1).padStart(2,'0')}-${String(date.getUTCDate()).padStart(2,'0')}`;
+    }
+
+    function addRecurrenceDate(baseISO, recurrence, step){
+      const [y,m,d]=baseISO.split('-').map(Number);
+
+      if(recurrence==='semanal'){
+        const dt=new Date(Date.UTC(y,m-1,d));
+        dt.setUTCDate(dt.getUTCDate()+(7*step));
+        return isoDateUTC(dt);
+      }
+
+      if(recurrence==='mensal'){
+        const total=(m-1)+step;
+        const ty=y+Math.floor(total/12);
+        const tm=((total%12)+12)%12;
+        const last=new Date(Date.UTC(ty,tm+1,0)).getUTCDate();
+        return `${ty}-${String(tm+1).padStart(2,'0')}-${String(Math.min(d,last)).padStart(2,'0')}`;
+      }
+
+      if(recurrence==='anual'){
+        const ty=y+step;
+        const last=new Date(Date.UTC(ty,m,0)).getUTCDate();
+        return `${ty}-${String(m).padStart(2,'0')}-${String(Math.min(d,last)).padStart(2,'0')}`;
+      }
+
+      return baseISO;
+    }
+
+    function recurrenceSteps(recurrence){
+      if(recurrence==='semanal') return 52;
+      if(recurrence==='mensal') return RECURRENCE_MONTHS_AHEAD;
+      if(recurrence==='anual') return 5;
+      return 0;
+    }
+
+    async function ensureBillSeriesRoot(bill){
+      if(bill.recurrence_series_id) return bill.recurrence_series_id;
+
+      const result=await supabaseClient.from('bills')
+        .update({recurrence_series_id:bill.id, recurrence_index:0})
+        .eq('id',bill.id)
+        .eq('user_id',currentUser.id)
+        .select()
+        .single();
+
+      if(result.error) throw result.error;
+      bill.recurrence_series_id=bill.id;
+      bill.recurrence_index=0;
+      return bill.id;
+    }
+
+    async function generateRecurringBills(rootBill){
+      if(!rootBill.recurrence || rootBill.recurrence==='unica') return [];
+
+      const seriesId=await ensureBillSeriesRoot(rootBill);
+      const steps=recurrenceSteps(rootBill.recurrence);
+
+      const existing=await supabaseClient.from('bills')
+        .select('id,due_date')
+        .eq('user_id',currentUser.id)
+        .eq('recurrence_series_id',seriesId);
+
+      if(existing.error) throw existing.error;
+      const existingDates=new Set((existing.data||[]).map(x=>x.due_date));
+
+      const rows=[];
+      for(let i=1;i<=steps;i++){
+        const due=addRecurrenceDate(rootBill.due_date,rootBill.recurrence,i);
+        if(existingDates.has(due)) continue;
+        rows.push({
+          user_id:currentUser.id,
+          name:rootBill.name,
+          category:rootBill.category,
+          amount:rootBill.amount,
+          due_date:due,
+          recurrence:rootBill.recurrence,
+          status:'pendente',
+          notes:rootBill.notes,
+          recurrence_series_id:seriesId,
+          recurrence_index:i
+        });
+      }
+
+      if(!rows.length) return [];
+      const result=await supabaseClient.from('bills').insert(rows).select();
+      if(result.error) throw result.error;
+      return result.data||[];
+    }
+
+    async function updateFutureRecurringBills(bill){
+      if(!bill.recurrence_series_id || !bill.recurrence || bill.recurrence==='unica') return;
+
+      const result=await supabaseClient.from('bills')
+        .update({
+          name:bill.name,
+          category:bill.category,
+          amount:bill.amount,
+          recurrence:bill.recurrence,
+          notes:bill.notes
+        })
+        .eq('user_id',currentUser.id)
+        .eq('recurrence_series_id',bill.recurrence_series_id)
+        .gte('due_date',bill.due_date)
+        .neq('status','pago');
+
+      if(result.error) throw result.error;
+    }
+
     document.getElementById('billForm').addEventListener('submit', async e=>{
       e.preventDefault();
       if(!currentUser) return;
@@ -1599,6 +1712,19 @@
 
       const wasEditing = !!editingBillId;
       const savedBill = data;
+
+      if(savedBill.recurrence && savedBill.recurrence!=='unica'){
+        try{
+          if(wasEditing){
+            await updateFutureRecurringBills(savedBill);
+          }
+          await generateRecurringBills(savedBill);
+        }catch(recErr){
+          console.error('Erro na recorrência:',recErr);
+          showToast(`Conta salva, mas houve erro ao gerar recorrência: ${recErr.message}`);
+        }
+      }
+
       const [y,m] = payload.due_date.split('-').map(Number);
       const targetMonth = new Date(y, m-1, 1);
 

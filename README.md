@@ -1,15 +1,16 @@
-# FINANCE+ V1.5.1
+# FINANCE+ V1.6 — Contas recorrentes automáticas
 
-## Ajuste visual do calendário
-- Nomes dos lançamentos ficam sempre em uma única linha.
-- Textos longos são cortados com reticências (...).
-- O conteúdo não aumenta nem deforma o tamanho do dia no calendário.
-- Removidos os prefixos visíveis "Conta:", "Receita:" e "Fatura:" para ganhar espaço.
-- O nome completo continua disponível ao abrir o dia.
-- No desktop, o nome completo também aparece ao passar o mouse.
+Nesta versão:
+- Recorrência mensal gera os próximos 12 meses.
+- Recorrência semanal gera as próximas 52 semanas.
+- Recorrência anual gera os próximos 5 anos.
+- A mesma ocorrência não é criada duas vezes.
+- As ocorrências futuras aparecem normalmente no Dashboard e no Calendário.
+- Ao editar uma conta recorrente, nome, categoria, valor e observação são propagados para ocorrências futuras ainda não pagas.
 
-## SQL
-Não há SQL novo obrigatório.
+## SQL obrigatório
+Execute uma única vez no Supabase:
+`SUPABASE_RECORRENCIA_V1.6.sql`
 
 ## Commit changes
-FINANCE+ V1.5.1 - ajustar nomes no calendário
+FINANCE+ V1.6 - adicionar contas recorrentes automáticas
