@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1713" />
+  <meta name="description" content="FINANCE+ — Sua vida financeira organizada." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
+  <title>FINANCE+</title>
+  <style>
+    :root{
+      --green:#00c48c;
+      --green-dark:#00a975;
+      --bg:#08100d;
+      --panel:#0f1915;
+      --card:#14201b;
+      --border:#22332b;
+      --text:#f7f8fa;
+      --muted:#9aa7a0;
+      --red:#ff4d4f;
+      --amber:#ffb020;
+      --blue:#2d7bff;
+      --white:#ffffff;
+      --shadow:0 16px 40px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top,#0d241c 0,#08100d 38%,#050a08 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .app-shell{max-width:1180px;margin:0 auto;padding:20px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px;font-size:1.35rem}
+    .brand-mark{
+      width:44px;height:44px;border:1px solid var(--green);border-radius:14px;
+      display:grid;place-items:center;background:linear-gradient(145deg,#0d2018,#09110e);box-shadow:0 0 0 1px rgba(0,196,140,.08) inset;
+    }
+    .brand-mark svg{width:28px;height:28px}
+    .plus{color:var(--green)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .tagline{color:var(--muted);font-size:.9rem;margin-top:2px}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--border);background:var(--card);color:var(--text);
+      padding:11px 14px;border-radius:12px;min-height:44px;
+    }
+    .btn-primary{background:var(--green);color:#04110c;border-color:var(--green);font-weight:800}
+    .btn-primary:hover{background:var(--green-dark)}
+    .btn-ghost:hover{border-color:#355144}
+    .grid{display:grid;gap:14px}
+    .summary-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card{background:rgba(20,32,27,.92);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+    .hero{grid-column:span 2;background:linear-gradient(145deg,#07ba84,#00c48c 55%,#0aa46f)}
+    .hero .muted,.hero .label{color:#d9fff1}
+    .label{font-size:.88rem;color:var(--muted)}
+    .value{font-size:1.9rem;font-weight:850;margin-top:6px}
+    .mini-value{font-size:1.2rem;font-weight:800;margin-top:8px}
+    .hero-row{display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap;margin-top:18px}
+    .hero-stat{min-width:120px}
+    .content-grid{grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);margin-top:14px}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    h2{font-size:1.05rem;margin:0}
+    .bill-list{display:flex;flex-direction:column;gap:9px}
+    .bill{
+      display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;
+      border:1px solid var(--border);border-radius:14px;padding:12px;background:#101914
+    }
+    .bill-title{font-weight:750}
+    .bill-meta{font-size:.82rem;color:var(--muted);margin-top:4px}
+    .badge{padding:6px 9px;border-radius:999px;font-size:.78rem;border:1px solid currentColor;white-space:nowrap}
+    .paid{color:var(--green)}
+    .pending{color:var(--amber)}
+    .late{color:var(--red)}
+    .scheduled{color:var(--blue)}
+    .side-stack{display:grid;gap:14px}
+    .quick-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .quick-actions button{min-height:54px}
+    .finance-grid{grid-template-columns:repeat(3,1fr);margin-top:14px}
+    .finance-box{background:#101914;border:1px solid var(--border);border-radius:14px;padding:14px}
+    .nav{
+      display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:16px;
+      background:rgba(15,25,21,.95);border:1px solid var(--border);padding:8px;border-radius:18px;
+    }
+    .nav button{border:0;background:transparent;color:var(--muted);padding:11px;border-radius:12px}
+    .nav button.active{background:#123225;color:var(--green);font-weight:800}
+    .auth-wrap{max-width:940px;margin:40px auto;padding:20px;display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+    .auth-hero{
+      min-height:520px;border:1px solid var(--border);border-radius:28px;padding:34px;
+      background:linear-gradient(150deg,#07100d,#0f2d21 65%,#073024);
+      display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow)
+    }
+    .auth-copy h1{font-size:3rem;margin:26px 0 8px}
+    .auth-copy p{color:#b9c9c1;max-width:480px;line-height:1.55}
+    .feature-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .feature{border:1px solid #244b3c;background:rgba(3,13,9,.35);padding:13px;border-radius:14px;color:#d7efe5}
+    .auth-card{border:1px solid var(--border);background:rgba(20,32,27,.97);border-radius:28px;padding:28px;box-shadow:var(--shadow)}
+    .tabs{display:flex;gap:8px;margin-bottom:22px}
+    .tabs button{flex:1;padding:11px;border-radius:12px;border:1px solid var(--border);background:#101914;color:var(--muted)}
+    .tabs button.active{background:#123225;color:var(--green);border-color:#1f5a44}
+    .field{display:grid;gap:7px;margin-bottom:14px}
+    .field label{font-size:.88rem;color:#c7d2cd}
+    .field input{
+      width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--border);
+      background:#0d1511;color:var(--text);outline:none;min-height:48px
+    }
+    .field input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,196,140,.12)}
+    .auth-note{font-size:.82rem;color:var(--muted);line-height:1.45}
+    .install-banner{
+      display:none;margin-bottom:14px;border:1px solid #1d5742;background:#0e2a20;border-radius:16px;padding:12px 14px;
+      align-items:center;justify-content:space-between;gap:12px
+    }
+    .install-banner.show{display:flex}
+    .toast{position:fixed;right:18px;bottom:18px;background:#14201b;border:1px solid var(--border);padding:12px 14px;border-radius:12px;box-shadow:var(--shadow);max-width:320px;z-index:50}
+    @media (max-width:860px){
+      .summary-grid{grid-template-columns:repeat(2,1fr)}
+      .hero{grid-column:span 2}
+      .content-grid{grid-template-columns:1fr}
+      .auth-wrap{grid-template-columns:1fr;max-width:640px}
+      .auth-hero{min-height:auto}
+      .auth-copy h1{font-size:2.3rem}
+    }
+    @media (max-width:560px){
+      .app-shell{padding:12px}
+      .summary-grid{grid-template-columns:1fr}
+      .hero{grid-column:auto}
+      .finance-grid{grid-template-columns:1fr}
+      .bill{grid-template-columns:1fr auto}
+      .bill .badge{grid-column:1/-1;justify-self:start}
+      .nav{position:sticky;bottom:8px}
+      .nav button{font-size:.75rem;padding:10px 5px}
+      .feature-row{grid-template-columns:1fr}
+      .auth-wrap{padding:12px;margin:16px auto}
+      .auth-hero,.auth-card{border-radius:20px;padding:20px}
+    }
+  </style>
+</head>
+<body>
+  <main id="authView" class="auth-wrap">
+    <section class="auth-hero">
+      <div>
+        <div class="brand">
+          <span class="brand-mark">
+            <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+              <path d="M14 18h25c7 0 11 4 11 10s-4 10-11 10H27v13H14V18Z" fill="#00c48c"/>
+              <path d="M34 43h7v9h-7zM45 36h7v16h-7zM23 46h7v6h-7z" fill="#00c48c"/>
+            </svg>
+          </span>
+          <span>FINANCE<span class="plus">+</span></span>
+        </div>
+        <div class="auth-copy">
+          <h1>Sua vida financeira organizada.</h1>
+          <p>Controle contas, cartões, vencimentos, receitas, pagamentos e relatórios em um só lugar.</p>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature">✓ Contas e vencimentos</div>
+        <div class="feature">✓ Cartões e faturas</div>
+        <div class="feature">✓ Lembretes</div>
+        <div class="feature">✓ Relatórios mensais e anuais</div>
+      </div>
+    </section>
+
+    <section class="auth-card">
+      <div class="tabs">
+        <button id="tabLogin" class="active" type="button">Entrar</button>
+        <button id="tabRegister" type="button">Criar conta</button>
+      </div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginEmail">E-mail</label>
+          <input id="loginEmail" type="email" placeholder="voce@email.com" required />
+        </div>
+        <div class="field">
+          <label for="loginPassword">Senha</label>
+          <input id="loginPassword" type="password" placeholder="Sua senha" minlength="6" required />
+        </div>
+        <button class="btn btn-primary" style="width:100%" type="submit">Entrar no FINANCE+</button>
+        <p class="auth-note">Nesta V1.0 inicial o login é demonstrativo e não envia dados para nenhum servidor.</p>
+      </form>
+
+      <form id="registerForm" class="hidden">
+        <div class="field">
+          <label for="regName">Nome</label>
+          <input id="regName" type="text" placeholder="Seu nome" required />
+        </div>
+        <div class="field">
+          <label for="regEmail">E-mail</label>
+          <input id="regEmail" type="email" placeholder="voce@email.com" required />
+        </div>
+        <div class="field">
+          <label for="regPassword">Senha</label>
+          <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required />
+        </div>
+        <button class="btn btn-primary" style="width:100%" type="submit">Criar minha conta</button>
+        <p class="auth-note">A autenticação real será conectada ao Supabase na próxima etapa.</p>
+      </form>
+    </section>
+  </main>
+
+  <main id="appView" class="app-shell hidden">
+    <div id="installBanner" class="install-banner">
+      <div><strong>Instalar FINANCE+</strong><div class="label">Use como aplicativo no celular ou computador.</div></div>
+      <button id="installBtn" class="btn btn-primary" type="button">Instalar aplicativo</button>
+    </div>
+
+    <header class="topbar">
+      <div>
+        <div class="brand">
+          <span class="brand-mark">
+            <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+              <path d="M14 18h25c7 0 11 4 11 10s-4 10-11 10H27v13H14V18Z" fill="#00c48c"/>
+              <path d="M34 43h7v9h-7zM45 36h7v16h-7zM23 46h7v6h-7z" fill="#00c48c"/>
+            </svg>
+          </span>
+          <span>FINANCE<span class="plus">+</span></span>
+        </div>
+        <div class="tagline">Sua vida financeira organizada.</div>
+      </div>
+      <div class="top-actions">
+        <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
+      </div>
+    </header>
+
+    <section class="grid summary-grid">
+      <article class="card hero">
+        <div class="label">Saldo do mês</div>
+        <div class="value">R$ 4.200,00</div>
+        <div class="hero-row">
+          <div class="hero-stat"><div class="label">Receitas</div><strong>R$ 7.300,00</strong></div>
+          <div class="hero-stat"><div class="label">Despesas pagas</div><strong>R$ 3.100,00</strong></div>
+          <div class="hero-stat"><div class="label">A pagar</div><strong>R$ 1.750,00</strong></div>
+        </div>
+      </article>
+      <article class="card"><div class="label">Já pago</div><div class="mini-value paid">R$ 3.100,00</div></article>
+      <article class="card"><div class="label">Falta pagar</div><div class="mini-value pending">R$ 1.750,00</div></article>
+      <article class="card"><div class="label">Vencendo em 7 dias</div><div class="mini-value pending">R$ 980,00</div></article>
+      <article class="card"><div class="label">Atrasadas</div><div class="mini-value late">R$ 350,00</div></article>
+    </section>
+
+    <section class="grid content-grid">
+      <article class="card">
+        <div class="section-title">
+          <div><h2>Contas do mês</h2><div class="label">Agosto de 2026</div></div>
+          <button id="newBillBtn" class="btn btn-primary" type="button">+ Nova conta</button>
+        </div>
+        <div class="bill-list" id="billList">
+          <div class="bill"><div><div class="bill-title">Energia</div><div class="bill-meta">Vencimento 05/08</div></div><strong>R$ 280,00</strong><span class="badge paid">Pago</span></div>
+          <div class="bill"><div><div class="bill-title">Internet</div><div class="bill-meta">Vencimento 10/08</div></div><strong>R$ 119,90</strong><span class="badge paid">Pago</span></div>
+          <div class="bill"><div><div class="bill-title">Nubank</div><div class="bill-meta">Vencimento 15/08</div></div><strong>R$ 1.350,00</strong><span class="badge pending">Pendente</span></div>
+          <div class="bill"><div><div class="bill-title">Condomínio</div><div class="bill-meta">Vencimento 20/08</div></div><strong>R$ 450,00</strong><span class="badge scheduled">Agendado</span></div>
+          <div class="bill"><div><div class="bill-title">Água</div><div class="bill-meta">Vencimento 22/08</div></div><strong>R$ 95,00</strong><span class="badge late">Atrasado</span></div>
+        </div>
+      </article>
+
+      <aside class="side-stack">
+        <article class="card">
+          <div class="section-title"><h2>Próximos vencimentos</h2></div>
+          <div class="bill-list">
+            <div class="bill"><div><div class="bill-title">Nubank</div><div class="bill-meta">15/08</div></div><strong>R$ 1.350</strong><span class="badge pending">Pendente</span></div>
+            <div class="bill"><div><div class="bill-title">Condomínio</div><div class="bill-meta">20/08</div></div><strong>R$ 450</strong><span class="badge scheduled">Agendado</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="section-title"><h2>Ações rápidas</h2></div>
+          <div class="quick-actions">
+            <button class="btn btn-primary" type="button">+ Conta</button>
+            <button class="btn" type="button">+ Receita</button>
+            <button class="btn" type="button">+ Cartão</button>
+            <button class="btn" type="button">Relatório</button>
+          </div>
+        </article>
+      </aside>
+    </section>
+
+    <section class="card" style="margin-top:14px">
+      <div class="section-title">
+        <div><h2>Visão financeira</h2><div class="label">Receitas e despesas registradas</div></div>
+      </div>
+      <div class="grid finance-grid">
+        <div class="finance-box"><div class="label">Receitas</div><div class="mini-value paid">R$ 7.300,00</div></div>
+        <div class="finance-box"><div class="label">Despesas pagas</div><div class="mini-value">R$ 3.100,00</div></div>
+        <div class="finance-box"><div class="label">Saldo</div><div class="mini-value paid">R$ 4.200,00</div></div>
+      </div>
+    </section>
+
+    <nav class="nav" aria-label="Navegação principal">
+      <button class="active" type="button">Início</button>
+      <button type="button">Contas</button>
+      <button type="button">Cartões</button>
+      <button type="button">Relatórios</button>
+      <button type="button">Mais</button>
+    </nav>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+    const authView = document.getElementById('authView');
+    const appView = document.getElementById('appView');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const toast = document.getElementById('toast');
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(()=>toast.classList.add('hidden'),2500);
+    }
+
+    function showLogin(){
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+    }
+    function showRegister(){
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+    }
+    function enterApp(name){
+      authView.classList.add('hidden');
+      appView.classList.remove('hidden');
+      showToast(`Bem-vindo${name ? ', ' + name : ''}!`);
+    }
+
+    tabLogin.addEventListener('click', showLogin);
+    tabRegister.addEventListener('click', showRegister);
+    loginForm.addEventListener('submit', e => { e.preventDefault(); enterApp(''); });
+    registerForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      enterApp(name);
+    });
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      appView.classList.add('hidden');
+      authView.classList.remove('hidden');
+      showLogin();
+    });
+    document.getElementById('newBillBtn').addEventListener('click', ()=>{
+      showToast('Cadastro de conta será conectado ao banco na próxima etapa.');
+    });
+
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('installBanner');
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e)=>{
+      e.preventDefault();
+      deferredPrompt = e;
+      installBanner.classList.add('show');
+    });
+
+    installBtn.addEventListener('click', async ()=>{
+      if(!deferredPrompt){
+        showToast('A instalação será oferecida pelo navegador quando disponível.');
+        return;
+      }
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBanner.classList.remove('show');
+    });
+
+    window.addEventListener('appinstalled', ()=>{
+      installBanner.classList.remove('show');
+      deferredPrompt = null;
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js'));
+    }
+  </script>
+</body>
+</html>
