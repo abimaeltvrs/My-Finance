@@ -1,21 +1,21 @@
-# FINANCE+ V1.2.4
+# FINANCE+ V1.2.5
 
-Correções de pagamentos/exclusão e Dashboard interativo.
+Atualização instantânea do Dashboard.
 
-## Correções
-- "Desfazer pagamento" agora localiza o pagamento diretamente pelo lançamento.
-- Funciona mesmo quando o pagamento foi registrado em outro mês.
-- Exclusão remove pagamentos e lembretes vinculados antes de excluir a conta.
-- Exclusão confirma no banco se o lançamento foi realmente apagado.
+## Correção principal
+As ações não dependem mais de recarregar toda a página depois de cada alteração.
 
-## Dashboard interativo
-Os cards podem ser clicados:
-- Já pago → mostra apenas contas pagas.
-- Falta pagar → mostra apenas pendentes/agendadas.
-- Vencendo em 7 dias → filtra os próximos vencimentos.
-- Atrasadas → mostra somente contas atrasadas.
-- Clicar novamente no mesmo card remove o filtro.
-- Botão "Mostrar todas" limpa o filtro.
+Agora a interface atualiza imediatamente após:
+- Cadastrar conta
+- Editar conta
+- Marcar como pago
+- Editar pagamento
+- Desfazer pagamento
+- Excluir lançamento
+
+Os dados continuam sendo gravados no Supabase, mas o Dashboard usa o resultado da operação para atualizar a tela na mesma hora.
+
+O botão "Atualizar" foi renomeado para "Sincronizar" e serve apenas para forçar uma releitura do servidor quando desejado.
 
 ## Commit changes
-FINANCE+ V1.2.4 - corrigir pagamentos e dashboard interativo
+FINANCE+ V1.2.5 - atualização instantânea do dashboard
