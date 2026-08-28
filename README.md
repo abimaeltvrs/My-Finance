@@ -1,17 +1,18 @@
-# FINANCE+ V1.3.2
+# FINANCE+ V1.4 — Receitas
 
-Correção do lançamento e atualização das compras no cartão.
-
-## Corrigido
-- O app confirma o INSERT da compra no Supabase.
-- Depois da compra, abre automaticamente o mês da fatura correta.
-- Se a compra ocorreu após o fechamento, ela aparece no mês seguinte e o usuário é avisado.
-- Compras parceladas abrem a fatura da primeira parcela.
-- O limite disponível considera todas as faturas abertas, inclusive meses futuros.
-- Caso a compra seja salva mas o cálculo da fatura falhe, a mensagem mostra esse erro separadamente.
+## Novidades
+- Nova área Receitas.
+- Cadastro de salário, renda extra, freelance, venda, reembolso, investimentos e outros.
+- Valor recebido e data efetiva de recebimento.
+- Edição e exclusão de receitas.
+- Navegação mensal.
+- Total de receitas e quantidade de lançamentos.
+- Integração imediata com o Dashboard.
+- Saldo continua sendo calculado por receitas recebidas menos pagamentos efetivamente realizados.
+- Realtime para alterações de receitas.
 
 ## SQL
-Se o SQL da V1.3.1 já foi executado, não há novo SQL obrigatório.
+Não há novo SQL obrigatório nesta versão: a tabela `incomes` já fazia parte da estrutura inicial do FINANCE+.
 
 ## Commit changes
-FINANCE+ V1.3.2 - corrigir atualização das compras e faturas
+FINANCE+ V1.4 - adicionar cadastro e gestão de receitas

@@ -350,6 +350,7 @@
             <button id="quickNewBill" class="btn btn-primary" type="button">+ Conta</button>
             <button class="btn" type="button">+ Receita</button>
             <button id="quickNewCard" class="btn" type="button">+ Cartão</button>
+            <button id="quickNewIncome" class="btn" type="button">+ Receita</button>
             <button class="btn" type="button">Relatório</button>
           </div>
         </article>
@@ -367,6 +368,35 @@
       </div>
     </section>
 
+    </div>
+
+    <div id="incomeContent" class="view-hidden">
+      <section class="card">
+        <div class="cards-toolbar">
+          <div>
+            <h2 style="margin:0">Receitas</h2>
+            <div class="label">Salários, rendas extras e outros valores recebidos.</div>
+          </div>
+          <button id="newIncomeBtn" class="btn btn-primary" type="button">+ Nova receita</button>
+        </div>
+      </section>
+      <section class="grid summary-grid" style="margin-top:14px">
+        <article class="card"><div class="label">Receitas do mês</div><div id="incomeMonthTotal" class="mini-value paid">R$ 0,00</div></article>
+        <article class="card"><div class="label">Quantidade</div><div id="incomeCount" class="mini-value">0</div></article>
+      </section>
+      <section class="card" style="margin-top:14px">
+        <div class="section-title">
+          <div>
+            <h2>Lançamentos</h2>
+            <div class="month-nav">
+              <button id="incomePrevMonthBtn" class="btn" type="button">‹</button>
+              <strong id="incomeMonthLabel"></strong>
+              <button id="incomeNextMonthBtn" class="btn" type="button">›</button>
+            </div>
+          </div>
+        </div>
+        <div id="incomeList" class="invoice-list"><div class="cards-empty">Nenhuma receita neste mês.</div></div>
+      </section>
     </div>
 
     <div id="cardsContent" class="view-hidden">
@@ -420,7 +450,7 @@
       <button id="navAccounts" type="button">Contas</button>
       <button id="navCards" type="button">Cartões</button>
       <button id="navReports" type="button">Relatórios</button>
-      <button id="navMore" type="button">Mais</button>
+      <button id="navMore" type="button">Receitas</button>
     </nav>
   </main>
 
@@ -538,6 +568,34 @@
     </section>
   </div>
 
+
+  <div id="incomeModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <section class="modal">
+      <div class="modal-header">
+        <div><h2 id="incomeModalTitle">Nova receita</h2><div class="label">Registre o valor efetivamente recebido.</div></div>
+        <button id="closeIncomeModal" class="btn" type="button">Fechar</button>
+      </div>
+      <form id="incomeForm">
+        <input id="incomeId" type="hidden">
+        <div class="form-grid">
+          <div class="field full"><label for="incomeDescription">Descrição</label><input id="incomeDescription" required placeholder="Ex.: Salário"></div>
+          <div class="field"><label for="incomeAmount">Valor recebido</label><input id="incomeAmount" type="number" min="0.01" step="0.01" required></div>
+          <div class="field"><label for="incomeDate">Data do recebimento</label><input id="incomeDate" type="date" required></div>
+          <div class="field full"><label for="incomeCategory">Categoria</label>
+            <select id="incomeCategory">
+              <option>Salário</option><option>Renda extra</option><option>Freelance</option>
+              <option>Venda</option><option>Reembolso</option><option>Investimentos</option><option>Outros</option>
+            </select>
+          </div>
+          <div class="field full"><label for="incomeNotes">Observação</label><textarea id="incomeNotes" placeholder="Opcional"></textarea></div>
+        </div>
+        <div class="modal-actions">
+          <button id="cancelIncomeBtn" class="btn" type="button">Cancelar</button>
+          <button class="btn btn-primary" type="submit">Salvar receita</button>
+        </div>
+      </form>
+    </section>
+  </div>
 
   <div id="cardModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <section class="modal">
@@ -780,6 +838,7 @@
     let currentBills = [];
     let currentPaymentByBill = new Map();
     let currentIncomes = [];
+    let editingIncomeId = null;
     let currentMonthPayments = [];
     let activeDashboardFilter = 'all';
     let realtimeChannel = null;
@@ -967,7 +1026,7 @@
           scheduleServerRefresh)
         .on('postgres_changes',
           {event:'*', schema:'public', table:'incomes', filter:`user_id=eq.${currentUser.id}`},
-          scheduleServerRefresh)
+          ()=>{ scheduleServerRefresh(); if(!document.getElementById('incomeContent').classList.contains('view-hidden')) loadIncomeData(); })
         .on('postgres_changes',
           {event:'*', schema:'public', table:'cards', filter:`user_id=eq.${currentUser.id}`},
           ()=>{ scheduleServerRefresh(); if(!document.getElementById('cardsContent').classList.contains('view-hidden')) loadCardsData(); })
@@ -1523,15 +1582,22 @@
     function showView(view){
       const home = document.getElementById('homeContent');
       const cards = document.getElementById('cardsContent');
+      const incomes = document.getElementById('incomeContent');
       document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
 
+      home.classList.add('view-hidden');
+      cards.classList.add('view-hidden');
+      incomes.classList.add('view-hidden');
+
       if(view === 'cards'){
-        home.classList.add('view-hidden');
         cards.classList.remove('view-hidden');
         document.getElementById('navCards').classList.add('active');
         loadCardsData();
+      }else if(view === 'income'){
+        incomes.classList.remove('view-hidden');
+        document.getElementById('navMore').classList.add('active');
+        loadIncomeData();
       }else{
-        cards.classList.add('view-hidden');
         home.classList.remove('view-hidden');
         document.getElementById(view === 'accounts' ? 'navAccounts' : 'navHome').classList.add('active');
         if(view === 'accounts') document.getElementById('billList')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -1554,6 +1620,96 @@
       const [y,m,d] = purchaseDate.split('-').map(Number);
       const base = `${y}-${String(m).padStart(2,'0')}-01`;
       return d > Number(card.closing_day || 31) ? addMonthsISO(base,1) : base;
+    }
+
+
+    function openIncomeModal(income=null){
+      editingIncomeId = income?.id || null;
+      document.getElementById('incomeModalTitle').textContent = editingIncomeId ? 'Editar receita' : 'Nova receita';
+      document.getElementById('incomeId').value = editingIncomeId || '';
+      document.getElementById('incomeDescription').value = income?.description || '';
+      document.getElementById('incomeAmount').value = income?.amount ?? '';
+      document.getElementById('incomeDate').value = income?.received_date || todayISO();
+      document.getElementById('incomeCategory').value = income?.category || 'Salário';
+      document.getElementById('incomeNotes').value = income?.notes || '';
+      document.getElementById('incomeModal').classList.remove('hidden');
+    }
+
+    function closeIncomeModal(){
+      editingIncomeId = null;
+      document.getElementById('incomeModal').classList.add('hidden');
+    }
+
+    async function loadIncomeData(){
+      if(!currentUser) return;
+      const {start,end}=monthBounds(currentMonth);
+      document.getElementById('incomeMonthLabel').textContent =
+        monthFmt.format(currentMonth).replace(/^\w/,c=>c.toUpperCase());
+
+      const res=await supabaseClient.from('incomes')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .gte('received_date',start)
+        .lte('received_date',end)
+        .order('received_date',{ascending:false});
+
+      if(res.error){ showToast(`Erro ao carregar receitas: ${res.error.message}`); return; }
+      currentIncomes=res.data||[];
+      renderIncomeList();
+      refreshDashboardFromState();
+    }
+
+    function renderIncomeList(){
+      const el=document.getElementById('incomeList');
+      const total=currentIncomes.reduce((s,x)=>s+Number(x.amount||0),0);
+      document.getElementById('incomeMonthTotal').textContent=brl.format(total);
+      document.getElementById('incomeCount').textContent=String(currentIncomes.length);
+
+      if(!currentIncomes.length){
+        el.innerHTML='<div class="cards-empty">Nenhuma receita neste mês.</div>';
+        return;
+      }
+
+      el.innerHTML='';
+      currentIncomes.forEach(income=>{
+        const row=document.createElement('div');
+        row.className='invoice-row';
+        row.innerHTML=`
+          <div>
+            <strong>${escapeHtml(income.description)}</strong>
+            <div class="label">${escapeHtml(income.category||'Outros')} • ${formatDateBR(income.received_date)}</div>
+          </div>
+          <strong class="paid">${brl.format(Number(income.amount||0))}</strong>`;
+        const actions=document.createElement('div');
+        actions.className='invoice-actions';
+
+        const edit=document.createElement('button');
+        edit.className='btn'; edit.type='button'; edit.textContent='Editar';
+        edit.addEventListener('click',()=>openIncomeModal(income));
+
+        const del=document.createElement('button');
+        del.className='btn btn-danger'; del.type='button'; del.textContent='Excluir';
+        del.addEventListener('click',()=>deleteIncome(income));
+
+        actions.append(edit,del);
+        row.appendChild(actions);
+        el.appendChild(row);
+      });
+    }
+
+    async function deleteIncome(income){
+      if(!confirm(`Excluir a receita "${income.description}"?`)) return;
+      const res=await supabaseClient.from('incomes')
+        .delete()
+        .eq('id',income.id)
+        .eq('user_id',currentUser.id)
+        .select('id');
+      if(res.error){showToast(`Erro ao excluir receita: ${res.error.message}`);return;}
+      currentIncomes=currentIncomes.filter(x=>x.id!==income.id);
+      renderIncomeList();
+      refreshDashboardFromState();
+      showToast('Receita excluída.');
+      scheduleServerRefresh();
     }
 
     function openCardModal(){
@@ -1746,9 +1902,10 @@
     document.getElementById('navAccounts').addEventListener('click',()=>showView('accounts'));
     document.getElementById('navCards').addEventListener('click',()=>showView('cards'));
     document.getElementById('navReports').addEventListener('click',()=>showToast('Relatórios serão a próxima etapa.'));
-    document.getElementById('navMore').addEventListener('click',()=>showToast('Mais recursos em breve.'));
+    document.getElementById('navMore').addEventListener('click',()=>showView('income'));
     document.getElementById('quickNewBill')?.addEventListener('click',openBillModal);
     document.getElementById('quickNewCard')?.addEventListener('click',()=>{showView('cards');openCardModal();});
+    document.getElementById('quickNewIncome')?.addEventListener('click',()=>{showView('income');openIncomeModal();});
     document.getElementById('newCardBtn').addEventListener('click',openCardModal);
     document.getElementById('newPurchaseBtn').addEventListener('click',openPurchaseModal);
 
@@ -1781,6 +1938,58 @@
     document.getElementById('cardsNextMonthBtn').addEventListener('click',async()=>{
       currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1);
       await loadCardsData(); await loadMonthData();
+    });
+
+
+    document.getElementById('newIncomeBtn').addEventListener('click',()=>openIncomeModal());
+    document.getElementById('closeIncomeModal').addEventListener('click',closeIncomeModal);
+    document.getElementById('cancelIncomeBtn').addEventListener('click',closeIncomeModal);
+
+    document.getElementById('incomePrevMonthBtn').addEventListener('click',async()=>{
+      currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1);
+      await loadIncomeData(); await loadMonthData();
+    });
+    document.getElementById('incomeNextMonthBtn').addEventListener('click',async()=>{
+      currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1);
+      await loadIncomeData(); await loadMonthData();
+    });
+
+    document.getElementById('incomeForm').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const submitBtn=e.submitter;
+      if(submitBtn) submitBtn.disabled=true;
+      try{
+        const payload={
+          user_id:currentUser.id,
+          description:document.getElementById('incomeDescription').value.trim(),
+          amount:Number(document.getElementById('incomeAmount').value),
+          received_date:document.getElementById('incomeDate').value,
+          category:document.getElementById('incomeCategory').value,
+          notes:document.getElementById('incomeNotes').value.trim()||null
+        };
+        if(!payload.description||!payload.received_date||!Number.isFinite(payload.amount)||payload.amount<=0){
+          showToast('Preencha corretamente os dados da receita.'); return;
+        }
+
+        const wasEditing=Boolean(editingIncomeId);
+        let res;
+        if(editingIncomeId){
+          res=await supabaseClient.from('incomes')
+            .update(payload).eq('id',editingIncomeId).eq('user_id',currentUser.id).select().single();
+        }else{
+          res=await supabaseClient.from('incomes').insert(payload).select().single();
+        }
+        if(res.error){showToast(`Erro ao salvar receita: ${res.error.message}`);return;}
+
+        const [y,m]=payload.received_date.split('-').map(Number);
+        currentMonth=new Date(y,m-1,1);
+        closeIncomeModal();
+        showToast(wasEditing?'Receita atualizada.':'Receita salva.');
+        await loadIncomeData();
+        await loadMonthData();
+      }finally{
+        if(submitBtn) submitBtn.disabled=false;
+      }
     });
 
     document.getElementById('cardForm').addEventListener('submit',async e=>{
