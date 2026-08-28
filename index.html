@@ -118,6 +118,37 @@
     .install-banner.show{display:flex}
     .toast{position:fixed;right:18px;bottom:18px;background:#14201b;border:1px solid var(--border);padding:12px 14px;border-radius:12px;box-shadow:var(--shadow);max-width:320px;z-index:50}
 
+
+    .summary-card.clickable{
+      cursor:pointer;
+      transition:transform .15s ease,border-color .15s ease,background .15s ease;
+      position:relative;
+    }
+    .summary-card.clickable:hover{transform:translateY(-2px)}
+    .summary-card.clickable:focus-visible{
+      outline:2px solid var(--accent);
+      outline-offset:3px;
+    }
+    .summary-card.clickable.active{
+      border-color:var(--accent);
+      background:rgba(26,196,118,.08);
+    }
+    .summary-card.clickable::after{
+      content:"Ver";
+      position:absolute;
+      right:14px;
+      bottom:12px;
+      font-size:11px;
+      color:var(--muted);
+    }
+    .filter-strip{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      flex-wrap:wrap;margin:8px 0 14px;padding:10px 12px;border:1px solid var(--border);
+      border-radius:12px;background:rgba(255,255,255,.02)
+    }
+    .filter-strip.hidden{display:none}
+    .filter-name{font-weight:700}
+
     .month-nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
     .month-nav button{min-width:42px}
     .modal-backdrop{
@@ -284,6 +315,10 @@
             </div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="refreshBillsBtn" class="btn" type="button">Atualizar</button><button id="newBillBtn" class="btn btn-primary" type="button">+ Nova conta</button></div>
+        </div>
+        <div id="activeFilterStrip" class="filter-strip hidden">
+          <div>Filtro: <span id="activeFilterName" class="filter-name"></span></div>
+          <button id="clearDashboardFilter" class="btn" type="button">Mostrar todas</button>
         </div>
         <div class="bill-list" id="billList">
           <div class="empty-state">Carregando contas...</div>
@@ -601,6 +636,9 @@
     let selectedPaymentBill = null;
     let editingPaymentId = null;
     let editingBillId = null;
+    let currentBills = [];
+    let currentPaymentByBill = new Map();
+    let activeDashboardFilter = 'all';
 
     const brl = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
     const monthFmt = new Intl.DateTimeFormat('pt-BR', { month:'long', year:'numeric' });
@@ -719,21 +757,93 @@
       if (incomesRes.error) console.warn('Erro ao carregar receitas:', incomesRes.error.message);
       if (paymentsRes.error) console.warn('Erro ao carregar pagamentos:', paymentsRes.error.message);
 
+      let linkedPayments = [];
+      if (bills.length) {
+        const billIds = bills.map(b => b.id);
+        const linkedRes = await supabaseClient
+          .from('payments')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .in('bill_id', billIds)
+          .order('paid_at', { ascending:false });
+
+        if (linkedRes.error) {
+          console.warn('Erro ao carregar pagamentos vinculados:', linkedRes.error.message);
+        } else {
+          linkedPayments = linkedRes.data || [];
+        }
+      }
+
       const paymentByBill = new Map();
-      payments.forEach(payment => {
+      linkedPayments.forEach(payment => {
         if (payment.bill_id && !paymentByBill.has(payment.bill_id)) paymentByBill.set(payment.bill_id, payment);
       });
 
-      renderBills(bills, paymentByBill);
+      currentBills = bills;
+      currentPaymentByBill = paymentByBill;
+      applyDashboardFilter();
       renderUpcoming(bills);
       updateSummary(bills, incomes, payments);
+    }
+
+
+    function filterLabel(filter){
+      return {
+        all:'Todas as contas',
+        paid:'Pagas',
+        pending:'Pendentes',
+        dueSoon:'Vencendo em 7 dias',
+        late:'Atrasadas'
+      }[filter] || 'Todas as contas';
+    }
+
+    function billMatchesFilter(bill, filter){
+      const status = computedStatus(bill);
+      if(filter === 'paid') return status === 'pago';
+      if(filter === 'pending') return status === 'pendente' || status === 'agendado';
+      if(filter === 'late') return status === 'atrasado';
+      if(filter === 'dueSoon'){
+        const diff = dateDiffDays(todayISO(), bill.due_date);
+        return status !== 'pago' && status !== 'cancelado' && diff >= 0 && diff <= 7;
+      }
+      return true;
+    }
+
+    function applyDashboardFilter(){
+      const filtered = currentBills.filter(b => billMatchesFilter(b, activeDashboardFilter));
+      renderBills(filtered, currentPaymentByBill);
+
+      const strip = document.getElementById('activeFilterStrip');
+      const name = document.getElementById('activeFilterName');
+      strip.classList.toggle('hidden', activeDashboardFilter === 'all');
+      name.textContent = filterLabel(activeDashboardFilter);
+
+      const mapping = {
+        paid:'filterPaidCard',
+        pending:'filterPendingCard',
+        dueSoon:'filterDueSoonCard',
+        late:'filterLateCard'
+      };
+      document.querySelectorAll('.summary-card.clickable').forEach(card => card.classList.remove('active'));
+      if(mapping[activeDashboardFilter]){
+        document.getElementById(mapping[activeDashboardFilter])?.classList.add('active');
+      }
+    }
+
+    function setDashboardFilter(filter){
+      activeDashboardFilter = activeDashboardFilter === filter ? 'all' : filter;
+      applyDashboardFilter();
+      document.getElementById('billList')?.scrollIntoView({ behavior:'smooth', block:'start' });
     }
 
     function renderBills(bills, paymentByBill = new Map()){
       const list = document.getElementById('billList');
       list.innerHTML = '';
       if(!bills.length){
-        list.innerHTML = '<div class="empty-state">Nenhuma conta cadastrada neste mês.<br><br>Use <strong>+ Nova conta</strong> para começar.</div>';
+        const msg = activeDashboardFilter === 'all'
+          ? 'Nenhuma conta cadastrada neste mês.<br><br>Use <strong>+ Nova conta</strong> para começar.'
+          : `Nenhum lançamento encontrado em <strong>${filterLabel(activeDashboardFilter)}</strong>.`;
+        list.innerHTML = `<div class="empty-state">${msg}</div>`;
         return;
       }
 
@@ -771,15 +881,17 @@
           actions.appendChild(pay);
         }
 
-        if(status === 'pago' && payment){
-          const editPayment = document.createElement('button');
-          editPayment.type='button'; editPayment.className='btn'; editPayment.textContent='Editar pagamento';
-          editPayment.addEventListener('click', ()=>openPayment(bill, payment));
-          actions.appendChild(editPayment);
+        if(status === 'pago'){
+          if(payment){
+            const editPayment = document.createElement('button');
+            editPayment.type='button'; editPayment.className='btn'; editPayment.textContent='Editar pagamento';
+            editPayment.addEventListener('click', ()=>openPayment(bill, payment));
+            actions.appendChild(editPayment);
+          }
 
           const undoPayment = document.createElement('button');
           undoPayment.type='button'; undoPayment.className='btn danger'; undoPayment.textContent='Desfazer pagamento';
-          undoPayment.addEventListener('click', ()=>undoPaymentForBill(bill, payment));
+          undoPayment.addEventListener('click', ()=>undoPaymentForBill(bill, payment || null));
           actions.appendChild(undoPayment);
         }
 
@@ -871,53 +983,121 @@
     async function undoPaymentForBill(bill, payment){
       if(!confirm(`Desfazer o pagamento de "${bill.name}"? A conta voltará a ficar pendente.`)) return;
 
-      const { error: delError } = await supabaseClient
-        .from('payments')
-        .delete()
-        .eq('id', payment.id);
+      let paymentId = payment?.id || null;
 
-      if(delError){
-        showToast(`Erro ao desfazer pagamento: ${delError.message}`);
-        return;
+      if(!paymentId){
+        const lookup = await supabaseClient
+          .from('payments')
+          .select('id')
+          .eq('user_id', currentUser.id)
+          .eq('bill_id', bill.id)
+          .order('paid_at', { ascending:false })
+          .limit(1)
+          .maybeSingle();
+
+        if(lookup.error){
+          showToast(`Erro ao localizar pagamento: ${lookup.error.message}`);
+          return;
+        }
+        paymentId = lookup.data?.id || null;
+      }
+
+      if(paymentId){
+        const { error: delError } = await supabaseClient
+          .from('payments')
+          .delete()
+          .eq('id', paymentId)
+          .eq('user_id', currentUser.id);
+
+        if(delError){
+          showToast(`Erro ao desfazer pagamento: ${delError.message}`);
+          return;
+        }
       }
 
       const newStatus = dateDiffDays(todayISO(), bill.due_date) < 0 ? 'atrasado' : 'pendente';
       const { error: billError } = await supabaseClient
         .from('bills')
         .update({ status:newStatus })
-        .eq('id', bill.id);
+        .eq('id', bill.id)
+        .eq('user_id', currentUser.id);
 
       if(billError){
-        showToast(`Pagamento removido, mas houve erro ao atualizar a conta: ${billError.message}`);
+        showToast(`Erro ao atualizar a conta: ${billError.message}`);
         return;
       }
 
-      showToast('Pagamento desfeito.');
+      showToast('Pagamento desfeito com sucesso.');
       await loadMonthData();
     }
 
     async function deleteBill(bill){
-      const msg = bill.status === 'pago'
-        ? `Excluir a conta "${bill.name}"? O pagamento vinculado a este lançamento também será removido do histórico.`
-        : `Excluir a conta "${bill.name}"?`;
+      const msg = `Excluir definitivamente o lançamento "${bill.name}"?`;
       if(!confirm(msg)) return;
 
-      const { error: paymentError } = await supabaseClient
+      const paymentDelete = await supabaseClient
         .from('payments')
         .delete()
-        .eq('bill_id', bill.id);
+        .eq('bill_id', bill.id)
+        .eq('user_id', currentUser.id);
 
-      if(paymentError){
-        showToast(`Erro ao excluir pagamento vinculado: ${paymentError.message}`);
+      if(paymentDelete.error){
+        showToast(`Erro ao excluir pagamento vinculado: ${paymentDelete.error.message}`);
         return;
       }
 
-      const { error } = await supabaseClient.from('bills').delete().eq('id', bill.id);
-      if(error){ showToast(`Erro ao excluir: ${error.message}`); return; }
+      const reminderDelete = await supabaseClient
+        .from('reminders')
+        .delete()
+        .eq('bill_id', bill.id)
+        .eq('user_id', currentUser.id);
 
-      showToast('Lançamento excluído.');
+      if(reminderDelete.error){
+        showToast(`Erro ao excluir lembrete vinculado: ${reminderDelete.error.message}`);
+        return;
+      }
+
+      const billDelete = await supabaseClient
+        .from('bills')
+        .delete()
+        .eq('id', bill.id)
+        .eq('user_id', currentUser.id)
+        .select('id');
+
+      if(billDelete.error){
+        showToast(`Erro ao excluir lançamento: ${billDelete.error.message}`);
+        return;
+      }
+
+      if(!billDelete.data?.length){
+        showToast('O lançamento não foi excluído. Atualize a tela e tente novamente.');
+        return;
+      }
+
+      showToast('Lançamento excluído com sucesso.');
       await loadMonthData();
     }
+
+    function bindFilterCard(id, filter){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('click', ()=>setDashboardFilter(filter));
+      el.addEventListener('keydown', e=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          setDashboardFilter(filter);
+        }
+      });
+    }
+
+    bindFilterCard('filterPaidCard','paid');
+    bindFilterCard('filterPendingCard','pending');
+    bindFilterCard('filterDueSoonCard','dueSoon');
+    bindFilterCard('filterLateCard','late');
+    document.getElementById('clearDashboardFilter')?.addEventListener('click', ()=>{
+      activeDashboardFilter='all';
+      applyDashboardFilter();
+    });
 
     document.getElementById('newBillBtn').addEventListener('click', openBillModal);
     document.getElementById('refreshBillsBtn').addEventListener('click', async ()=>{ await loadMonthData(); showToast('Dashboard atualizado.'); });
@@ -927,10 +1107,12 @@
     document.getElementById('cancelPaymentBtn').addEventListener('click', closePaymentModal);
 
     document.getElementById('prevMonthBtn').addEventListener('click', ()=>{
+      activeDashboardFilter = 'all';
       currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()-1, 1);
       loadMonthData();
     });
     document.getElementById('nextMonthBtn').addEventListener('click', ()=>{
+      activeDashboardFilter = 'all';
       currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()+1, 1);
       loadMonthData();
     });
