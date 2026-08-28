@@ -1,30 +1,21 @@
-# FINANCE+ V2.6.1 — Hotfix do Dashboard
+# FINANCE+ V2.7 — Modo Offline
 
-## Problema encontrado na V2.6
-O novo Dashboard substituiu uma área antiga que também continha controles operacionais de Contas.
-O JavaScript continuava procurando:
-- Nova conta;
-- Sincronizar;
-- Mês anterior;
-- Próximo mês.
+A V2.7 adiciona fila persistente em IndexedDB e sincronização automática.
 
-Como esses elementos haviam sido removidos do HTML, o JavaScript interrompia a inicialização e a tela de abertura podia ficar carregando.
+Funciona offline para novos lançamentos de:
+- contas;
+- receitas;
+- cartões;
+- pagamentos de contas.
 
-## Correção
-- Dashboard inteligente mantido.
-- Tela de Contas restaurada como uma área independente.
-- Nova conta restaurada.
-- Sincronizar restaurado.
-- Navegação de mês restaurada.
-- Lista de contas restaurada.
-- Próximos vencimentos da área de Contas restaurados.
-- Referências antigas do resumo foram protegidas para não derrubar o aplicativo.
-- Adicionada proteção para a splash screen nunca ficar presa.
-- Revisão automática confirmou que não há listener direto apontando para botão inexistente.
-- JavaScript validado por verificação de sintaxe.
+O cabeçalho mostra Offline, quantidade pendente, Sincronizando ou Sincronizado.
+Ao recuperar a conexão, o app envia a fila automaticamente ao Supabase. Os inserts usam IDs gerados antes do envio e `upsert` na sincronização, reduzindo o risco de duplicidade em novas tentativas.
 
-## SQL
-Não há SQL novo.
+A interface PWA continua sendo mantida pelo Service Worker.
 
-## Commit changes
-FINANCE+ V2.6.1 - corrigir carregamento e restaurar operacao de contas
+Nesta etapa, compras parceladas, edição e exclusão continuam sendo operações preferencialmente online. Isso evita criar conflitos de edição sem uma estratégia completa de resolução.
+
+Nenhum SQL novo.
+
+Commit changes:
+FINANCE+ V2.7 - adicionar modo offline e sincronizacao automatica

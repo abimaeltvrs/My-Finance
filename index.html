@@ -1804,6 +1804,12 @@
   .fp-bar-chart{height:210px;gap:24px}.fp-bar-column{width:100px}.fp-bar-track{height:135px}
 }
 
+
+.fp-offline-box{display:flex;align-items:center;gap:5px;border:1px solid #2b3632;background:#111816;border-radius:999px;padding:4px 5px 4px 9px}
+#fpOfflineStatus{font-size:10px;font-weight:800;color:#55dc9b;white-space:nowrap}
+#fpOfflineStatus[data-kind="offline"]{color:#f0a12b}#fpOfflineStatus[data-kind="pending"]{color:#f0c44c}
+#fpSyncNowBtn{width:29px;height:29px;border:0;border-radius:50%;background:#202a27;color:#fff;font-size:17px;padding:0}
+@media(max-width:520px){#fpOfflineStatus{max-width:85px;overflow:hidden;text-overflow:ellipsis}.fp-offline-box{padding-left:6px}}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -1976,6 +1982,7 @@
         <div class="tagline">Sua vida financeira organizada.</div>
       </div>
       <div class="top-actions">
+          <div class="fp-offline-box"><span id="fpOfflineStatus" data-kind="ok">Sincronizado ✓</span><button id="fpSyncNowBtn" type="button" title="Sincronizar agora">↻</button></div>
         <button id="headerNotifyBtn" class="btn icon-btn" type="button" aria-label="Notificações"><span class="ui-icon" data-icon="bell"></span></button>
           <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
       </div>
@@ -2696,6 +2703,57 @@
     const SUPABASE_URL = "https://ozcgtyzahnlfppnfnrlv.supabase.co";
     const SUPABASE_KEY = "sb_publishable_RrIIBXoXkkT8zOleA2bxMA_L9De0KeS";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // FINANCE+ V2.7 — fila offline persistente (IndexedDB)
+    const FP_DB='finance-plus-offline-v1', FP_STORE='queue';
+    let fpSyncing=false;
+    function fpDB(){return new Promise((ok,no)=>{const r=indexedDB.open(FP_DB,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(FP_STORE))r.result.createObjectStore(FP_STORE,{keyPath:'qid'})};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+    async function fpQueueAll(){try{const d=await fpDB();return await new Promise((ok,no)=>{const r=d.transaction(FP_STORE).objectStore(FP_STORE).getAll();r.onsuccess=()=>ok(r.result||[]);r.onerror=()=>no(r.error)})}catch(e){return[]}}
+    async function fpQueuePut(x){const d=await fpDB();return new Promise((ok,no)=>{const t=d.transaction(FP_STORE,'readwrite');t.objectStore(FP_STORE).put(x);t.oncomplete=ok;t.onerror=()=>no(t.error)})}
+    async function fpQueueDel(id){const d=await fpDB();return new Promise((ok,no)=>{const t=d.transaction(FP_STORE,'readwrite');t.objectStore(FP_STORE).delete(id);t.oncomplete=ok;t.onerror=()=>no(t.error)})}
+    function fpUUID(){return crypto.randomUUID?crypto.randomUUID():'fp-'+Date.now()+'-'+Math.random().toString(16).slice(2)}
+    async function fpPending(){return (await fpQueueAll()).filter(x=>!currentUser||x.user_id===currentUser.id)}
+    async function fpStatus(){
+      const n=(await fpPending()).length,el=document.getElementById('fpOfflineStatus');
+      if(!el)return;
+      el.dataset.kind=!navigator.onLine?'offline':n?'pending':'ok';
+      el.textContent=!navigator.onLine?(n?`Offline • ${n} pendente${n===1?'':'s'}`:'Offline'):(n?`${n} pendente${n===1?'':'s'}`:'Sincronizado ✓');
+    }
+    async function fpSaveOffline(table,payload){
+      const id=payload.id||fpUUID(), qid=fpUUID(), full={...payload,id,user_id:currentUser.id};
+      await fpQueuePut({qid,user_id:currentUser.id,table,payload:full,created_at:new Date().toISOString(),attempts:0});
+      await fpStatus();
+      return {...full,_offline:true,_qid:qid};
+    }
+    async function fpInsert(table,payload){
+      const full={...payload,id:payload.id||fpUUID(),user_id:currentUser.id};
+      if(navigator.onLine){
+        try{
+          const r=await supabaseClient.from(table).insert(full).select().single();
+          if(!r.error)return {data:r.data,offline:false};
+          if(!/fetch|network|failed|timeout/i.test(r.error.message||''))throw r.error;
+        }catch(e){if(navigator.onLine&&!/fetch|network|failed|timeout/i.test(e.message||''))throw e}
+      }
+      return {data:await fpSaveOffline(table,full),offline:true};
+    }
+    async function fpSync(){
+      if(fpSyncing||!navigator.onLine||!currentUser)return fpStatus();
+      fpSyncing=true; const el=document.getElementById('fpOfflineStatus');if(el){el.dataset.kind='pending';el.textContent='Sincronizando…'}
+      try{
+        const rows=(await fpPending()).sort((a,b)=>a.created_at.localeCompare(b.created_at));
+        for(const x of rows){
+          const r=await supabaseClient.from(x.table).upsert(x.payload,{onConflict:'id'});
+          if(r.error){x.attempts++;x.error=r.error.message;await fpQueuePut(x);break}
+          await fpQueueDel(x.qid);
+        }
+      }finally{fpSyncing=false;await fpStatus()}
+      try{await loadMonthData()}catch(e){}
+      try{await loadCardsData()}catch(e){}
+    }
+    window.addEventListener('online',()=>fpSync());
+    window.addEventListener('offline',()=>fpStatus());
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){fpStatus();if(navigator.onLine)fpSync()}});
+
     let currentUser = null;
     let currentCards = [];
     let currentCardTransactions = [];
@@ -3634,9 +3692,10 @@
           }
         }
       } else {
-        const result = await supabaseClient.from('bills').insert(payload).select().single();
+        const result = await fpInsert('bills',payload);
         data = result.data;
-        error = result.error;
+        error = null;
+        if(result.offline) showToast('Conta salva offline. Será sincronizada automaticamente.');
 
         if(!error && reminderValue >= 0){
           const reminderRes = await supabaseClient.from('reminders').insert({
@@ -3704,23 +3763,28 @@
         payError = result.error;
         if(!result.error) window.__savedPayment = result.data;
       } else {
-        const result = await supabaseClient.from('payments').insert({
+        const result = await fpInsert('payments',{
           user_id: currentUser.id,
           bill_id: selectedPaymentBill.id,
           amount,
           paid_at: paidDate + 'T12:00:00',
           payment_method: method,
           notes
-        }).select().single();
-        payError = result.error;
-        if(!result.error) window.__savedPayment = result.data;
+        });
+        payError = result.error || null;
+        if(!payError) window.__savedPayment = result.data;
+        if(result.offline){
+          selectedPaymentBill.status='pago';
+          await fpQueuePut({qid:fpUUID(),user_id:currentUser.id,table:'bills',payload:{...selectedPaymentBill,status:'pago',user_id:currentUser.id},created_at:new Date().toISOString(),attempts:0});
+          showToast('Pagamento salvo offline. Será sincronizado automaticamente.');
+        }
       }
 
       if(payError){ showToast(`Erro ao registrar pagamento: ${payError.message}`); return; }
 
-      const { error: billError } = await supabaseClient.from('bills')
-        .update({ status:'pago' })
-        .eq('id', selectedPaymentBill.id);
+      const { error: billError } = navigator.onLine
+        ? await supabaseClient.from('bills').update({ status:'pago' }).eq('id', selectedPaymentBill.id)
+        : {error:null};
 
       if(billError){ showToast(`Pagamento salvo, mas houve erro ao atualizar a conta: ${billError.message}`); return; }
 
@@ -5123,6 +5187,10 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
       btn.addEventListener('click',()=>showView(btn.dataset.menuView));
     });
 
+    // FINANCE+ V2.7 — Offline
+    document.getElementById('fpSyncNowBtn')?.addEventListener('click',()=>navigator.onLine?fpSync():showToast('Sem internet. Seus lançamentos pendentes estão salvos neste aparelho.'));
+    fpStatus();
+
     // FINANCE+ V2.6 — Dashboard
     document.getElementById('dashModeBasic')?.addEventListener('click',()=>{setAppMode('basic');setDashboardModeState();refreshDashboardV26();});
     document.getElementById('dashModeAdvanced')?.addEventListener('click',()=>{setAppMode('advanced');setDashboardModeState();refreshDashboardV26();});
@@ -5206,7 +5274,8 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
           res=await supabaseClient.from('incomes')
             .update(payload).eq('id',editingIncomeId).eq('user_id',currentUser.id).select().single();
         }else{
-          res=await supabaseClient.from('incomes').insert(payload).select().single();
+          res=await fpInsert('incomes',payload);
+          if(res.offline) showToast('Receita salva offline. Será sincronizada automaticamente.');
         }
         if(res.error){showToast(`Erro ao salvar receita: ${res.error.message}`);return;}
 
@@ -5234,9 +5303,9 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
       if(payload.closing_day<1||payload.closing_day>31||payload.due_day<1||payload.due_day>31){
         showToast('Informe dias entre 1 e 31.'); return;
       }
-      const res=await supabaseClient.from('cards').insert(payload).select().single();
+      const res=await fpInsert('cards',payload);
       if(res.error){showToast(`Erro ao salvar cartão: ${res.error.message}`);return;}
-      closeCardModal(); showToast('Cartão cadastrado.');
+      closeCardModal(); showToast(res.offline?'Cartão salvo offline. Será sincronizado automaticamente.':'Cartão cadastrado.');
       await loadCardsData();
     });
 
