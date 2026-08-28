@@ -3,8 +3,8 @@
   "short_name": "FINANCE+",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#08100d",
-  "theme_color": "#0b1713",
+  "background_color": "#07110F",
+  "theme_color": "#00C87A",
   "description": "Sua vida financeira organizada.",
   "icons": [
     {

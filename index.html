@@ -736,25 +736,155 @@
       .report-summary .card{padding:12px!important}
     }
 
+
+    /* FINANCE+ V2.2 — logo e capa oficial */
+    .fp-brand-mark{
+      width:58px!important;height:58px!important;
+      border-radius:18px!important;
+      padding:0!important;
+      overflow:hidden;
+      border:0!important;
+      background:transparent!important;
+      box-shadow:0 8px 24px rgba(0,200,122,.16)!important;
+    }
+    .fp-brand-mark svg{width:100%;height:100%;display:block}
+    .topbar{
+      display:flex!important;
+      align-items:center!important;
+      justify-content:space-between!important;
+      gap:16px!important;
+      padding:10px 2px 14px!important;
+      background:transparent!important;
+      border:0!important;
+    }
+    .topbar .brand{display:flex;align-items:center;gap:13px}
+    .topbar .brand>span:last-child{font-size:27px;font-weight:900;letter-spacing:.025em}
+    .topbar .tagline{color:var(--fp-muted);margin-top:4px;font-size:13px}
+
+    .fp-cover{
+      position:relative;
+      overflow:hidden;
+      min-height:260px;
+      border-radius:28px;
+      margin:4px 0 18px;
+      background:
+        linear-gradient(125deg,rgba(4,116,75,.92),rgba(0,200,122,.96) 48%,rgba(12,154,99,.93)),
+        #00b873;
+      color:white;
+      box-shadow:0 22px 55px rgba(0,171,104,.18);
+      isolation:isolate;
+    }
+    .fp-cover-bg{position:absolute;inset:0;overflow:hidden;z-index:-1}
+    .fp-orb{position:absolute;border-radius:50%;background:rgba(255,255,255,.07)}
+    .fp-orb-a{width:330px;height:330px;right:-100px;top:-155px}
+    .fp-orb-b{width:210px;height:210px;left:42%;bottom:-145px}
+    .fp-cover-chart{
+      position:absolute;left:0;right:0;bottom:0;width:100%;height:48%;
+      opacity:.23;
+    }
+    .fp-cover-chart path{stroke:#e8fff6;stroke-width:3;vector-effect:non-scaling-stroke}
+    .fp-cover-content{
+      min-height:260px;
+      padding:32px 36px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:28px;
+    }
+    .fp-cover-copy{max-width:610px}
+    .fp-cover-kicker{
+      font-size:12px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+      color:rgba(255,255,255,.76);margin-bottom:8px
+    }
+    .fp-cover h1{
+      font-size:clamp(34px,5vw,64px)!important;
+      line-height:.97!important;
+      letter-spacing:-.045em!important;
+      margin:0 0 14px!important;
+      max-width:650px;
+      color:white!important;
+    }
+    .fp-cover h1 span{color:#06251a}
+    .fp-cover p{
+      margin:0;
+      color:rgba(255,255,255,.86);
+      font-size:15px;
+      max-width:520px;
+    }
+    .fp-cover-badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:21px}
+    .fp-cover-badges span{
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(3,51,34,.17);
+      border:1px solid rgba(255,255,255,.16);
+      font-size:11px;font-weight:700;
+    }
+    .fp-cover-emblem{
+      min-width:205px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      padding:18px;
+      border-radius:24px;
+      background:rgba(1,37,24,.17);
+      border:1px solid rgba(255,255,255,.15);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+    .fp-cover-logo{width:112px;height:112px;filter:drop-shadow(0 16px 26px rgba(0,0,0,.16))}
+    .fp-cover-logo svg{width:100%;height:100%}
+    .fp-cover-mini{text-align:center}
+    .fp-cover-mini span{display:block;font-size:10px;color:rgba(255,255,255,.70)}
+    .fp-cover-mini strong{display:block;margin-top:3px;font-size:17px;color:white}
+
+    @media(max-width:700px){
+      .topbar{padding:7px 4px 12px!important}
+      .topbar .brand>span:last-child{font-size:24px}
+      .fp-brand-mark{width:50px!important;height:50px!important}
+      .fp-cover{
+        min-height:220px;
+        border-radius:22px;
+        margin-top:0;
+      }
+      .fp-cover-content{
+        min-height:220px;
+        padding:24px 21px;
+        align-items:flex-end;
+      }
+      .fp-cover h1{font-size:37px!important}
+      .fp-cover p{font-size:13px;max-width:310px}
+      .fp-cover-badges{gap:6px;margin-top:16px}
+      .fp-cover-badges span{font-size:9px;padding:6px 8px}
+      .fp-cover-emblem{display:none}
+    }
+    @media(max-width:390px){
+      .fp-cover h1{font-size:33px!important}
+      .fp-cover-badges span:nth-child(3){display:none}
+    }
+
 </style>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js">
-    applyNavigationIcons();
-    applyV21VisualIdentity();
-    applyAppMode();
-    syncSidebarActive('home');
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
   <main id="authView" class="auth-wrap">
     <section class="auth-hero">
       <div>
         <div class="brand">
-          <span class="brand-mark">
-            <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
-              <path d="M14 18h25c7 0 11 4 11 10s-4 10-11 10H27v13H14V18Z" fill="#00c48c"/>
-              <path d="M34 43h7v9h-7zM45 36h7v16h-7zM23 46h7v6h-7z" fill="#00c48c"/>
-            </svg>
-          </span>
+          <span class="brand-mark fp-brand-mark"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <rect x="5" y="5" width="54" height="54" rx="17" fill="url(#fpLogoBg)"/>
+  <path d="M18 19h18c8 0 13 4.2 13 10.6S44 40.3 36 40.3h-7.5V51H18V19Z" fill="#061711"/>
+  <path d="M28.5 29.7H36c2.7 0 4.2-1.2 4.2-3.2s-1.5-3.2-4.2-3.2h-7.5v6.4Z" fill="#17E596"/>
+  <path d="M34 45h5.5v6H34zM42 40h5.5v11H42zM26 47h5.5v4H26z" fill="#17E596"/>
+  <path d="M45.5 13.5v8M41.5 17.5h8" stroke="#E9FFF6" stroke-width="3" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="fpLogoBg" x1="10" y1="8" x2="56" y2="57" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1BE59A"/>
+      <stop offset="1" stop-color="#00A968"/>
+    </linearGradient>
+  </defs>
+</svg></span>
           <span>FINANCE<span class="plus">+</span></span>
         </div>
         <div class="auth-copy">
@@ -817,12 +947,19 @@
     <header class="topbar">
       <div>
         <div class="brand">
-          <span class="brand-mark">
-            <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
-              <path d="M14 18h25c7 0 11 4 11 10s-4 10-11 10H27v13H14V18Z" fill="#00c48c"/>
-              <path d="M34 43h7v9h-7zM45 36h7v16h-7zM23 46h7v6h-7z" fill="#00c48c"/>
-            </svg>
-          </span>
+          <span class="brand-mark fp-brand-mark"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <rect x="5" y="5" width="54" height="54" rx="17" fill="url(#fpLogoBg)"/>
+  <path d="M18 19h18c8 0 13 4.2 13 10.6S44 40.3 36 40.3h-7.5V51H18V19Z" fill="#061711"/>
+  <path d="M28.5 29.7H36c2.7 0 4.2-1.2 4.2-3.2s-1.5-3.2-4.2-3.2h-7.5v6.4Z" fill="#17E596"/>
+  <path d="M34 45h5.5v6H34zM42 40h5.5v11H42zM26 47h5.5v4H26z" fill="#17E596"/>
+  <path d="M45.5 13.5v8M41.5 17.5h8" stroke="#E9FFF6" stroke-width="3" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="fpLogoBg" x1="10" y1="8" x2="56" y2="57" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1BE59A"/>
+      <stop offset="1" stop-color="#00A968"/>
+    </linearGradient>
+  </defs>
+</svg></span>
           <span>FINANCE<span class="plus">+</span></span>
         </div>
         <div class="tagline">Sua vida financeira organizada.</div>
@@ -832,6 +969,47 @@
           <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
       </div>
     </header>
+    <section class="fp-cover" aria-label="Capa FINANCE+">
+      <div class="fp-cover-bg" aria-hidden="true">
+        <span class="fp-orb fp-orb-a"></span>
+        <span class="fp-orb fp-orb-b"></span>
+        <svg class="fp-cover-chart" viewBox="0 0 520 150" preserveAspectRatio="none">
+          <path d="M0 125 C50 112,72 120,112 91 S180 105,218 78 S286 86,326 56 S390 67,430 42 S485 43,520 18" fill="none"/>
+        </svg>
+      </div>
+      <div class="fp-cover-content">
+        <div class="fp-cover-copy">
+          <div class="fp-cover-kicker">FINANCE+</div>
+          <h1>Seu dinheiro.<br><span>Sob controle.</span></h1>
+          <p>Organize receitas, contas, cartões e objetivos em uma única visão.</p>
+          <div class="fp-cover-badges">
+            <span>● Visão mensal</span>
+            <span>● Calendário financeiro</span>
+            <span>● Relatórios</span>
+          </div>
+        </div>
+        <div class="fp-cover-emblem">
+          <div class="fp-cover-logo"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <rect x="5" y="5" width="54" height="54" rx="17" fill="url(#fpLogoBg)"/>
+  <path d="M18 19h18c8 0 13 4.2 13 10.6S44 40.3 36 40.3h-7.5V51H18V19Z" fill="#061711"/>
+  <path d="M28.5 29.7H36c2.7 0 4.2-1.2 4.2-3.2s-1.5-3.2-4.2-3.2h-7.5v6.4Z" fill="#17E596"/>
+  <path d="M34 45h5.5v6H34zM42 40h5.5v11H42zM26 47h5.5v4H26z" fill="#17E596"/>
+  <path d="M45.5 13.5v8M41.5 17.5h8" stroke="#E9FFF6" stroke-width="3" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="fpLogoBg" x1="10" y1="8" x2="56" y2="57" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1BE59A"/>
+      <stop offset="1" stop-color="#00A968"/>
+    </linearGradient>
+  </defs>
+</svg></div>
+          <div class="fp-cover-mini">
+            <span>Saldo organizado</span>
+            <strong>FINANCE+</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
 
     <div id="homeContent">
       <div id="appModeBanner" class="mode-banner">
@@ -3924,7 +4102,17 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js'));
     }
-  </script>
+  
+    // FINANCE+ V2.2 visual bootstrap
+    if(!window.__financeV22VisualReady){
+      window.__financeV22VisualReady=true;
+      try{ applyNavigationIcons(); }catch(e){ console.warn(e); }
+      try{ applyV21VisualIdentity(); }catch(e){ console.warn(e); }
+      try{ applyAppMode(); }catch(e){ console.warn(e); }
+      try{ syncSidebarActive('home'); }catch(e){ console.warn(e); }
+    }
+
+</script>
 
   <button id="fpFab" class="fp-fab" type="button" aria-label="Novo lançamento">
     <span class="ui-icon" data-icon="plus"></span>

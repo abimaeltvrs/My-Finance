@@ -1,59 +1,35 @@
-# FINANCE+ V2.1 — Identidade Visual Oficial
+# FINANCE+ V2.2 — Nova logo + capa oficial + correção visual
 
-Atualização visual baseada no conceito aprovado para Android, iOS e Web.
+## Correção importante
+A V2.1 possuía uma inicialização visual dentro da tag externa do jsPDF. O navegador ignorava esse código.
+A V2.2 corrige a inicialização e força a atualização visual real.
 
-## Identidade
-- Fundo grafite/preto profundo.
-- Verde esmeralda como cor principal.
-- Azul para faturas.
-- Laranja para pendências.
-- Vermelho para atrasos.
-- Roxo como cor complementar.
-- Cartões com cantos arredondados e hierarquia visual mais limpa.
-- Ícones SVG consistentes em toda a aplicação.
+## Nova logo
+- Novo símbolo FINANCE+.
+- F estilizado + gráfico financeiro.
+- Gradiente verde esmeralda.
+- Aplicada no login e no cabeçalho do aplicativo.
+- Ícones PWA 192 e 512 também foram substituídos pela nova identidade.
 
-## Android / iOS
-- Barra de navegação inferior com aparência de aplicativo nativo.
-- Área ativa destacada em verde.
-- Botão flutuante central para novo lançamento.
-- Safe areas preservadas em iPhone.
-- Cabeçalho mais limpo.
-- Componentes e alvos de toque otimizados para celular.
+## Nova capa/cabeçalho
+- Capa esmeralda abaixo do cabeçalho.
+- Mensagem “Seu dinheiro. Sob controle.”
+- Elementos gráficos financeiros.
+- Destaques para visão mensal, calendário e relatórios.
+- Layout adaptado para Android, iOS e Web.
 
-## Web / Desktop
-- Novo menu lateral persistente.
-- Dashboard ocupa a área principal.
-- Acesso direto a Dashboard, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Configurações.
-- Botão Sair disponível no menu lateral.
-- A barra inferior deixa de aparecer no desktop.
-
-## Dashboard
-- Cartão principal de saldo com gradiente esmeralda.
-- Indicadores com melhor contraste.
-- Cards com marcadores de cor.
-- Próximos compromissos com aparência mais limpa e clicável.
-
-## Calendário
-- Layout mais compacto.
-- Dia atual em verde.
-- Contas = vermelho.
-- Receitas = verde.
-- Faturas = azul.
-- Nomes continuam em linha única.
-- Melhor adaptação para telas pequenas.
-
-## Relatórios
-- Cards e tabela adaptados à nova identidade.
-- Barras de categoria em verde esmeralda.
-- Mensal/Anual com destaque consistente.
-- Exportação PDF permanece ativa.
+## PWA / cache
+- Cache alterado para `finance-plus-v2-2-force-refresh`.
+- Navegação/HTML usa no-store.
+- Na ativação, caches antigos são eliminados.
+- Isso evita que o celular continue exibindo a versão visual antiga.
 
 ## Funcionalidades
-Nenhuma regra financeira foi removida.
-Modo Básico e Modo Avançado permanecem funcionando normalmente.
+Nenhuma regra financeira foi alterada.
+Modo Básico e Avançado continuam preservados.
 
 ## SQL
-Não há SQL novo obrigatório.
+Não há SQL novo.
 
 ## Commit changes
-FINANCE+ V2.1 - aplicar identidade visual oficial
+FINANCE+ V2.2 - nova logo capa e corrigir atualizacao visual
