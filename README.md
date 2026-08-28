@@ -1,33 +1,23 @@
-# FINANCE+ V1.1
+# FINANCE+ V1.2
 
-Versão com autenticação real conectada ao Supabase.
+Versão funcional de contas a pagar conectada ao Supabase.
 
-## Incluído
-- Identidade visual FINANCE+
-- Cadastro real pelo Supabase Auth
-- Login real
-- Sessão persistente
-- Logout
-- Criação/sincronização do perfil na tabela `profiles`
-- Dashboard responsivo
-- Estrutura PWA
-- Service Worker para cache básico
-
-## Configuração Supabase usada
-- Project URL configurada no `index.html`
-- Publishable key configurada no `index.html`
-- A chave usada é própria para frontend. Não use service_role no navegador.
-
-## Próxima etapa
+## Novidades da V1.2
 - Cadastro real de contas
-- Listagem por usuário
-- Marcar conta como paga
-- Receitas
-- Cartões e faturas
-- Relatórios e lembretes
+- Categoria, valor, vencimento, recorrência, lembrete e observação
+- Listagem das contas do usuário autenticado
+- Navegação entre meses
+- Status calculado: pendente, pago, atrasado, agendado
+- Registro de pagamento
+- Forma e data de pagamento
+- Pagamentos gravados na tabela `payments`
+- Dashboard calculado com dados reais
+- Próximos vencimentos
+- Exclusão de conta
+- Lembrete gravado na tabela `reminders`
 
-## Publicação no GitHub
-Substitua os arquivos da versão anterior pelos desta versão.
+## Observação
+A recorrência já é gravada no cadastro, mas a geração automática das próximas ocorrências será implementada em etapa posterior para evitar duplicações e manter histórico confiável.
 
-Commit message sugerido:
-FINANCE+ V1.1 - conectar autenticação ao Supabase
+## Commit no GitHub
+FINANCE+ V1.2 - contas a pagar e pagamentos reais
