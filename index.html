@@ -619,6 +619,7 @@
     let currentCards = [];
     let currentCardTransactions = [];
     let currentInvoices = [];
+    let allOpenInvoices = [];
     let selectedInvoice = null;
 
     const authView = document.getElementById('authView');
@@ -1627,10 +1628,11 @@
       const {start,end}=monthBounds(currentMonth);
       const refMonth = start;
 
-      const [cardsRes, txRes, invRes] = await Promise.all([
+      const [cardsRes, txRes, invRes, openInvRes] = await Promise.all([
         supabaseClient.from('cards').select('*').eq('user_id',currentUser.id).order('created_at'),
         supabaseClient.from('card_transactions').select('*').eq('user_id',currentUser.id).gte('reference_month',start).lte('reference_month',end).order('purchase_date',{ascending:false}),
-        supabaseClient.from('card_invoices').select('*').eq('user_id',currentUser.id).eq('reference_month',refMonth).order('due_date')
+        supabaseClient.from('card_invoices').select('*').eq('user_id',currentUser.id).eq('reference_month',refMonth).order('due_date'),
+        supabaseClient.from('card_invoices').select('*').eq('user_id',currentUser.id).neq('status','pago').neq('status','cancelado')
       ]);
 
       if(cardsRes.error){ showToast(`Erro ao carregar cartões: ${cardsRes.error.message}`); return; }
@@ -1638,6 +1640,7 @@
       currentCards = cardsRes.data || [];
       currentCardTransactions = txRes.error ? [] : (txRes.data || []);
       currentInvoices = invRes.error ? [] : (invRes.data || []);
+      allOpenInvoices = openInvRes.error ? [] : (openInvRes.data || []);
 
       renderCards();
       renderInvoices();
@@ -1656,8 +1659,8 @@
       el.innerHTML='';
       let availableTotal=0;
       currentCards.forEach(card=>{
-        const invoice=currentInvoices.find(x=>x.card_id===card.id);
-        const used=Number(invoice?.amount||0);
+        const openForCard = allOpenInvoices.filter(x=>x.card_id===card.id && x.status!=='pago' && x.status!=='cancelado');
+        const used=openForCard.reduce((s,x)=>s+Number(x.amount||0),0);
         const limit=Number(card.credit_limit||0);
         const available=Math.max(0,limit-used);
         availableTotal += available;
@@ -1753,6 +1756,21 @@
     document.getElementById('cancelCardBtn').addEventListener('click',closeCardModal);
     document.getElementById('closePurchaseModal').addEventListener('click',closePurchaseModal);
     document.getElementById('cancelPurchaseBtn').addEventListener('click',closePurchaseModal);
+    function showPurchaseInvoiceMonth(){
+      const card=currentCards.find(c=>c.id===document.getElementById('purchaseCard').value);
+      const purchaseDate=document.getElementById('purchaseDate').value;
+      if(!card||!purchaseDate)return;
+      const ref=purchaseReferenceMonth(card,purchaseDate);
+      const [y,m]=ref.split('-').map(Number);
+      const label=monthFmt.format(new Date(y,m-1,1)).replace(/^\w/,c=>c.toUpperCase());
+      const day=Number(purchaseDate.split('-')[2]);
+      if(day>Number(card.closing_day||31)){
+        showToast(`Após o fechamento: essa compra entra em ${label}.`);
+      }
+    }
+    document.getElementById('purchaseDate').addEventListener('change',showPurchaseInvoiceMonth);
+    document.getElementById('purchaseCard').addEventListener('change',showPurchaseInvoiceMonth);
+
     document.getElementById('closeInvoicePaymentModal').addEventListener('click',closeInvoicePaymentModal);
     document.getElementById('cancelInvoicePaymentBtn').addEventListener('click',closeInvoicePaymentModal);
 
@@ -1786,54 +1804,92 @@
 
     document.getElementById('purchaseForm').addEventListener('submit',async e=>{
       e.preventDefault();
-      const card=currentCards.find(c=>c.id===document.getElementById('purchaseCard').value);
-      if(!card){showToast('Selecione um cartão.');return;}
-      const description=document.getElementById('purchaseDescription').value.trim();
-      const total=Number(document.getElementById('purchaseAmount').value);
-      const purchaseDate=document.getElementById('purchaseDate').value;
-      const installments=Math.max(1,Math.min(48,Number(document.getElementById('purchaseInstallments').value)||1));
-      const notes=document.getElementById('purchaseNotes').value.trim()||null;
-      if(!description||!purchaseDate||!Number.isFinite(total)||total<=0){showToast('Preencha os dados da compra.');return;}
-
-      const firstRef=purchaseReferenceMonth(card,purchaseDate);
-      const cents=Math.round(total*100);
-      const base=Math.floor(cents/installments);
-      let distributed=0;
-      const rows=[];
-      const affected=[];
-
-      for(let i=0;i<installments;i++){
-        const partCents=i===installments-1?cents-distributed:base;
-        distributed+=partCents;
-        const ref=addMonthsISO(firstRef,i);
-        affected.push(ref);
-        rows.push({
-          user_id:currentUser.id,
-          card_id:card.id,
-          description,
-          purchase_date:purchaseDate,
-          amount:partCents/100,
-          installment_number:i+1,
-          installments_total:installments,
-          reference_month:ref,
-          notes
-        });
-      }
-
-      const ins=await supabaseClient.from('card_transactions').insert(rows);
-      if(ins.error){showToast(`Erro ao salvar compra: ${ins.error.message}`);return;}
+      const submitBtn=e.submitter;
+      if(submitBtn){submitBtn.disabled=true; submitBtn.textContent='Salvando...';}
 
       try{
-        for(const ref of affected) await rebuildInvoice(card,ref);
-      }catch(err){
-        console.warn(err);
-        showToast('Compra salva, mas houve erro ao recalcular a fatura.');
-      }
+        const card=currentCards.find(c=>c.id===document.getElementById('purchaseCard').value);
+        if(!card){showToast('Selecione um cartão.');return;}
 
-      closePurchaseModal();
-      showToast(installments>1?`Compra parcelada em ${installments}x.`:'Compra adicionada à fatura.');
-      await loadCardsData();
-      await loadMonthData();
+        const description=document.getElementById('purchaseDescription').value.trim();
+        const total=Number(document.getElementById('purchaseAmount').value);
+        const purchaseDate=document.getElementById('purchaseDate').value;
+        const installments=Math.max(1,Math.min(48,parseInt(document.getElementById('purchaseInstallments').value||'1',10)));
+        const notes=document.getElementById('purchaseNotes').value.trim()||null;
+
+        if(!description||!purchaseDate||!Number.isFinite(total)||total<=0){
+          showToast('Preencha corretamente os dados da compra.');
+          return;
+        }
+
+        const firstRef=purchaseReferenceMonth(card,purchaseDate);
+        const totalCents=Math.round(total*100);
+        const baseCents=Math.floor(totalCents/installments);
+        const remainder=totalCents-(baseCents*installments);
+        const rows=[];
+        const affected=[];
+
+        for(let i=0;i<installments;i++){
+          const partCents=baseCents+(i===installments-1?remainder:0);
+          const ref=addMonthsISO(firstRef,i);
+          affected.push(ref);
+          rows.push({
+            user_id:currentUser.id,
+            card_id:card.id,
+            description,
+            purchase_date:purchaseDate,
+            amount:Number((partCents/100).toFixed(2)),
+            installment_number:i+1,
+            installments_total:installments,
+            reference_month:ref,
+            notes
+          });
+        }
+
+        const ins=await supabaseClient
+          .from('card_transactions')
+          .insert(rows)
+          .select();
+
+        if(ins.error){
+          console.error('Erro ao salvar compra:',ins.error);
+          showToast(`Erro ao salvar compra: ${ins.error.message}`);
+          return;
+        }
+
+        let invoiceError=null;
+        for(const ref of [...new Set(affected)]){
+          try{
+            await rebuildInvoice(card,ref);
+          }catch(err){
+            invoiceError=err;
+            console.error('Erro ao recalcular fatura:',err);
+          }
+        }
+
+        // Mostra automaticamente o mês em que a primeira parcela/fatura entrou.
+        const [refY,refM]=firstRef.split('-').map(Number);
+        currentMonth=new Date(refY,refM-1,1);
+
+        closePurchaseModal();
+
+        if(invoiceError){
+          showToast(`Compra salva, mas a fatura não foi atualizada: ${invoiceError.message||'erro desconhecido'}`);
+        }else{
+          showToast(installments>1
+            ? `Compra salva em ${installments}x. Abrindo a 1ª fatura.`
+            : 'Compra salva. Abrindo a fatura correspondente.');
+        }
+
+        await loadCardsData();
+        await loadMonthData();
+
+      }catch(err){
+        console.error(err);
+        showToast(`Erro ao salvar compra: ${err?.message||'erro inesperado'}`);
+      }finally{
+        if(submitBtn){submitBtn.disabled=false; submitBtn.textContent='Salvar compra';}
+      }
     });
 
     document.getElementById('invoicePaymentForm').addEventListener('submit',async e=>{

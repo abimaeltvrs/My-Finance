@@ -1,18 +1,17 @@
-# FINANCE+ V1.3.1
+# FINANCE+ V1.3.2
 
-Correção para salvar compras no cartão.
+Correção do lançamento e atualização das compras no cartão.
 
-## Alterações
-- Validação reforçada dos campos da compra.
-- Insert agora confirma no Supabase com `.select()`.
-- Erro real do Supabase aparece na tela.
-- Compra é salva primeiro; recalcular fatura acontece depois.
-- Parcelamento em centavos evita diferença de arredondamento.
-- Verificação automática da tabela `card_transactions`.
-- SQL de correção incluído.
+## Corrigido
+- O app confirma o INSERT da compra no Supabase.
+- Depois da compra, abre automaticamente o mês da fatura correta.
+- Se a compra ocorreu após o fechamento, ela aparece no mês seguinte e o usuário é avisado.
+- Compras parceladas abrem a fatura da primeira parcela.
+- O limite disponível considera todas as faturas abertas, inclusive meses futuros.
+- Caso a compra seja salva mas o cálculo da fatura falhe, a mensagem mostra esse erro separadamente.
 
-## Passo obrigatório
-Execute `SUPABASE_CORRECAO_COMPRAS_V1.3.1.sql` no Supabase > SQL Editor.
+## SQL
+Se o SQL da V1.3.1 já foi executado, não há novo SQL obrigatório.
 
 ## Commit changes
-FINANCE+ V1.3.1 - corrigir salvamento de compras no cartão
+FINANCE+ V1.3.2 - corrigir atualização das compras e faturas
