@@ -1,36 +1,40 @@
-# FINANCE+ V1.9 — Modo Básico e Avançado
+# FINANCE+ V2.0 — Nova interface responsiva
 
-## Modo Básico
-Voltado ao usuário que quer somente controle financeiro simples.
-- Receitas/entradas.
-- Contas/despesas/saídas.
-- Cartões continuam cadastráveis.
-- Não é necessário lançar cada compra do cartão.
-- O usuário informa somente o valor total da fatura de cada cartão em cada mês.
-- A fatura pode ser paga normalmente e entra no controle financeiro.
-- Compras detalhadas e parcelamentos ficam ocultos.
-- Calendário, Dashboard e Relatórios continuam disponíveis.
+Atualização visual ampla para Android, iOS e Web.
 
-## Modo Avançado
-Mantém o FINANCE+ completo:
-- Contas únicas e recorrentes.
-- Receitas.
-- Cartões.
-- Compras individuais.
-- Parcelamentos.
-- Faturas automáticas.
-- Calendário.
-- Dashboard completo.
-- Relatórios e PDF.
+## Navegação
+- Nova barra inferior flutuante no celular.
+- Ícones vetoriais consistentes para Início, Contas, Cartões, Agenda, Relatórios e Receitas.
+- Área ativa destacada.
+- Respeita a safe area inferior do iPhone.
+- No desktop a navegação se adapta para formato horizontal.
+- Botão Menu com ícone compacto no celular.
+- Sair continua disponível dentro do Perfil e no desktop.
 
-## Troca de modo
-- Pode ser feita em Configurações.
-- A troca não apaga dados.
-- Se o usuário usou o modo Avançado e mudar para Básico, os dados detalhados permanecem no banco, mas ficam ocultos.
-- Voltando ao Avançado, os dados detalhados reaparecem.
+## Calendário
+- Células mais compactas no celular.
+- Dia atual destacado.
+- Indicadores coloridos preservados.
+- Textos continuam em uma única linha.
+- Setas de navegação substituídas por ícones.
+- Melhor adaptação a telas pequenas.
+
+## Ícones
+- Novo conjunto SVG próprio, sem depender de emojis.
+- Mesma linguagem visual em Android, iOS e Web.
+- Ícones adicionados também ao Menu principal.
+
+## Layout
+- Bordas e botões mais consistentes.
+- Áreas de toque maiores para celular.
+- Melhor comportamento responsivo.
+- Suporte às safe areas de aparelhos com notch/barra inferior.
+
+## Funcionalidades
+Nenhuma regra financeira foi removida. Modo Básico e Avançado permanecem funcionando.
 
 ## SQL
-Não há SQL novo obrigatório nesta versão.
+Não há SQL novo obrigatório.
 
 ## Commit changes
-FINANCE+ V1.9 - ativar modos basico e avancado
+FINANCE+ V2.0 - renovar interface menu calendario e icones
