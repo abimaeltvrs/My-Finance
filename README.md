@@ -1,46 +1,36 @@
-# FINANCE+ V1.8 — Consolidação da área financeira
+# FINANCE+ V1.9 — Modo Básico e Avançado
 
-## Relatórios concluídos
-- Relatório mensal.
-- Relatório anual.
-- Receitas, pagamentos efetivos, pendências, faturas e saldo realizado.
-- Despesas por categoria.
-- Resumo por cartão.
-- Lista de lançamentos do período.
-- Botão Baixar PDF, gerando o relatório diretamente no navegador.
+## Modo Básico
+Voltado ao usuário que quer somente controle financeiro simples.
+- Receitas/entradas.
+- Contas/despesas/saídas.
+- Cartões continuam cadastráveis.
+- Não é necessário lançar cada compra do cartão.
+- O usuário informa somente o valor total da fatura de cada cartão em cada mês.
+- A fatura pode ser paga normalmente e entra no controle financeiro.
+- Compras detalhadas e parcelamentos ficam ocultos.
+- Calendário, Dashboard e Relatórios continuam disponíveis.
 
-## Dashboard
-- Receitas do mês.
-- Faturas em aberto.
-- Saldo realizado.
-- Próximos compromissos.
-- Cards e linhas clicáveis levando às áreas correspondentes.
-- Atalho para o Calendário.
+## Modo Avançado
+Mantém o FINANCE+ completo:
+- Contas únicas e recorrentes.
+- Receitas.
+- Cartões.
+- Compras individuais.
+- Parcelamentos.
+- Faturas automáticas.
+- Calendário.
+- Dashboard completo.
+- Relatórios e PDF.
 
-## Menu
-- Novo menu principal com acesso direto a:
-  Dashboard, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Configurações.
-
-## Perfil
-- Exibe nome e e-mail.
-- Avatar por iniciais.
-- Botão Sair do perfil.
-
-## Configurações
-- Seleção de modo Básico ou Avançado.
-- Nesta versão a escolha é armazenada, mas ainda não altera as funções do app. As regras serão adicionadas depois que forem definidas.
-- Reset total dos dados financeiros, preservando a conta de acesso.
-- Reset por período personalizado.
-- O reset por período considera:
-  contas pelo vencimento, receitas pela data recebida, pagamentos pela data paga,
-  compras pela data da compra e faturas pelo vencimento.
-
-## Segurança do reset
-- Reset total exige confirmação e digitação da palavra RESETAR.
-- Exclusões continuam protegidas pelo RLS do usuário.
+## Troca de modo
+- Pode ser feita em Configurações.
+- A troca não apaga dados.
+- Se o usuário usou o modo Avançado e mudar para Básico, os dados detalhados permanecem no banco, mas ficam ocultos.
+- Voltando ao Avançado, os dados detalhados reaparecem.
 
 ## SQL
 Não há SQL novo obrigatório nesta versão.
 
 ## Commit changes
-FINANCE+ V1.8 - concluir relatórios dashboard menu perfil e configurações
+FINANCE+ V1.9 - ativar modos basico e avancado

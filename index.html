@@ -295,8 +295,17 @@
       .profile-grid,.settings-grid{grid-template-columns:1fr}
     }
 
-</style>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+    .advanced-only.mode-hidden{display:none!important}
+    .basic-only{display:none!important}
+    body[data-app-mode="basic"] .basic-only{display:block!important}
+    .mode-banner{border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .mode-banner strong{font-size:13px}
+    .mode-banner span{font-size:12px;color:var(--muted)}
+    </style>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js">
+    applyAppMode();
+</script>
 </head>
 <body>
   <main id="authView" class="auth-wrap">
@@ -388,6 +397,11 @@
     </header>
 
     <div id="homeContent">
+      <div id="appModeBanner" class="mode-banner">
+        <div><strong id="appModeBannerTitle">Modo Avançado</strong><br><span id="appModeBannerText">Controle financeiro completo.</span></div>
+        <button id="appModeSettingsBtn" class="btn" type="button">Configurar</button>
+      </div>
+
     <section class="grid summary-grid">
       <article class="card hero">
         <div class="label">Saldo do mês</div>
@@ -464,7 +478,7 @@
         <div class="menu-grid" style="margin-top:14px">
           <button class="menu-card" data-menu-view="home"><strong>🏠 Dashboard</strong><span>Resumo financeiro e indicadores</span></button>
           <button class="menu-card" data-menu-view="bills"><strong>🧾 Contas</strong><span>Contas únicas e recorrentes</span></button>
-          <button class="menu-card" data-menu-view="cards"><strong>💳 Cartões</strong><span>Compras, parcelas e faturas</span></button>
+          <button class="menu-card" data-menu-view="cards"><strong>💳 Cartões</strong><span id="menuCardsDescription">Compras, parcelas e faturas</span></button>
           <button class="menu-card" data-menu-view="incomes"><strong>💰 Receitas</strong><span>Entradas e rendimentos</span></button>
           <button class="menu-card" data-menu-view="calendar"><strong>📅 Calendário</strong><span>Movimentações por data</span></button>
           <button class="menu-card" data-menu-view="reports"><strong>📊 Relatórios</strong><span>Mensal, anual e PDF</span></button>
@@ -497,10 +511,10 @@
         <div class="settings-grid">
           <div class="setting-option">
             <h3 style="margin-top:0">Modo do aplicativo</h3>
-            <div class="label">A opção já pode ser escolhida. As diferenças entre Básico e Avançado serão aplicadas quando você definir as regras.</div>
+            <div class="label">Básico: entradas, saídas e valor total das faturas. Avançado: controle completo com compras, parcelas e detalhes.</div>
             <div class="mode-choice" style="margin-top:12px">
-              <button id="modeBasicBtn" class="mode-card" type="button"><strong>Básico</strong><div class="label">Interface simplificada</div></button>
-              <button id="modeAdvancedBtn" class="mode-card" type="button"><strong>Avançado</strong><div class="label">Todos os recursos</div></button>
+              <button id="modeBasicBtn" class="mode-card" type="button"><strong>Básico</strong><div class="label">Receitas, despesas e faturas mensais</div></button>
+              <button id="modeAdvancedBtn" class="mode-card" type="button"><strong>Avançado</strong><div class="label">Compras, parcelas e controle completo</div></button>
             </div>
           </div>
 
@@ -638,7 +652,8 @@
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="newCardBtn" class="btn" type="button">+ Cartão</button>
-            <button id="newPurchaseBtn" class="btn btn-primary" type="button">+ Compra</button>
+            <button id="basicNewInvoiceBtn" class="btn primary basic-only" type="button">+ Fatura mensal</button>
+          <button id="newPurchaseBtn" class="advanced-only" class="btn btn-primary" type="button">+ Compra</button>
           </div>
         </div>
       </section>
@@ -670,7 +685,7 @@
         </article>
         <aside class="card">
           <div class="section-title"><h2>Compras e parcelas</h2></div>
-          <div id="purchaseList" class="purchase-list"><div class="cards-empty">Nenhuma compra.</div></div>
+          <div id="purchaseList" class="advanced-only" class="purchase-list"><div class="cards-empty">Nenhuma compra.</div></div>
         </aside>
       </section>
     </div>
@@ -910,7 +925,39 @@
     </section>
   </div>
 
-  <div id="invoicePaymentModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+  
+  <div id="basicInvoiceModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><h2 style="margin:0">Fatura do cartão</h2><div class="label">Modo Básico: informe apenas o valor total da fatura do mês.</div></div>
+        <button id="closeBasicInvoiceModal" class="btn" type="button">✕</button>
+      </div>
+      <form id="basicInvoiceForm">
+        <div class="form-grid">
+          <label>Cartão
+            <select id="basicInvoiceCard" required></select>
+          </label>
+          <label>Mês da fatura
+            <input id="basicInvoiceMonth" type="month" required>
+          </label>
+          <label>Valor total
+            <input id="basicInvoiceAmount" type="number" min="0.01" step="0.01" required>
+          </label>
+          <label>Vencimento
+            <input id="basicInvoiceDueDate" type="date" required>
+          </label>
+        </div>
+        <label>Observação
+          <textarea id="basicInvoiceNotes" rows="3" placeholder="Opcional"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="btn primary" type="submit">Salvar fatura</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<div id="invoicePaymentModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <section class="modal">
       <div class="modal-header">
         <div><h2>Pagar fatura</h2><div id="invoicePaymentName" class="label"></div></div>
@@ -2059,15 +2106,141 @@
     function getAppMode(){
       return localStorage.getItem('financePlusMode') || 'advanced';
     }
-    function renderAppMode(){
+
+    function applyAppMode(){
       const mode=getAppMode();
-      document.getElementById('modeBasicBtn')?.classList.toggle('active',mode==='basic');
-      document.getElementById('modeAdvancedBtn')?.classList.toggle('active',mode==='advanced');
+      document.body.dataset.appMode=mode;
+
+      document.querySelectorAll('.advanced-only').forEach(el=>{
+        el.classList.toggle('mode-hidden',mode==='basic');
+      });
+
+      const basicBtn=document.getElementById('modeBasicBtn');
+      const advancedBtn=document.getElementById('modeAdvancedBtn');
+      basicBtn?.classList.toggle('active',mode==='basic');
+      advancedBtn?.classList.toggle('active',mode==='advanced');
+
+      const title=document.getElementById('appModeBannerTitle');
+      const text=document.getElementById('appModeBannerText');
+      if(title) title.textContent=mode==='basic'?'Modo Básico':'Modo Avançado';
+      if(text) text.textContent=mode==='basic'
+        ? 'Entradas, saídas e faturas mensais de forma simples.'
+        : 'Controle completo com compras, parcelas, faturas e recursos detalhados.';
+
+      const menuCards=document.getElementById('menuCardsDescription');
+      if(menuCards) menuCards.textContent=mode==='basic'
+        ? 'Valor total das faturas por mês'
+        : 'Compras, parcelas e faturas';
+
+      const settingsText=document.querySelector('#settingsContent .setting-option .label');
+      // No destructive conversion: changing modes only changes interface/flow.
     }
+
+    function renderAppMode(){
+      applyAppMode();
+    }
+
     function setAppMode(mode){
       localStorage.setItem('financePlusMode',mode);
-      renderAppMode();
-      showToast(`Modo ${mode==='basic'?'Básico':'Avançado'} selecionado. As regras serão aplicadas em uma próxima atualização.`);
+      applyAppMode();
+      showToast(mode==='basic'
+        ? 'Modo Básico ativado. Compras detalhadas e parcelamentos foram ocultados.'
+        : 'Modo Avançado ativado. Todos os recursos detalhados estão disponíveis.');
+      if(document.getElementById('cardsContent') && !document.getElementById('cardsContent').classList.contains('view-hidden')){
+        loadCardsData();
+      }
+    }
+
+
+    function openBasicInvoiceModal(){
+      if(!currentCards.length){
+        showToast('Cadastre um cartão primeiro.');
+        return;
+      }
+      const select=document.getElementById('basicInvoiceCard');
+      select.innerHTML=currentCards.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+      const ym=`${currentMonth.getFullYear()}-${String(currentMonth.getMonth()+1).padStart(2,'0')}`;
+      document.getElementById('basicInvoiceMonth').value=ym;
+      document.getElementById('basicInvoiceAmount').value='';
+      document.getElementById('basicInvoiceNotes').value='';
+      updateBasicInvoiceDueDate();
+      document.getElementById('basicInvoiceModal').classList.remove('hidden');
+    }
+
+    function closeBasicInvoiceModal(){
+      document.getElementById('basicInvoiceModal').classList.add('hidden');
+    }
+
+    function updateBasicInvoiceDueDate(){
+      const card=currentCards.find(c=>c.id===document.getElementById('basicInvoiceCard').value);
+      const ym=document.getElementById('basicInvoiceMonth').value;
+      if(!card||!ym) return;
+      const [y,m]=ym.split('-').map(Number);
+      const dueDay=Math.max(1,Math.min(Number(card.due_day||1),new Date(y,m,0).getDate()));
+      document.getElementById('basicInvoiceDueDate').value=`${y}-${String(m).padStart(2,'0')}-${String(dueDay).padStart(2,'0')}`;
+    }
+
+    async function saveBasicInvoice(e){
+      e.preventDefault();
+      if(getAppMode()!=='basic'){
+        showToast('Esta opção pertence ao Modo Básico.');
+        return;
+      }
+
+      const cardId=document.getElementById('basicInvoiceCard').value;
+      const month=document.getElementById('basicInvoiceMonth').value;
+      const amount=Number(document.getElementById('basicInvoiceAmount').value);
+      const dueDate=document.getElementById('basicInvoiceDueDate').value;
+      if(!cardId||!month||!amount||amount<=0||!dueDate){
+        showToast('Preencha cartão, mês, valor e vencimento.');
+        return;
+      }
+
+      const referenceMonth=`${month}-01`;
+
+      // One invoice per card/reference month: update if already present.
+      const existing=await supabaseClient.from('card_invoices')
+        .select('*')
+        .eq('user_id',currentUser.id)
+        .eq('card_id',cardId)
+        .eq('reference_month',referenceMonth)
+        .maybeSingle();
+
+      if(existing.error){showToast(existing.error.message);return;}
+
+      let result;
+      if(existing.data){
+        if(existing.data.status==='pago'){
+          showToast('Esta fatura já está paga. Desfaça o pagamento antes de alterar o valor.');
+          return;
+        }
+        result=await supabaseClient.from('card_invoices')
+          .update({amount,due_date:dueDate,status:'pendente'})
+          .eq('id',existing.data.id)
+          .eq('user_id',currentUser.id)
+          .select()
+          .single();
+      }else{
+        result=await supabaseClient.from('card_invoices')
+          .insert({
+            user_id:currentUser.id,
+            card_id:cardId,
+            reference_month:referenceMonth,
+            amount,
+            due_date:dueDate,
+            status:'pendente'
+          })
+          .select()
+          .single();
+      }
+
+      if(result.error){showToast(`Erro ao salvar fatura: ${result.error.message}`);return;}
+
+      currentMonth=new Date(Number(month.slice(0,4)),Number(month.slice(5,7))-1,1);
+      closeBasicInvoiceModal();
+      showToast(existing.data?'Fatura mensal atualizada.':'Fatura mensal salva.');
+      await loadCardsData();
+      await loadMonthData();
     }
 
     async function loadProfileView(){
@@ -2713,6 +2886,22 @@
 
 
     async function openInvoiceDetail(invoice){
+      if(getAppMode()==='basic'){
+        selectedInvoice=invoice;
+        const title=document.getElementById('invoiceDetailTitle');
+        const body=document.getElementById('invoiceDetailBody');
+        if(title) title.textContent=`Fatura • ${invoice.cards?.name||'Cartão'}`;
+        if(body) body.innerHTML=`
+          <div class="cards-empty" style="text-align:left">
+            <strong>Modo Básico</strong><br>
+            Valor total informado para esta fatura: <strong>${brl.format(Number(invoice.amount||0))}</strong><br>
+            Vencimento: ${invoice.due_date?formatDateBR(invoice.due_date):'—'}<br><br>
+            Neste modo não há lançamento individual das compras.
+          </div>`;
+        document.getElementById('invoiceDetailModal')?.classList.remove('hidden');
+        return;
+      }
+
       const card=currentCards.find(c=>c.id===invoice.card_id);
       const [y,m]=invoice.reference_month.split('-').map(Number);
       const monthLabel=monthFmt.format(new Date(y,m-1,1)).replace(/^\w/,c=>c.toUpperCase());
@@ -2894,6 +3083,14 @@
 
 
 
+
+
+    document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasicInvoiceModal);
+    document.getElementById('closeBasicInvoiceModal')?.addEventListener('click',closeBasicInvoiceModal);
+    document.getElementById('basicInvoiceForm')?.addEventListener('submit',saveBasicInvoice);
+    document.getElementById('basicInvoiceCard')?.addEventListener('change',updateBasicInvoiceDueDate);
+    document.getElementById('basicInvoiceMonth')?.addEventListener('change',updateBasicInvoiceDueDate);
+    document.getElementById('appModeSettingsBtn')?.addEventListener('click',()=>showView('settings'));
 
     document.getElementById('openMainMenuBtn')?.addEventListener('click',()=>showView('menu'));
     document.querySelectorAll('[data-menu-view]').forEach(btn=>{
