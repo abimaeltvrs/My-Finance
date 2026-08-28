@@ -1872,6 +1872,21 @@
   .fp-card-profile-visual{min-height:125px;padding:18px}
 }
 
+
+/* FINANCE+ V2.9 — cores do cartão + receitas a receber */
+.fp-card-color-picker{display:flex;gap:10px;flex-wrap:wrap;padding-top:4px}
+.fp-card-color{width:38px;height:38px;border-radius:50%;border:3px solid transparent;background:var(--card-color);padding:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.13)}
+.fp-card-color.active{border-color:#fff;outline:2px solid #2fd48a;outline-offset:2px}
+.fp-card-color:focus-visible{outline:3px solid #2fd48a;outline-offset:2px}
+.fp-income-status-preview{min-height:42px;border:1px solid #57471c;background:#211b0d;border-radius:12px;display:flex;align-items:center;gap:8px;padding:0 12px;color:#f1c14a;font-weight:800;font-size:12px}
+.fp-income-status-preview .status-dot{width:8px;height:8px;border-radius:50%;background:#f1c14a}
+.fp-income-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 8px;font-size:9px;font-weight:900;margin-top:5px}
+.fp-income-badge.pending{background:#3b2f0b;color:#f0c44c;border:1px solid #66551c}
+.fp-income-badge.received{background:#0d3526;color:#53dda0;border:1px solid #1e5d45}
+.fp-income-badge.cancelled{background:#311817;color:#ef786f;border:1px solid #62302c}
+.fp-card-color-strip{height:5px;border-radius:99px;margin:-2px 0 10px;background:var(--card-color,#6D38C5)}
+.metric-pending-income .fp-metric-icon{background:rgba(230,174,50,.12);color:#efc24d}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -2119,6 +2134,10 @@
     <button id="dashIncomeMetric" class="fp-metric-card metric-income" type="button">
       <div class="fp-metric-icon">↓</div>
       <div><span>RECEITAS</span><strong id="dashIncomeValue">R$ 0,00</strong><small>Este mês</small></div>
+    </button>
+    <button id="dashPendingIncomeMetric" class="fp-metric-card metric-pending-income" type="button">
+      <div class="fp-metric-icon">◎</div>
+      <div><span>RECEITAS PENDENTES</span><strong id="dashPendingIncomeValue">R$ 0,00</strong><small id="dashPendingIncomeCount">0 a receber</small></div>
     </button>
     <button id="dashPaidMetric" class="fp-metric-card metric-paid" type="button">
       <div class="fp-metric-icon">↑</div>
@@ -2396,7 +2415,8 @@
         </div>
       </section>
       <section class="grid summary-grid" style="margin-top:14px">
-        <article class="card"><div class="label">Receitas do mês</div><div id="incomeMonthTotal" class="mini-value paid">R$ 0,00</div></article>
+        <article class="card"><div class="label">Recebido no mês</div><div id="incomeMonthTotal" class="mini-value paid">R$ 0,00</div></article>
+        <article class="card"><div class="label">A receber</div><div id="incomePendingTotal" class="mini-value pending">R$ 0,00</div></article>
         <article class="card"><div class="label">Quantidade</div><div id="incomeCount" class="mini-value">0</div></article>
       </section>
       <section class="card" style="margin-top:14px">
@@ -2621,21 +2641,38 @@
   <div id="incomeModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <section class="modal">
       <div class="modal-header">
-        <div><h2 id="incomeModalTitle">Nova receita</h2><div class="label">Registre o valor efetivamente recebido.</div></div>
+        <div><h2 id="incomeModalTitle">Nova receita a receber</h2><div id="incomeModalSubtitle" class="label">Cadastre valores previstos. Eles entram como pendentes até você confirmar o recebimento.</div></div>
         <button id="closeIncomeModal" class="btn" type="button">Fechar</button>
       </div>
       <form id="incomeForm">
         <input id="incomeId" type="hidden">
         <div class="form-grid">
           <div class="field full"><label for="incomeDescription">Descrição</label><input id="incomeDescription" required placeholder="Ex.: Salário"></div>
-          <div class="field"><label for="incomeAmount">Valor recebido</label><input id="incomeAmount" type="number" min="0.01" step="0.01" required></div>
-          <div class="field"><label for="incomeDate">Data do recebimento</label><input id="incomeDate" type="date" required></div>
+          <div class="field"><label for="incomeAmount">Valor previsto</label><input id="incomeAmount" type="number" min="0.01" step="0.01" required></div>
+          <div class="field"><label for="incomeDate">Data prevista</label><input id="incomeDate" type="date" required></div>
           <div class="field full"><label for="incomeCategory">Categoria</label>
             <select id="incomeCategory">
               <option>Salário</option><option>Renda extra</option><option>Freelance</option>
               <option>Venda</option><option>Reembolso</option><option>Investimentos</option><option>Outros</option>
             </select>
           </div>
+          <div class="field">
+            <label for="incomeOccurrences">Repetir por quantos meses?</label>
+            <select id="incomeOccurrences">
+              <option value="1">1x • somente este mês</option>
+              <option value="2">2x • 2 meses</option>
+              <option value="3">3x • 3 meses</option>
+              <option value="4">4x • 4 meses</option>
+              <option value="5">5x • 5 meses</option>
+              <option value="6">6x • 6 meses</option>
+              <option value="12">12x • 12 meses</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Status inicial</label>
+            <div class="fp-income-status-preview"><span class="status-dot"></span>Pendente</div>
+          </div>
+          <div id="incomeRecurrenceHint" class="field full label">Ex.: escolhendo 5x, o FINANCE+ criará esta receita no mesmo dia dos próximos 5 meses.</div>
           <div class="field full"><label for="incomeNotes">Observação</label><textarea id="incomeNotes" placeholder="Opcional"></textarea></div>
         </div>
         <div class="modal-actions">
@@ -2661,6 +2698,21 @@
           <div class="field"><label for="cardLimit">Limite</label><input id="cardLimit" type="number" min="0" step="0.01" required></div>
           <div class="field"><label for="cardClosingDay">Dia de fechamento</label><input id="cardClosingDay" type="number" min="1" max="31" required></div>
           <div class="field"><label for="cardDueDay">Dia de vencimento</label><input id="cardDueDay" type="number" min="1" max="31" required></div>
+          <div class="field full">
+            <label>Cor do cartão</label>
+            <input id="cardColor" type="hidden" value="#6D38C5">
+            <div id="cardColorPicker" class="fp-card-color-picker" role="radiogroup" aria-label="Escolha a cor do cartão">
+              <button type="button" class="fp-card-color active" data-color="#6D38C5" style="--card-color:#6D38C5" aria-label="Roxo"></button>
+              <button type="button" class="fp-card-color" data-color="#1F5FBF" style="--card-color:#1F5FBF" aria-label="Azul"></button>
+              <button type="button" class="fp-card-color" data-color="#178A58" style="--card-color:#178A58" aria-label="Verde"></button>
+              <button type="button" class="fp-card-color" data-color="#C83A2A" style="--card-color:#C83A2A" aria-label="Vermelho"></button>
+              <button type="button" class="fp-card-color" data-color="#E57B18" style="--card-color:#E57B18" aria-label="Laranja"></button>
+              <button type="button" class="fp-card-color" data-color="#171A19" style="--card-color:#171A19" aria-label="Preto"></button>
+              <button type="button" class="fp-card-color" data-color="#7B8581" style="--card-color:#7B8581" aria-label="Cinza"></button>
+              <button type="button" class="fp-card-color" data-color="#B78A20" style="--card-color:#B78A20" aria-label="Dourado"></button>
+            </div>
+            <div class="label" style="margin-top:6px">A cor será usada na lista e no perfil do cartão.</div>
+          </div>
         </div>
         <div class="modal-actions">
           <button id="cancelCardBtn" class="btn" type="button">Cancelar</button>
@@ -3094,6 +3146,28 @@
       return Math.round((b-a)/86400000);
     }
 
+
+    const FP_CARD_COLORS=['#6D38C5','#1F5FBF','#178A58','#C83A2A','#E57B18','#171A19','#7B8581','#B78A20'];
+    function fpSafeCardColor(value){
+      const v=String(value||'').toUpperCase();
+      return FP_CARD_COLORS.includes(v)?v:'#6D38C5';
+    }
+    function fpSetCardColor(value){
+      const color=fpSafeCardColor(value);
+      const input=document.getElementById('cardColor');
+      if(input)input.value=color;
+      document.querySelectorAll('#cardColorPicker .fp-card-color').forEach(b=>b.classList.toggle('active',String(b.dataset.color).toUpperCase()===color));
+    }
+    function fpIncomeStatus(income){
+      return income?.status || 'recebido';
+    }
+    function fpAddMonthsSameDay(dateIso,months){
+      const [y,m,d]=dateIso.split('-').map(Number);
+      const targetFirst=new Date(y,m-1+months,1);
+      const yy=targetFirst.getFullYear(), mm=targetFirst.getMonth()+1;
+      const last=new Date(yy,mm,0).getDate();
+      return `${yy}-${String(mm).padStart(2,'0')}-${String(Math.min(d,last)).padStart(2,'0')}`;
+    }
     function formatDateBR(iso){
       if(!iso) return '';
       const [y,m,d] = iso.split('-');
@@ -4548,17 +4622,20 @@ function syncModeButtonsV251(){
         supabaseClient.from('payments').select('*').eq('user_id',currentUser.id).gte('paid_at',`${start}T00:00:00`).lte('paid_at',`${end}T23:59:59`),
         supabaseClient.from('card_invoices').select('*,cards(name)').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end),
         supabaseClient.from('bills').select('*').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end),
-        supabaseClient.from('incomes').select('amount').eq('user_id',currentUser.id).gte('received_date',prevBounds.start).lte('received_date',prevBounds.end),
+        supabaseClient.from('incomes').select('amount,status').eq('user_id',currentUser.id).gte('received_date',prevBounds.start).lte('received_date',prevBounds.end),
         supabaseClient.from('payments').select('amount').eq('user_id',currentUser.id).gte('paid_at',`${prevBounds.start}T00:00:00`).lte('paid_at',`${prevBounds.end}T23:59:59`)
       ]);
 
       if(incRes.error||payRes.error||invRes.error||billRes.error) return;
 
       const incomes=incRes.data||[], payments=payRes.data||[], invoices=invRes.data||[], bills=billRes.data||[];
-      const income=incomes.reduce((s,x)=>s+Number(x.amount||0),0);
+      const receivedIncomes=incomes.filter(x=>fpIncomeStatus(x)==='recebido');
+      const pendingIncomes=incomes.filter(x=>fpIncomeStatus(x)==='pendente');
+      const income=receivedIncomes.reduce((s,x)=>s+Number(x.amount||0),0);
+      const pendingIncome=pendingIncomes.reduce((s,x)=>s+Number(x.amount||0),0);
       const paid=payments.reduce((s,x)=>s+Number(x.amount||0),0);
       const balance=income-paid;
-      const prevIncome=(prevIncRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
+      const prevIncome=(prevIncRes.data||[]).filter(x=>(x.status||'recebido')==='recebido').reduce((s,x)=>s+Number(x.amount||0),0);
       const prevPaid=(prevPayRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
       const prevBalance=prevIncome-prevPaid;
 
@@ -4566,7 +4643,7 @@ function syncModeButtonsV251(){
       const openInvoices=invoices.filter(x=>!['pago','cancelado'].includes(x.status));
       const payable=openBills.reduce((s,x)=>s+Number(x.amount||0),0);
       const openInv=openInvoices.reduce((s,x)=>s+Number(x.amount||0),0);
-      const projection=balance-payable-openInv;
+      const projection=balance+pendingIncome-payable-openInv;
       const status=dashboardStatusByNumbers(income,paid,projection);
       setSmartDashboardStatus(status);
 
@@ -4591,6 +4668,8 @@ function syncModeButtonsV251(){
       document.getElementById('smartBalanceTrend').textContent=trendText;
 
       document.getElementById('dashIncomeValue').textContent=brl.format(income);
+      document.getElementById('dashPendingIncomeValue').textContent=brl.format(pendingIncome);
+      document.getElementById('dashPendingIncomeCount').textContent=`${pendingIncomes.length} ${pendingIncomes.length===1?'a receber':'a receber'}`;
       document.getElementById('dashPaidValue').textContent=brl.format(paid);
       document.getElementById('dashAvailableValue').textContent=brl.format(balance);
       document.getElementById('dashPayableValue').textContent=brl.format(payable);
@@ -4627,7 +4706,7 @@ function syncModeButtonsV251(){
       // Linha de evolução diária: receitas acumuladas - pagamentos acumulados.
       const {last}=getDashboardMonthDates();
       const byDayIncome={}, byDayPaid={};
-      incomes.forEach(x=>{const d=Number(String(x.received_date).slice(8,10));byDayIncome[d]=(byDayIncome[d]||0)+Number(x.amount||0)});
+      receivedIncomes.forEach(x=>{const d=Number(String(x.received_date).slice(8,10));byDayIncome[d]=(byDayIncome[d]||0)+Number(x.amount||0)});
       payments.forEach(x=>{const d=Number(String(x.paid_at).slice(8,10));byDayPaid[d]=(byDayPaid[d]||0)+Number(x.amount||0)});
       const todayDate=new Date();
       const sameCurrent=todayDate.getFullYear()===currentMonth.getFullYear()&&todayDate.getMonth()===currentMonth.getMonth();
@@ -4642,6 +4721,7 @@ function syncModeButtonsV251(){
       const items=[];
       openBills.forEach(x=>items.push({date:x.due_date,type:'Conta',name:x.name,amount:Number(x.amount||0),view:'accounts'}));
       openInvoices.forEach(x=>items.push({date:x.due_date,type:'Fatura',name:x.cards?.name||'Cartão',amount:Number(x.amount||0),view:'cards'}));
+      pendingIncomes.forEach(x=>items.push({date:x.received_date,type:'Receita a receber',name:x.description,amount:Number(x.amount||0),view:'income',income:true}));
       items.sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
       const box=document.getElementById('dashboardUpcomingList');
       const top=items.slice(0,4);
@@ -4921,18 +5001,30 @@ function syncModeButtonsV251(){
 
     function openIncomeModal(income=null){
       editingIncomeId = income?.id || null;
-      document.getElementById('incomeModalTitle').textContent = editingIncomeId ? 'Editar receita' : 'Nova receita';
+      const editing=!!editingIncomeId;
+      document.getElementById('incomeModalTitle').textContent = editing ? 'Editar receita' : 'Nova receita a receber';
+      document.getElementById('incomeModalSubtitle').textContent = editing
+        ? 'Esta edição altera somente esta ocorrência.'
+        : 'O lançamento ficará pendente até você confirmar que recebeu.';
       document.getElementById('incomeId').value = editingIncomeId || '';
       document.getElementById('incomeDescription').value = income?.description || '';
       document.getElementById('incomeAmount').value = income?.amount ?? '';
       document.getElementById('incomeDate').value = income?.received_date || todayISO();
       document.getElementById('incomeCategory').value = income?.category || 'Salário';
       document.getElementById('incomeNotes').value = income?.notes || '';
+      const occ=document.getElementById('incomeOccurrences');
+      occ.value='1';
+      occ.disabled=editing;
+      document.getElementById('incomeRecurrenceHint').textContent=editing
+        ? 'Para preservar o histórico, a edição altera apenas esta ocorrência da receita.'
+        : 'Ex.: escolhendo 5x, o FINANCE+ criará esta receita no mesmo dia dos próximos 5 meses.';
       document.getElementById('incomeModal').classList.remove('hidden');
     }
 
     function closeIncomeModal(){
       editingIncomeId = null;
+      const occ=document.getElementById('incomeOccurrences');
+      if(occ)occ.disabled=false;
       document.getElementById('incomeModal').classList.add('hidden');
     }
 
@@ -4957,27 +5049,53 @@ function syncModeButtonsV251(){
 
     function renderIncomeList(){
       const el=document.getElementById('incomeList');
-      const total=currentIncomes.reduce((s,x)=>s+Number(x.amount||0),0);
-      document.getElementById('incomeMonthTotal').textContent=brl.format(total);
+      const received=currentIncomes.filter(x=>fpIncomeStatus(x)==='recebido');
+      const pending=currentIncomes.filter(x=>fpIncomeStatus(x)==='pendente');
+      const receivedTotal=received.reduce((s,x)=>s+Number(x.amount||0),0);
+      const pendingTotal=pending.reduce((s,x)=>s+Number(x.amount||0),0);
+      document.getElementById('incomeMonthTotal').textContent=brl.format(receivedTotal);
+      document.getElementById('incomePendingTotal').textContent=brl.format(pendingTotal);
       document.getElementById('incomeCount').textContent=String(currentIncomes.length);
 
       if(!currentIncomes.length){
-        el.innerHTML='<div class="cards-empty">Nenhuma receita neste mês.</div>';
+        el.innerHTML='<div class="cards-empty">Nenhuma receita prevista neste mês.</div>';
         return;
       }
 
       el.innerHTML='';
-      currentIncomes.forEach(income=>{
+      [...currentIncomes].sort((a,b)=>String(a.received_date).localeCompare(String(b.received_date))).forEach(income=>{
+        const status=fpIncomeStatus(income);
         const row=document.createElement('div');
         row.className='invoice-row';
+        const recurrence=Number(income.recurrence_total||1)>1
+          ? ` • ${Number(income.recurrence_index||1)}/${Number(income.recurrence_total)}`
+          : '';
+        const badge=status==='pendente'
+          ? '<span class="fp-income-badge pending">● PENDENTE</span>'
+          : status==='recebido'
+            ? '<span class="fp-income-badge received">✓ RECEBIDO</span>'
+            : '<span class="fp-income-badge cancelled">CANCELADO</span>';
         row.innerHTML=`
           <div>
             <strong>${escapeHtml(income.description)}</strong>
-            <div class="label">${escapeHtml(income.category||'Outros')} • ${formatDateBR(income.received_date)}</div>
+            <div class="label">${escapeHtml(income.category||'Outros')} • ${formatDateBR(income.received_date)}${recurrence}</div>
+            ${badge}
           </div>
-          <strong class="paid">${brl.format(Number(income.amount||0))}</strong>`;
+          <strong class="${status==='recebido'?'paid':'pending'}">${brl.format(Number(income.amount||0))}</strong>`;
         const actions=document.createElement('div');
         actions.className='invoice-actions';
+
+        if(status==='pendente'){
+          const receive=document.createElement('button');
+          receive.className='btn btn-primary'; receive.type='button'; receive.textContent='Marcar recebido';
+          receive.addEventListener('click',()=>setIncomeStatus(income,'recebido'));
+          actions.appendChild(receive);
+        }else if(status==='recebido'){
+          const pendingBtn=document.createElement('button');
+          pendingBtn.className='btn'; pendingBtn.type='button'; pendingBtn.textContent='Voltar p/ pendente';
+          pendingBtn.addEventListener('click',()=>setIncomeStatus(income,'pendente'));
+          actions.appendChild(pendingBtn);
+        }
 
         const edit=document.createElement('button');
         edit.className='btn'; edit.type='button'; edit.textContent='Editar';
@@ -4991,6 +5109,37 @@ function syncModeButtonsV251(){
         row.appendChild(actions);
         el.appendChild(row);
       });
+    }
+
+    async function setIncomeStatus(income,status){
+      if(!income||!['pendente','recebido'].includes(status))return;
+      const patch={status,received_at:status==='recebido'?new Date().toISOString():null};
+
+      if(!navigator.onLine){
+        const merged={...income,...patch,user_id:currentUser.id};
+        await fpQueuePut({qid:fpUUID(),user_id:currentUser.id,table:'incomes',payload:merged,created_at:new Date().toISOString(),attempts:0});
+        const idx=currentIncomes.findIndex(x=>x.id===income.id);
+        if(idx>=0)currentIncomes[idx]=merged;
+        await fpStatus();
+        renderIncomeList();
+        refreshDashboardFromState();
+        showToast(status==='recebido'?'Recebimento confirmado offline.':'Receita voltou para pendente offline.');
+        return;
+      }
+
+      const res=await supabaseClient.from('incomes')
+        .update(patch)
+        .eq('id',income.id)
+        .eq('user_id',currentUser.id)
+        .select()
+        .single();
+      if(res.error){showToast(`Erro ao atualizar receita: ${res.error.message}`);return;}
+      const idx=currentIncomes.findIndex(x=>x.id===income.id);
+      if(idx>=0)currentIncomes[idx]={...currentIncomes[idx],...res.data};
+      renderIncomeList();
+      refreshDashboardFromState();
+      showToast(status==='recebido'?'Receita marcada como recebida.':'Receita marcada como pendente.');
+      scheduleServerRefresh();
     }
 
     async function deleteIncome(income){
@@ -5023,9 +5172,11 @@ function syncModeButtonsV251(){
         document.getElementById('cardLimit').value=Number(card.credit_limit||0);
         document.getElementById('cardClosingDay').value=Number(card.closing_day||5);
         document.getElementById('cardDueDay').value=Number(card.due_day||12);
+        fpSetCardColor(card.card_color||'#6D38C5');
       }else{
         document.getElementById('cardClosingDay').value=5;
         document.getElementById('cardDueDay').value=12;
+        fpSetCardColor('#6D38C5');
       }
       document.getElementById('cardModal').classList.remove('hidden');
       setTimeout(()=>document.getElementById('cardName')?.focus(),50);
@@ -5054,6 +5205,7 @@ function syncModeButtonsV251(){
       document.getElementById('cardProfileClosing').textContent=card.closing_day?`Dia ${card.closing_day}`:'—';
       document.getElementById('cardProfileDue').textContent=card.due_day?`Dia ${card.due_day}`:'—';
       document.getElementById('cardProfileInvoices').textContent=String(openForCard.length);
+      document.getElementById('cardProfileVisual').style.background=`linear-gradient(135deg, ${fpSafeCardColor(card.card_color)}, #111 82%)`;
 
       const list=document.getElementById('cardProfileTransactions');
       const tx=currentCardTransactions
@@ -5183,7 +5335,10 @@ function syncModeButtonsV251(){
         availableTotal += available;
         const row=document.createElement('article');
         row.className='credit-card-item';
+        row.style.setProperty('--card-color',fpSafeCardColor(card.card_color));
+        row.style.background=`linear-gradient(135deg, color-mix(in srgb, ${fpSafeCardColor(card.card_color)} 38%, #111 62%), #101412 72%)`;
         row.innerHTML=`
+          <div class="fp-card-color-strip" style="--card-color:${fpSafeCardColor(card.card_color)}"></div>
           <h3>${escapeHtml(card.name)}</h3>
           <div class="label">${escapeHtml(card.brand||'Cartão')} • fecha dia ${card.closing_day||'-'} • vence dia ${card.due_day||'-'}</div>
           <div class="card-numbers">
@@ -5360,6 +5515,9 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
     document.getElementById('newCardBtn')?.addEventListener('click',()=>openCardModal());
     document.getElementById('newPurchaseBtn').addEventListener('click',openPurchaseModal);
 
+    document.querySelectorAll('#cardColorPicker .fp-card-color').forEach(btn=>{
+      btn.addEventListener('click',()=>fpSetCardColor(btn.dataset.color));
+    });
     document.getElementById('closeCardProfileBtn')?.addEventListener('click',closeCardProfile);
     document.getElementById('editCardFromProfileBtn')?.addEventListener('click',()=>{
       const card=selectedCardProfile;
@@ -5456,6 +5614,7 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
     document.getElementById('dashModeBasic')?.addEventListener('click',()=>{setAppMode('basic');setDashboardModeState();refreshDashboardV26();});
     document.getElementById('dashModeAdvanced')?.addEventListener('click',()=>{setAppMode('advanced');setDashboardModeState();refreshDashboardV26();});
     document.getElementById('dashIncomeMetric')?.addEventListener('click',()=>showView('income'));
+    document.getElementById('dashPendingIncomeMetric')?.addEventListener('click',()=>showView('income'));
     document.getElementById('dashPaidMetric')?.addEventListener('click',()=>showView('reports'));
     document.getElementById('dashAvailableMetric')?.addEventListener('click',()=>showView('reports'));
     document.getElementById('dashPayableCard')?.addEventListener('click',()=>showView('accounts'));
@@ -5515,9 +5674,9 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
     document.getElementById('incomeForm').addEventListener('submit',async e=>{
       e.preventDefault();
       const submitBtn=e.submitter;
-      if(submitBtn) submitBtn.disabled=true;
+      if(submitBtn)submitBtn.disabled=true;
       try{
-        const payload={
+        const base={
           user_id:currentUser.id,
           description:document.getElementById('incomeDescription').value.trim(),
           amount:Number(document.getElementById('incomeAmount').value),
@@ -5525,29 +5684,62 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
           category:document.getElementById('incomeCategory').value,
           notes:document.getElementById('incomeNotes').value.trim()||null
         };
-        if(!payload.description||!payload.received_date||!Number.isFinite(payload.amount)||payload.amount<=0){
-          showToast('Preencha corretamente os dados da receita.'); return;
+        if(!base.description||!base.received_date||!Number.isFinite(base.amount)||base.amount<=0){
+          showToast('Preencha corretamente os dados da receita.');return;
         }
 
         const wasEditing=Boolean(editingIncomeId);
-        let res;
-        if(editingIncomeId){
-          res=await supabaseClient.from('incomes')
-            .update(payload).eq('id',editingIncomeId).eq('user_id',currentUser.id).select().single();
+        if(wasEditing){
+          const original=currentIncomes.find(x=>x.id===editingIncomeId);
+          const payload={...base,status:fpIncomeStatus(original),received_at:original?.received_at||null};
+          if(!navigator.onLine){
+            const merged={...(original||{}),...payload,id:editingIncomeId,user_id:currentUser.id};
+            await fpQueuePut({qid:fpUUID(),user_id:currentUser.id,table:'incomes',payload:merged,created_at:new Date().toISOString(),attempts:0});
+            await fpStatus();
+          }else{
+            const res=await supabaseClient.from('incomes')
+              .update(payload).eq('id',editingIncomeId).eq('user_id',currentUser.id).select().single();
+            if(res.error){showToast(`Erro ao salvar receita: ${res.error.message}`);return;}
+          }
+          closeIncomeModal();
+          showToast('Receita atualizada.');
         }else{
-          res=await fpInsert('incomes',payload);
-          if(res.offline) showToast('Receita salva offline. Será sincronizada automaticamente.');
-        }
-        if(res.error){showToast(`Erro ao salvar receita: ${res.error.message}`);return;}
+          const total=Math.max(1,Math.min(60,Number(document.getElementById('incomeOccurrences').value||1)));
+          const seriesId=fpUUID();
+          let offlineCount=0;
 
-        const [y,m]=payload.received_date.split('-').map(Number);
-        currentMonth=new Date(y,m-1,1);
-        closeIncomeModal();
-        showToast(wasEditing?'Receita atualizada.':'Receita salva.');
-        await loadIncomeData();
-        await loadMonthData();
+          for(let i=0;i<total;i++){
+            const payload={
+              ...base,
+              received_date:fpAddMonthsSameDay(base.received_date,i),
+              status:'pendente',
+              received_at:null,
+              recurrence_series_id:seriesId,
+              recurrence_index:i+1,
+              recurrence_total:total
+            };
+            const res=await fpInsert('incomes',payload);
+            if(res.error){showToast(`Erro ao criar receita ${i+1}/${total}: ${res.error.message}`);return;}
+            if(res.offline)offlineCount++;
+          }
+
+          const [y,m]=base.received_date.split('-').map(Number);
+          currentMonth=new Date(y,m-1,1);
+          closeIncomeModal();
+          showToast(total>1
+            ? `${total} receitas pendentes cadastradas nos próximos meses.`
+            : 'Receita cadastrada como pendente.');
+          if(offlineCount)showToast(`${offlineCount} lançamento(s) salvo(s) offline para sincronização.`);
+        }
+
+        if(navigator.onLine){
+          await loadIncomeData();
+          await loadMonthData();
+        }else{
+          await loadIncomeData().catch(()=>{});
+        }
       }finally{
-        if(submitBtn) submitBtn.disabled=false;
+        if(submitBtn)submitBtn.disabled=false;
       }
     });
 
@@ -5566,7 +5758,8 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
           brand:document.getElementById('cardBrand').value,
           credit_limit:Number(document.getElementById('cardLimit').value),
           closing_day:Number(document.getElementById('cardClosingDay').value),
-          due_day:Number(document.getElementById('cardDueDay').value)
+          due_day:Number(document.getElementById('cardDueDay').value),
+          card_color:fpSafeCardColor(document.getElementById('cardColor').value)
         };
 
         if(!payload.name || !Number.isFinite(payload.credit_limit) || payload.credit_limit<0){
