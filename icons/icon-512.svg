@@ -1,9 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<defs><linearGradient id="g" x1="70" y1="50" x2="445" y2="465" gradientUnits="userSpaceOnUse"><stop stop-color="#1BE59A"/><stop offset="1" stop-color="#00A968"/></linearGradient></defs>
-<rect width="512" height="512" rx="132" fill="#07110F"/>
-<rect x="52" y="52" width="408" height="408" rx="126" fill="url(#g)"/>
-<path d="M142 152h142c63 0 102 34 102 84s-39 85-102 85h-58v84h-84V152Z" fill="#061711"/>
-<path d="M226 236h59c21 0 33-10 33-25s-12-25-33-25h-59v50Z" fill="#17E596"/>
-<path d="M270 359h43v46h-43zM334 320h43v85h-43zM207 373h43v32h-43z" fill="#17E596"/>
-<path d="M351 112v61M320 142h62" stroke="#E9FFF6" stroke-width="24" stroke-linecap="round"/>
+<defs>
+  <linearGradient id="silver" x1="120" y1="82" x2="328" y2="430"><stop stop-color="#fff"/><stop offset=".45" stop-color="#e7eae9"/><stop offset="1" stop-color="#9da6a2"/></linearGradient>
+  <linearGradient id="green" x1="145" y1="414" x2="445" y2="145"><stop stop-color="#00A96A"/><stop offset=".55" stop-color="#12D985"/><stop offset="1" stop-color="#32F0A5"/></linearGradient>
+</defs>
+<rect width="512" height="512" rx="132" fill="#06100E"/>
+<rect x="8" y="8" width="496" height="496" rx="124" fill="none" stroke="#0EDB8A" stroke-opacity=".55" stroke-width="6"/>
+<path d="M112 92h258l-31 69H193v61h117l-31 68h-86v121h-81V92Z" fill="url(#silver)"/>
+<path d="M149 381c72-52 137-87 201-107 33-11 65-24 101-45l-12 69-25-20c-28 20-59 37-91 50-62 24-117 46-174 83Z" fill="url(#green)"/>
+<rect x="220" y="360" width="41" height="55" rx="8" fill="#0ABF76"/>
+<rect x="281" y="331" width="41" height="84" rx="8" fill="#0ECB7D"/>
+<rect x="342" y="294" width="41" height="121" rx="8" fill="#11D687"/>
+<rect x="403" y="251" width="41" height="164" rx="8" fill="#17E394"/>
+<path d="M382 102v73M346 138h73" stroke="#22E997" stroke-width="28" stroke-linecap="round"/>
 </svg>

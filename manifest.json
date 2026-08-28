@@ -3,18 +3,18 @@
   "short_name": "FINANCE+",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#07110F",
-  "theme_color": "#00C87A",
+  "background_color": "#04100E",
+  "theme_color": "#06100E",
   "description": "Sua vida financeira organizada.",
   "icons": [
     {
-      "src": "icons/icon-192.svg",
+      "src": "./icons/icon-192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.svg",
+      "src": "./icons/icon-512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"

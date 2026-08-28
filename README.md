@@ -1,26 +1,37 @@
-# FINANCE+ V2.4.2 — Correção estrutural do menu inferior
+# FINANCE+ V2.5 — Nova identidade oficial
 
-## Problema encontrado
-A barra nova estava sendo inserida dentro da área “Compras e parcelas”.
-Ao mesmo tempo, o menu antigo continuava no rodapé. Por isso o celular ainda mostrava:
-- poucos ícones,
-- Receitas em uma segunda linha,
-- Perfil e Configurações ausentes.
+## Nova logo
+A nova marca oficial do FINANCE+ combina:
+- letra F;
+- gráfico de crescimento;
+- seta ascendente;
+- símbolo +;
+- prata/branco + verde esmeralda sobre fundo grafite.
 
-## Correção
-- Menu antigo removido.
-- Barra nova movida para o local correto, fora do conteúdo das telas.
-- Existe agora apenas uma barra inferior.
-- 8 itens em uma única linha:
-  Início, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Config.
-- Ícones SVG são carregados diretamente em cada item.
-- Barra fixa em toda a aplicação.
-- Sem quebra de linha.
-- Sem rolagem horizontal.
-- Área Compras e parcelas restaurada.
+## Aplicação
+- Nova logo aplicada no cabeçalho.
+- Nova logo aplicada no login.
+- Wordmark FINANCE+ atualizado.
+- Tela curta de abertura (splash screen) com a nova identidade.
+- Tagline: “SEU DINHEIRO. SOB CONTROLE.”
+
+## Ícone instalado
+Foram atualizados:
+- icon.svg;
+- icon-192.svg;
+- icon-512.svg;
+- versão clara;
+- versão monocromática;
+- favicon;
+- manifest do PWA.
+
+Após reinstalar/atualizar o PWA, o novo ícone passa a ser utilizado na tela inicial do celular.
+
+## Funcionalidades
+Nenhuma regra financeira foi alterada.
 
 ## SQL
 Não há SQL novo.
 
 ## Commit changes
-FINANCE+ V2.4.2 - corrigir estrutura real do menu inferior
+FINANCE+ V2.5 - aplicar nova identidade oficial e logo
