@@ -1835,6 +1835,20 @@
   .fp-install-app-btn{width:38px;padding:0;border-radius:50%}
 }
 
+
+.fp-public-intro{grid-column:1/-1;width:min(100%,760px);margin:0 auto 14px;display:flex;flex-direction:column;gap:14px}
+.fp-public-title{text-align:center;padding:0 12px}.fp-public-title>span{font-size:11px;font-weight:900;letter-spacing:.22em;color:#32d58b}
+.fp-public-title h2{margin:6px 0 0;font-size:clamp(24px,5vw,36px);line-height:1.05}.fp-public-title p{max-width:580px;margin:9px auto 0;color:#9eada7;font-size:12px;line-height:1.5}
+.fp-intro-carousel-wrap{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;align-items:center;gap:8px}
+.fp-intro-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;gap:10px;border-radius:18px;scrollbar-width:none}.fp-intro-carousel::-webkit-scrollbar{display:none}
+.fp-intro-card{box-sizing:border-box;min-width:100%;scroll-snap-align:center;min-height:145px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:8px;padding:20px;border:1px solid #28362f;border-radius:18px;background:linear-gradient(155deg,#151d1a,#0b100e)}
+.fp-intro-card>div{font-size:29px}.fp-intro-card strong{font-size:15px}.fp-intro-card span{font-size:12px;line-height:1.45;color:#a9b7b1;max-width:430px}
+.fp-carousel-arrow{width:34px;height:34px;border-radius:50%;border:1px solid #2d4138;background:#142019;color:#e7fff4;font-size:24px;padding:0}
+.fp-carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:-5px}.fp-carousel-dots i{width:6px;height:6px;border-radius:99px;background:#384640;transition:.2s}.fp-carousel-dots i.active{width:18px;background:#32d58b}
+.fp-public-install-btn{width:100%;min-height:46px;border:0;border-radius:14px;background:linear-gradient(135deg,#0d8d58,#20c47e);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:900}
+.fp-developer-credit{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;color:#718079;font-size:10px}.fp-developer-credit strong{color:#afbeb8}
+@media(max-width:560px){.fp-intro-carousel-wrap{grid-template-columns:27px minmax(0,1fr) 27px;gap:4px}.fp-carousel-arrow{width:27px;height:27px;font-size:20px}.fp-intro-card{min-height:132px;padding:16px 13px}}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -1883,6 +1897,29 @@
   </div>
 
   <main id="authView" class="auth-wrap">
+
+<section id="fpPublicIntro" class="fp-public-intro">
+  <div class="fp-public-title">
+    <span>FINANCE+</span>
+    <h2>Seu dinheiro. Sob controle.</h2>
+    <p>Organize contas, receitas, cartões, vencimentos e acompanhe sua vida financeira em um só lugar.</p>
+  </div>
+  <div class="fp-intro-carousel-wrap">
+    <button id="fpIntroPrev" class="fp-carousel-arrow" type="button">‹</button>
+    <div id="fpIntroCarousel" class="fp-intro-carousel">
+      <article class="fp-intro-card"><div>💳</div><strong>Contas e cartões</strong><span>Organize contas, faturas e vencimentos.</span></article>
+      <article class="fp-intro-card"><div>📊</div><strong>Dashboard inteligente</strong><span>Acompanhe receitas, despesas, saldo e projeções.</span></article>
+      <article class="fp-intro-card"><div>📅</div><strong>Calendário financeiro</strong><span>Visualize seus compromissos financeiros do mês.</span></article>
+      <article class="fp-intro-card"><div>📴</div><strong>Modo offline</strong><span>Registre lançamentos essenciais sem internet e sincronize depois.</span></article>
+      <article class="fp-intro-card"><div>📱</div><strong>Instale no aparelho</strong><span>Use o FINANCE+ com experiência de aplicativo.</span></article>
+    </div>
+    <button id="fpIntroNext" class="fp-carousel-arrow" type="button">›</button>
+  </div>
+  <div id="fpIntroDots" class="fp-carousel-dots"></div>
+  <button id="fpPublicInstallBtn" class="fp-public-install-btn" type="button">⬇ Instalar aplicativo</button>
+  <div class="fp-developer-credit"><span>Desenvolvido por</span><strong>@AB_tvrs</strong><strong>•</strong><strong>Tavaresgamertech</strong></div>
+</section>
+
     <section class="auth-hero">
       <div>
         <div class="brand">
@@ -5219,51 +5256,48 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
     });
 
 
-    // FINANCE+ V2.7.1 — instalação inteligente PWA
-    let fpDeferredInstallPrompt = null;
 
-    function fpIsStandalone(){
-      return window.matchMedia('(display-mode: standalone)').matches
-        || window.navigator.standalone === true;
+    // FINANCE+ V2.8 — instalação inteligente com fallback
+    let fpDeferredInstallPrompt=null;
+    function fpInstalled(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
+    function fpInstallGuidance(){
+      const ua=navigator.userAgent||'';
+      if(/iphone|ipad|ipod/i.test(ua)) showToast('Para instalar: Compartilhar → Adicionar à Tela de Início.');
+      else if(/android/i.test(ua)) showToast('Para instalar: menu ⋮ do Chrome → Instalar aplicativo ou Adicionar à tela inicial.');
+      else showToast('Para instalar: use o ícone de instalação na barra de endereço ou o menu do Chrome/Edge.');
     }
-
-    function fpSyncInstallButton(){
-      const btn=document.getElementById('installAppBtn');
-      if(!btn) return;
-      const canShow = !fpIsStandalone() && !!fpDeferredInstallPrompt;
-      btn.classList.toggle('hidden', !canShow);
+    function fpRefreshInstallUI(){
+      const installed=fpInstalled();
+      const pub=document.getElementById('fpPublicInstallBtn');
+      const smart=document.getElementById('installAppBtn');
+      const banner=document.getElementById('installBanner');
+      if(pub) pub.style.display=installed?'none':'flex';
+      if(smart) smart.classList.toggle('hidden',installed||!fpDeferredInstallPrompt);
+      if(banner) banner.style.display=installed?'none':'';
     }
+    async function fpInstall(){
+      if(fpInstalled()){showToast('O FINANCE+ já está instalado.');return}
+      if(!fpDeferredInstallPrompt){fpInstallGuidance();return}
+      const ev=fpDeferredInstallPrompt;fpDeferredInstallPrompt=null;ev.prompt();try{await ev.userChoice}catch(e){}fpRefreshInstallUI()
+    }
+    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();fpDeferredInstallPrompt=e;fpRefreshInstallUI()});
+    window.addEventListener('appinstalled',()=>{fpDeferredInstallPrompt=null;fpRefreshInstallUI();showToast('FINANCE+ instalado com sucesso.')});
+    document.getElementById('fpPublicInstallBtn')?.addEventListener('click',fpInstall);
+    document.getElementById('installAppBtn')?.addEventListener('click',fpInstall);
+    document.getElementById('installBtn')?.addEventListener('click',fpInstall);
+    fpRefreshInstallUI();
 
-    window.addEventListener('beforeinstallprompt', event=>{
-      event.preventDefault();
-      fpDeferredInstallPrompt = event;
-      fpSyncInstallButton();
-    });
-
-    window.addEventListener('appinstalled', ()=>{
-      fpDeferredInstallPrompt = null;
-      fpSyncInstallButton();
-      if(typeof showToast==='function') showToast('FINANCE+ instalado com sucesso.');
-    });
-
-    document.getElementById('installAppBtn')?.addEventListener('click', async ()=>{
-      if(fpIsStandalone()){
-        fpSyncInstallButton();
-        return;
-      }
-      if(!fpDeferredInstallPrompt){
-        if(typeof showToast==='function') showToast('A instalação ainda não está disponível neste navegador.');
-        return;
-      }
-      const promptEvent = fpDeferredInstallPrompt;
-      fpDeferredInstallPrompt = null;
-      promptEvent.prompt();
-      try{ await promptEvent.userChoice; }catch(e){}
-      fpSyncInstallButton();
-    });
-
-    window.matchMedia?.('(display-mode: standalone)')?.addEventListener?.('change', fpSyncInstallButton);
-    fpSyncInstallButton();
+    (function(){
+      const car=document.getElementById('fpIntroCarousel');if(!car)return;
+      const cards=[...car.querySelectorAll('.fp-intro-card')],dots=document.getElementById('fpIntroDots');let index=0,timer;
+      cards.forEach((_,i)=>{const d=document.createElement('i');if(i===0)d.classList.add('active');dots?.appendChild(d)});
+      const ds=[...(dots?.children||[])],paint=()=>ds.forEach((d,i)=>d.classList.toggle('active',i===index));
+      const go=i=>{index=(i+cards.length)%cards.length;car.scrollTo({left:index*car.clientWidth,behavior:'smooth'});paint()};
+      document.getElementById('fpIntroPrev')?.addEventListener('click',()=>go(index-1));
+      document.getElementById('fpIntroNext')?.addEventListener('click',()=>go(index+1));
+      car.addEventListener('scroll',()=>{const i=Math.round(car.scrollLeft/(car.clientWidth||1));if(i>=0&&i<cards.length){index=i;paint()}},{passive:true});
+      const auto=()=>{clearInterval(timer);timer=setInterval(()=>go(index+1),4500)};car.addEventListener('pointerdown',()=>clearInterval(timer),{passive:true});car.addEventListener('pointerup',auto,{passive:true});auto();
+    })();
 
     // FINANCE+ V2.7 — Offline
     document.getElementById('fpSyncNowBtn')?.addEventListener('click',()=>navigator.onLine?fpSync():showToast('Sem internet. Seus lançamentos pendentes estão salvos neste aparelho.'));

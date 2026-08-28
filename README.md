@@ -1,25 +1,15 @@
-# FINANCE+ V2.7.1 — Correção do botão Instalar aplicativo
+# FINANCE+ V2.8
 
-## Correção
-- Restaurado o botão inteligente “Instalar aplicativo”.
-- O botão só aparece quando o navegador realmente disponibiliza a instalação PWA.
-- Depois que o FINANCE+ já está instalado, o botão some automaticamente.
-- Em celular, o botão fica compacto para não ocupar espaço do cabeçalho.
-- Mantido o modo offline da V2.7.
-- Mantido o Dashboard inteligente.
-- Mantida a barra inferior com 8 itens.
+Correções:
+- Ao acessar sem login, a área pública mostra Login/Cadastro e um carrossel de apresentação.
+- O conteúdo interno continua oculto até autenticação.
+- Adicionado crédito: @AB_tvrs • Tavaresgamertech.
+- Botão Instalar aplicativo permanece visível na tela pública enquanto o app não estiver instalado.
+- Se o navegador liberar o prompt PWA, abre a instalação.
+- Se não liberar, orienta o procedimento correto no Android, iPhone/iPad ou computador.
+- Preservados Dashboard, modo offline, Supabase e menu inferior.
 
-## Importante
-No Chrome/Edge, o evento de instalação normalmente só aparece quando:
-- o site está em HTTPS;
-- o manifest está válido;
-- o Service Worker está ativo;
-- o app ainda não está instalado.
+SQL: nenhum.
 
-No iPhone/iPad, o Safari não oferece o mesmo `beforeinstallprompt`; a instalação é feita por Compartilhar → Adicionar à Tela de Início.
-
-## SQL
-Nenhum SQL novo.
-
-## Commit changes
-FINANCE+ V2.7.1 - restaurar botao inteligente de instalar aplicativo
+Commit changes:
+FINANCE+ V2.8 - criar tela publica com carrossel e corrigir instalacao
