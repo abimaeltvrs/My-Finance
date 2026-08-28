@@ -1,4 +1,4 @@
-const CACHE = 'finance-plus-v2-5-1-icons-modes';
+const CACHE = 'finance-plus-v2-5-3-remove-header-menu';
 const STATIC_ASSETS = ['./manifest.json','./favicon.ico','./icons/icon.svg','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install', event => {

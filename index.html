@@ -1029,14 +1029,14 @@
     .topbar .brand>span:last-child{font-size:28px!important;font-weight:900!important}
     .topbar .tagline{font-size:13px!important;color:#9aa7a4!important}
     .topbar>div:last-child{display:flex!important;gap:9px!important;align-items:center!important}
-    #headerNotifyBtn,#openMainMenuBtn{
+    #headerNotifyBtn{
       width:48px!important;height:48px!important;
       min-width:48px!important;padding:0!important;
       border-radius:50%!important;
       background:#0b1614!important;
       border:1px solid #1c2a27!important;
     }
-    #openMainMenuBtn .menu-text{display:none!important}
+    
     #logoutBtn{display:none!important}
     .card{
       background:linear-gradient(180deg,#0f1a18,#0b1513)!important;
@@ -1338,7 +1338,7 @@
       .topbar .tagline{font-size:12px!important}
       .fp-brand-mark{width:48px!important;height:48px!important}
       .topbar .brand>span:last-child{font-size:23px!important}
-      #headerNotifyBtn,#openMainMenuBtn{
+      #headerNotifyBtn{
         width:44px!important;height:44px!important;min-width:44px!important;
       }
 
@@ -1680,6 +1680,25 @@
   .mode-choice-grid{grid-template-columns:1fr!important}
 }
 
+
+    /* FINANCE+ V2.5.2 — revisão de interações */
+    button:not(:disabled){cursor:pointer}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .dashboard-card,.dashboard-list-row,.invoice-row.clickable{cursor:pointer}
+    #bottomNav button:focus-visible,
+    .btn:focus-visible,
+    .menu-card:focus-visible,
+    .mode-card:focus-visible{
+      outline:2px solid #12DB89!important;
+      outline-offset:2px!important;
+    }
+    #bottomNav button:active,
+    .btn:active,
+    .menu-card:active,
+    .mode-card:active{
+      transform:scale(.97);
+    }
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -1853,7 +1872,6 @@
       </div>
       <div class="top-actions">
         <button id="headerNotifyBtn" class="btn icon-btn" type="button" aria-label="Notificações"><span class="ui-icon" data-icon="bell"></span></button>
-          <button id="openMainMenuBtn" class="btn" type="button">☰ Menu</button>
           <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
       </div>
     </header>
@@ -1938,9 +1956,9 @@
         <div class="label">Acesso rápido às principais áreas do FINANCE+.</div>
         <div class="menu-grid" style="margin-top:14px">
           <button class="menu-card" data-menu-view="home"><strong><span class="ui-icon" data-icon="home"></span>Dashboard</strong><span>Resumo financeiro e indicadores</span></button>
-          <button class="menu-card" data-menu-view="bills"><strong><span class="ui-icon" data-icon="bills"></span>Contas</strong><span>Contas únicas e recorrentes</span></button>
+          <button class="menu-card" data-menu-view="accounts"><strong><span class="ui-icon" data-icon="bills"></span>Contas</strong><span>Contas únicas e recorrentes</span></button>
           <button class="menu-card" data-menu-view="cards"><strong><span class="ui-icon" data-icon="cards"></span>Cartões</strong><span id="menuCardsDescription">Compras, parcelas e faturas</span></button>
-          <button class="menu-card" data-menu-view="incomes"><strong><span class="ui-icon" data-icon="income"></span>Receitas</strong><span>Entradas e rendimentos</span></button>
+          <button class="menu-card" data-menu-view="income"><strong><span class="ui-icon" data-icon="income"></span>Receitas</strong><span>Entradas e rendimentos</span></button>
           <button class="menu-card" data-menu-view="calendar"><strong><span class="ui-icon" data-icon="calendar"></span>Calendário</strong><span>Movimentações por data</span></button>
           <button class="menu-card" data-menu-view="reports"><strong><span class="ui-icon" data-icon="reports"></span>Relatórios</strong><span>Mensal, anual e PDF</span></button>
           <button class="menu-card" data-menu-view="profile"><strong><span class="ui-icon" data-icon="user"></span>Perfil</strong><span>Dados da conta e sair</span></button>
@@ -3529,6 +3547,9 @@
 
 
     function showView(view){
+      if(view==='bills') view='accounts';
+      if(view==='incomes') view='income';
+
       try{ setBottomNavActive(view); }catch(e){}
       syncSidebarActive(view);
       const home = document.getElementById('homeContent');
@@ -3696,10 +3717,10 @@
     }
 
 
-    function initBottomNavV242(){
+    function initBottomNavV252(){
       const nav=document.getElementById('bottomNav');
-      if(!nav || nav.dataset.ready==='1') return;
-      nav.dataset.ready='1';
+      if(!nav || nav.dataset.ready==='252') return;
+      nav.dataset.ready='252';
 
       nav.querySelectorAll('[data-icon]').forEach(el=>{
         const svg=ICONS[el.dataset.icon];
@@ -3708,7 +3729,9 @@
 
       nav.querySelectorAll('[data-bottom-view]').forEach(btn=>{
         btn.addEventListener('click',()=>{
-          showView(btn.dataset.bottomView);
+          const view=btn.dataset.bottomView;
+          if(!view) return;
+          showView(view);
         });
       });
     }
@@ -4716,38 +4739,11 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
       currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1);
       await loadCardsData(); await loadMonthData();
     });
-
-
-
-
-
-
-    document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasicInvoiceModal);
-    document.getElementById('closeBasicInvoiceModal')?.addEventListener('click',closeBasicInvoiceModal);
-    document.getElementById('basicInvoiceForm')?.addEventListener('submit',saveBasicInvoice);
-    document.getElementById('basicInvoiceCard')?.addEventListener('change',updateBasicInvoiceDueDate);
-    document.getElementById('basicInvoiceMonth')?.addEventListener('change',updateBasicInvoiceDueDate);
-    document.getElementById('appModeSettingsBtn')?.addEventListener('click',()=>showView('settings'));
-
-    document.getElementById('headerNotifyBtn')?.addEventListener('click',()=>showToast('Nenhuma nova notificação.'));
-    document.getElementById('openMainMenuBtn')?.addEventListener('click',()=>showView('menu'));
-    document.querySelectorAll('[data-menu-view]').forEach(btn=>{
+document.getElementById('basicInvoiceForm')?.addEventListener('submit',saveBasicInvoice);
+document.querySelectorAll('[data-menu-view]').forEach(btn=>{
       btn.addEventListener('click',()=>showView(btn.dataset.menuView));
     });
-    document.getElementById('profileLogoutBtn')?.addEventListener('click',async()=>{
-      await supabaseClient.auth.signOut();
-    });
-    document.getElementById('modeBasicBtn')?.addEventListener('click',()=>setAppMode('basic'));
-    document.getElementById('modeAdvancedBtn')?.addEventListener('click',()=>setAppMode('advanced'));
-    document.getElementById('resetAllBtn')?.addEventListener('click',resetAllFinancialData);
-    document.getElementById('resetPeriodBtn')?.addEventListener('click',resetFinancialPeriod);
-    document.getElementById('downloadReportPdfBtn')?.addEventListener('click',downloadReportPDF);
-    document.getElementById('dashCardIncome')?.addEventListener('click',()=>showView('incomes'));
-    document.getElementById('dashCardCards')?.addEventListener('click',()=>showView('cards'));
-    document.getElementById('dashCardBalance')?.addEventListener('click',()=>showView('reports'));
-    document.getElementById('dashOpenCalendarBtn')?.addEventListener('click',()=>showView('calendar'));
-
-    document.getElementById('reportMonthlyBtn').addEventListener('click',async()=>{
+document.getElementById('reportMonthlyBtn').addEventListener('click',async()=>{
       reportMode='monthly';
       document.getElementById('reportMonthlyBtn').classList.add('active');
       document.getElementById('reportAnnualBtn').classList.remove('active');
@@ -5039,6 +5035,42 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
       window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js'));
     }
   
+
+    // FINANCE+ V2.5.2 — eventos canônicos revisados
+    document.getElementById('headerNotifyBtn')?.addEventListener('click',()=>{
+      const unread=document.querySelectorAll('.notification-item:not(.read)').length;
+      showToast(unread ? `${unread} notificação(ões) pendente(s).` : 'Nenhuma nova notificação.');
+    });
+document.querySelectorAll('[data-menu-view]').forEach(btn=>{
+      if(btn.dataset.eventsReady==='1') return;
+      btn.dataset.eventsReady='1';
+      btn.addEventListener('click',()=>showView(btn.dataset.menuView));
+    });
+
+    document.getElementById('profileLogoutBtn')?.addEventListener('click',async()=>{
+      await supabaseClient.auth.signOut();
+    });
+
+    document.getElementById('modeBasicBtn')?.addEventListener('click',()=>setAppMode('basic'));
+    document.getElementById('modeAdvancedBtn')?.addEventListener('click',()=>setAppMode('advanced'));
+
+    document.getElementById('resetAllBtn')?.addEventListener('click',resetAllFinancialData);
+    document.getElementById('resetPeriodBtn')?.addEventListener('click',resetFinancialPeriod);
+
+    document.getElementById('downloadReportPdfBtn')?.addEventListener('click',downloadReportPDF);
+
+    document.getElementById('dashCardIncome')?.addEventListener('click',()=>showView('income'));
+    document.getElementById('dashCardCards')?.addEventListener('click',()=>showView('cards'));
+    document.getElementById('dashCardBalance')?.addEventListener('click',()=>showView('reports'));
+    document.getElementById('dashOpenCalendarBtn')?.addEventListener('click',()=>showView('calendar'));
+
+    document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasicInvoiceModal);
+    document.getElementById('closeBasicInvoiceModal')?.addEventListener('click',closeBasicInvoiceModal);
+    document.getElementById('basicInvoiceForm')?.addEventListener('submit',saveBasicInvoice);
+    document.getElementById('basicInvoiceCard')?.addEventListener('change',updateBasicInvoiceDueDate);
+    document.getElementById('basicInvoiceMonth')?.addEventListener('change',updateBasicInvoiceDueDate);
+    document.getElementById('appModeSettingsBtn')?.addEventListener('click',()=>showView('settings'));
+
     // FINANCE+ V2.2 visual bootstrap
     if(!window.__financeV22VisualReady){
       window.__financeV22VisualReady=true;
@@ -5046,7 +5078,7 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
       try{ applyV21VisualIdentity(); }catch(e){ console.warn(e); }
       try{ applyAppMode(); syncModeButtonsV251(); }catch(e){ console.warn(e); }
       try{ syncSidebarActive('home'); }catch(e){ console.warn(e); }
-      try{ initBottomNavV242(); setBottomNavActive('home'); }catch(e){ console.warn(e); }
+      try{ initBottomNavV252(); setBottomNavActive('home'); }catch(e){ console.warn(e); }
       try{ initFinanceSplash(); }catch(e){ console.warn(e); }
     }
 

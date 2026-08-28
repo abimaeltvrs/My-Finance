@@ -1,0 +1,17 @@
+{
+  "buttons_total": 59,
+  "buttons_with_direct_listener_or_submit_or_delegate": 72,
+  "potentially_uncovered": [],
+  "bottom_menu_items": [
+    "home",
+    "accounts",
+    "cards",
+    "income",
+    "calendar",
+    "reports",
+    "profile",
+    "settings"
+  ],
+  "bottom_menu_count": 8,
+  "bottom_nav_count": 1
+}
