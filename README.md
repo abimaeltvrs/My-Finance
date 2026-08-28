@@ -1,19 +1,18 @@
-# FINANCE+ V1.4.4
+# FINANCE+ V1.5 — Calendário financeiro
 
-Correção reforçada do módulo de cartões.
-
-## Alterações
-- Compras e faturas passam a ser carregadas por intervalo do mês, evitando falhas de comparação do campo `reference_month`.
-- Após salvar uma compra, o app confirma no Supabase se as parcelas realmente permaneceram gravadas.
-- O app recarrega as compras diretamente do banco antes de finalizar o lançamento.
-- Mantido o bloqueio do Realtime durante o salvamento.
-- A fatura inteira continua clicável.
-- Adicionado botão explícito `Ver itens`.
-- Detalhes da fatura também usam consulta por intervalo mensal.
-- Mostra descrição, data, parcela, observação e valor de cada item.
+## Novidades
+- Nova área Calendário.
+- Visualização mensal.
+- Contas a vencer aparecem no dia do vencimento.
+- Receitas aparecem na data do recebimento.
+- Faturas de cartão aparecem na data de vencimento.
+- Legenda por tipo de movimentação.
+- Ao clicar em um dia, abre o detalhamento completo das movimentações daquela data.
+- Navegação entre meses.
+- Atualização integrada ao Realtime.
 
 ## SQL
-Não há SQL novo obrigatório.
+Não há SQL novo obrigatório nesta versão.
 
 ## Commit changes
-FINANCE+ V1.4.4 - estabilizar compras e detalhes das faturas
+FINANCE+ V1.5 - adicionar calendário financeiro
