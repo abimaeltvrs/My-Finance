@@ -1,4 +1,4 @@
-const CACHE = 'finance-plus-v1-6-1';
+const CACHE = 'finance-plus-v1-6-2';
 const STATIC_ASSETS = ['./manifest.json','./icons/icon-192.svg','./icons/icon-512.svg'];
 
 self.addEventListener('install', event => {

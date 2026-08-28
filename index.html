@@ -571,7 +571,7 @@
               <option value="semanal">Semanal</option>
               <option value="anual">Anual</option>
             </select>
-            <div class="label" style="margin-top:6px">A recorrência gera automaticamente os próximos lançamentos e evita duplicidades.</div>
+            <div id="billRecurrenceHint" class="label" style="margin-top:6px">Conta única: será criado apenas este lançamento.</div>
           </div>
           <div class="field">
             <label for="billReminder">Lembrete</label>
@@ -1017,6 +1017,8 @@
     function openBillModal(bill=null){
       const form = document.getElementById('billForm');
       form.reset();
+      document.getElementById('billRecurrence').value='unica';
+      updateBillRecurrenceHint();
       editingBillId = bill?.id || null;
       document.getElementById('billModalTitle').textContent = bill ? 'Editar conta' : 'Nova conta';
       document.getElementById('saveBillBtn').textContent = bill ? 'Salvar alterações' : 'Salvar conta';
@@ -1027,6 +1029,7 @@
         document.getElementById('billAmount').value = Number(bill.amount || 0);
         document.getElementById('billDueDate').value = bill.due_date || '';
         document.getElementById('billRecurrence').value = bill.recurrence || 'unica';
+        updateBillRecurrenceHint();
         document.getElementById('billNotes').value = bill.notes || '';
         document.getElementById('billReminder').value = '1';
       } else {
@@ -1259,7 +1262,9 @@
           <div>
             <div class="bill-title">${escapeHtml(bill.name)}</div>
             <div class="bill-meta">${escapeHtml(bill.category || 'Sem categoria')} • Vence ${formatDateBR(bill.due_date)}</div>
-            <div class="bill-meta">${bill.recurrence && bill.recurrence !== 'unica' ? 'Recorrência: ' + escapeHtml(bill.recurrence) : 'Conta única'}</div>
+            <div class="bill-meta">${bill.recurrence && bill.recurrence !== 'unica'
+  ? `🔁 ${bill.recurrence==='mensal'?'Mensal':bill.recurrence==='semanal'?'Semanal':'Anual'}`
+  : 'Conta única'}</div>
             ${paymentInfo}
           </div>
           <div style="text-align:right">
@@ -1642,6 +1647,20 @@
       if(result.error) throw result.error;
     }
 
+
+    function updateBillRecurrenceHint(){
+      const value=document.getElementById('billRecurrence').value;
+      const hint=document.getElementById('billRecurrenceHint');
+      const messages={
+        unica:'Conta única: será criado apenas este lançamento.',
+        mensal:'Mensal: o sistema criará automaticamente os próximos 12 meses.',
+        semanal:'Semanal: o sistema criará automaticamente as próximas 52 semanas.',
+        anual:'Anual: o sistema criará automaticamente os próximos 5 anos.'
+      };
+      hint.textContent=messages[value]||messages.unica;
+    }
+    document.getElementById('billRecurrence').addEventListener('change',updateBillRecurrenceHint);
+
     document.getElementById('billForm').addEventListener('submit', async e=>{
       e.preventDefault();
       if(!currentUser) return;
@@ -1717,18 +1736,6 @@
 
       const wasEditing = !!editingBillId;
       const savedBill = data;
-
-      if(savedBill.recurrence && savedBill.recurrence!=='unica'){
-        try{
-          if(wasEditing){
-            await updateFutureRecurringBills(savedBill);
-          }
-          await generateRecurringBills(savedBill);
-        }catch(recErr){
-          console.error('Erro na recorrência:',recErr);
-          showToast(`Conta salva, mas houve erro ao gerar recorrência: ${recErr.message}`);
-        }
-      }
 
       const [y,m] = payload.due_date.split('-').map(Number);
       const targetMonth = new Date(y, m-1, 1);
