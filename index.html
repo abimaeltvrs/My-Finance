@@ -1849,6 +1849,29 @@
 .fp-developer-credit{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;color:#718079;font-size:10px}.fp-developer-credit strong{color:#afbeb8}
 @media(max-width:560px){.fp-intro-carousel-wrap{grid-template-columns:27px minmax(0,1fr) 27px;gap:4px}.fp-carousel-arrow{width:27px;height:27px;font-size:20px}.fp-intro-card{min-height:132px;padding:16px 13px}}
 
+
+/* FINANCE+ V2.8.1 — cartões */
+.credit-card-item{cursor:pointer;position:relative;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.credit-card-item:hover{transform:translateY(-2px);border-color:#2f6a51;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.credit-card-item:focus-visible{outline:2px solid #32d58b;outline-offset:2px}
+.fp-card-open-hint{margin-top:10px;font-size:10px;color:#6f8279;font-weight:700}
+.fp-card-profile-modal{max-width:620px}
+.fp-card-profile-visual{min-height:150px;border:1px solid #2c4036;border-radius:20px;padding:22px;background:linear-gradient(145deg,#18231e,#0b110e);display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.fp-card-profile-visual h3{font-size:24px;margin:4px 0 5px}
+.fp-card-chip{font-size:30px;color:#b7c6c0}
+.fp-card-profile-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:14px}
+.fp-card-profile-grid .card{padding:14px}
+.fp-card-profile-grid strong{display:block;margin-top:5px;font-size:15px}
+.fp-card-profile-info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.fp-card-profile-info>div{border:1px solid #26352f;background:#101714;border-radius:13px;padding:12px}
+.fp-card-profile-info span{display:block;color:#899990;font-size:10px;margin-bottom:4px}
+.fp-card-profile-info strong{font-size:12px}
+.fp-card-profile-section{margin-top:8px}
+@media(max-width:560px){
+  .fp-card-profile-grid,.fp-card-profile-info{grid-template-columns:1fr}
+  .fp-card-profile-visual{min-height:125px;padding:18px}
+}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -2401,7 +2424,7 @@
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="newCardBtn" class="btn" type="button">+ Cartão</button>
             <button id="basicNewInvoiceBtn" class="btn primary basic-only" type="button">+ Fatura mensal</button>
-          <button id="newPurchaseBtn" class="advanced-only" class="btn btn-primary" type="button">+ Compra</button>
+          <button id="newPurchaseBtn" class="btn btn-primary advanced-only" type="button">+ Compra</button>
           </div>
         </div>
       </section>
@@ -2626,7 +2649,7 @@
   <div id="cardModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <section class="modal">
       <div class="modal-header">
-        <div><h2>Novo cartão</h2><div class="label">Cadastre os dados básicos do cartão.</div></div>
+        <div><h2 id="cardModalTitle">Novo cartão</h2><div id="cardModalSubtitle" class="label">Cadastre os dados básicos do cartão.</div></div>
         <button id="closeCardModal" class="btn" type="button">Fechar</button>
       </div>
       <form id="cardForm">
@@ -2641,9 +2664,54 @@
         </div>
         <div class="modal-actions">
           <button id="cancelCardBtn" class="btn" type="button">Cancelar</button>
-          <button class="btn btn-primary" type="submit">Salvar cartão</button>
+          <button id="saveCardBtn" class="btn btn-primary" type="submit">Salvar cartão</button>
         </div>
       </form>
+    </section>
+  </div>
+
+
+  <div id="cardProfileModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="cardProfileTitle">
+    <section class="modal fp-card-profile-modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="cardProfileTitle">Perfil do cartão</h2>
+          <div id="cardProfileSubtitle" class="label"></div>
+        </div>
+        <button id="closeCardProfileBtn" class="btn" type="button">Fechar</button>
+      </div>
+
+      <div id="cardProfileVisual" class="fp-card-profile-visual">
+        <div>
+          <span class="label">Cartão</span>
+          <h3 id="cardProfileName">—</h3>
+          <div id="cardProfileBrand" class="label">—</div>
+        </div>
+        <div class="fp-card-chip">▦</div>
+      </div>
+
+      <div class="grid summary-grid fp-card-profile-grid">
+        <article class="card"><div class="label">Limite</div><strong id="cardProfileLimit">R$ 0,00</strong></article>
+        <article class="card"><div class="label">Utilizado</div><strong id="cardProfileUsed">R$ 0,00</strong></article>
+        <article class="card"><div class="label">Disponível</div><strong id="cardProfileAvailable">R$ 0,00</strong></article>
+      </div>
+
+      <div class="fp-card-profile-info">
+        <div><span>Fechamento</span><strong id="cardProfileClosing">—</strong></div>
+        <div><span>Vencimento</span><strong id="cardProfileDue">—</strong></div>
+        <div><span>Faturas em aberto</span><strong id="cardProfileInvoices">0</strong></div>
+      </div>
+
+      <div class="fp-card-profile-section">
+        <div class="section-title"><h3>Últimos lançamentos</h3></div>
+        <div id="cardProfileTransactions" class="invoice-list">
+          <div class="cards-empty">Nenhum lançamento encontrado.</div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="editCardFromProfileBtn" class="btn btn-primary" type="button">Editar cartão</button>
+      </div>
     </section>
   </div>
 
@@ -2828,6 +2896,8 @@
     let currentInvoices = [];
     let allOpenInvoices = [];
     let selectedInvoice = null;
+    let selectedCardProfile = null;
+    let editingCardId = null;
     let isSavingPurchase = false;
 
     const authView = document.getElementById('authView');
@@ -3564,7 +3634,7 @@
       applyDashboardFilter();
     });
 
-    document.getElementById('newBillBtn').addEventListener('click', openBillModal);
+    document.getElementById('newBillBtn')?.addEventListener('click',()=>openBillModal());
     document.getElementById('refreshBillsBtn').addEventListener('click', async ()=>{ await loadMonthData(); showToast('Sincronizado com o servidor.'); });
     document.getElementById('closeBillModal').addEventListener('click', closeBillModal);
     document.getElementById('cancelBillBtn').addEventListener('click', closeBillModal);
@@ -4938,13 +5008,78 @@ function syncModeButtonsV251(){
       scheduleServerRefresh();
     }
 
-    function openCardModal(){
-      document.getElementById('cardForm').reset();
-      document.getElementById('cardClosingDay').value = 5;
-      document.getElementById('cardDueDay').value = 12;
+    function openCardModal(card=null){
+      const form=document.getElementById('cardForm');
+      form.reset();
+      editingCardId=card?.id||null;
+
+      document.getElementById('cardModalTitle').textContent=card?'Editar cartão':'Novo cartão';
+      document.getElementById('cardModalSubtitle').textContent=card?'Atualize os dados do cartão cadastrado.':'Cadastre os dados básicos do cartão.';
+      document.getElementById('saveCardBtn').textContent=card?'Salvar alterações':'Salvar cartão';
+
+      if(card){
+        document.getElementById('cardName').value=card.name||'';
+        document.getElementById('cardBrand').value=card.brand||'Mastercard';
+        document.getElementById('cardLimit').value=Number(card.credit_limit||0);
+        document.getElementById('cardClosingDay').value=Number(card.closing_day||5);
+        document.getElementById('cardDueDay').value=Number(card.due_day||12);
+      }else{
+        document.getElementById('cardClosingDay').value=5;
+        document.getElementById('cardDueDay').value=12;
+      }
       document.getElementById('cardModal').classList.remove('hidden');
+      setTimeout(()=>document.getElementById('cardName')?.focus(),50);
     }
-    function closeCardModal(){ document.getElementById('cardModal').classList.add('hidden'); }
+
+    function closeCardModal(){
+      editingCardId=null;
+      document.getElementById('cardModal').classList.add('hidden');
+    }
+
+    function openCardProfile(card){
+      if(!card)return;
+      selectedCardProfile=card;
+      const openForCard=allOpenInvoices.filter(x=>x.card_id===card.id && x.status!=='pago' && x.status!=='cancelado');
+      const used=openForCard.reduce((s,x)=>s+Number(x.amount||0),0);
+      const limit=Number(card.credit_limit||0);
+      const available=Math.max(0,limit-used);
+
+      document.getElementById('cardProfileTitle').textContent=`Perfil • ${card.name||'Cartão'}`;
+      document.getElementById('cardProfileSubtitle').textContent=`${card.brand||'Cartão'} • dados e movimentações`;
+      document.getElementById('cardProfileName').textContent=card.name||'Cartão';
+      document.getElementById('cardProfileBrand').textContent=card.brand||'Cartão';
+      document.getElementById('cardProfileLimit').textContent=brl.format(limit);
+      document.getElementById('cardProfileUsed').textContent=brl.format(used);
+      document.getElementById('cardProfileAvailable').textContent=brl.format(available);
+      document.getElementById('cardProfileClosing').textContent=card.closing_day?`Dia ${card.closing_day}`:'—';
+      document.getElementById('cardProfileDue').textContent=card.due_day?`Dia ${card.due_day}`:'—';
+      document.getElementById('cardProfileInvoices').textContent=String(openForCard.length);
+
+      const list=document.getElementById('cardProfileTransactions');
+      const tx=currentCardTransactions
+        .filter(x=>x.card_id===card.id)
+        .sort((a,b)=>String(b.purchase_date||'').localeCompare(String(a.purchase_date||'')))
+        .slice(0,6);
+
+      if(!tx.length){
+        list.innerHTML='<div class="cards-empty">Nenhum lançamento encontrado para este cartão.</div>';
+      }else{
+        list.innerHTML=tx.map(x=>`
+          <div class="purchase-row">
+            <div>
+              <strong>${escapeHtml(x.description||'Compra')}</strong>
+              <div class="label">${x.purchase_date?formatDateBR(x.purchase_date):'—'}${Number(x.installments_total||1)>1?` • ${x.installment_number}/${x.installments_total}`:''}</div>
+            </div>
+            <strong>${brl.format(Number(x.amount||0))}</strong>
+          </div>`).join('');
+      }
+      document.getElementById('cardProfileModal').classList.remove('hidden');
+    }
+
+    function closeCardProfile(){
+      document.getElementById('cardProfileModal').classList.add('hidden');
+      selectedCardProfile=null;
+    }
 
     function openPurchaseModal(){
       if(!currentCards.length){
@@ -5054,7 +5189,13 @@ function syncModeButtonsV251(){
           <div class="card-numbers">
             <div class="card-number-box"><div class="label">Limite</div><strong>${brl.format(limit)}</strong></div>
             <div class="card-number-box"><div class="label">Disponível</div><strong>${brl.format(available)}</strong></div>
-          </div>`;
+          </div>
+          <div class="fp-card-open-hint">Toque para ver o perfil do cartão</div>`;
+        row.tabIndex=0;
+        row.setAttribute('role','button');
+        row.setAttribute('aria-label',`Abrir perfil do cartão ${card.name||''}`);
+        row.addEventListener('click',()=>openCardProfile(card));
+        row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openCardProfile(card)}});
         el.appendChild(row);
       });
       document.getElementById('cardsCount').textContent=String(currentCards.length);
@@ -5216,8 +5357,16 @@ document.getElementById('navAccounts').addEventListener('click',()=>showView('ac
 document.getElementById('quickNewBill')?.addEventListener('click',openBillModal);
     document.getElementById('quickNewCard')?.addEventListener('click',()=>{showView('cards');openCardModal();});
     document.getElementById('quickNewIncome')?.addEventListener('click',()=>{showView('income');openIncomeModal();});
-    document.getElementById('newCardBtn').addEventListener('click',openCardModal);
+    document.getElementById('newCardBtn')?.addEventListener('click',()=>openCardModal());
     document.getElementById('newPurchaseBtn').addEventListener('click',openPurchaseModal);
+
+    document.getElementById('closeCardProfileBtn')?.addEventListener('click',closeCardProfile);
+    document.getElementById('editCardFromProfileBtn')?.addEventListener('click',()=>{
+      const card=selectedCardProfile;
+      if(!card)return;
+      document.getElementById('cardProfileModal').classList.add('hidden');
+      openCardModal(card);
+    });
 
     document.getElementById('closeCardModal').addEventListener('click',closeCardModal);
     document.getElementById('cancelCardBtn').addEventListener('click',closeCardModal);
@@ -5404,21 +5553,72 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
 
     document.getElementById('cardForm').addEventListener('submit',async e=>{
       e.preventDefault();
-      const payload={
-        user_id:currentUser.id,
-        name:document.getElementById('cardName').value.trim(),
-        brand:document.getElementById('cardBrand').value,
-        credit_limit:Number(document.getElementById('cardLimit').value),
-        closing_day:Number(document.getElementById('cardClosingDay').value),
-        due_day:Number(document.getElementById('cardDueDay').value)
-      };
-      if(payload.closing_day<1||payload.closing_day>31||payload.due_day<1||payload.due_day>31){
-        showToast('Informe dias entre 1 e 31.'); return;
+      if(!currentUser)return;
+      const saveBtn=document.getElementById('saveCardBtn');
+      saveBtn.disabled=true;
+      const wasEditing=!!editingCardId;
+      saveBtn.textContent=wasEditing?'Salvando alterações...':'Salvando...';
+
+      try{
+        const payload={
+          user_id:currentUser.id,
+          name:document.getElementById('cardName').value.trim(),
+          brand:document.getElementById('cardBrand').value,
+          credit_limit:Number(document.getElementById('cardLimit').value),
+          closing_day:Number(document.getElementById('cardClosingDay').value),
+          due_day:Number(document.getElementById('cardDueDay').value)
+        };
+
+        if(!payload.name || !Number.isFinite(payload.credit_limit) || payload.credit_limit<0){
+          showToast('Preencha corretamente o nome e o limite do cartão.');return;
+        }
+        if(payload.closing_day<1||payload.closing_day>31||payload.due_day<1||payload.due_day>31){
+          showToast('Informe dias entre 1 e 31.');return;
+        }
+
+        if(wasEditing){
+          if(!navigator.onLine){
+            const original=currentCards.find(c=>c.id===editingCardId);
+            const merged={...(original||{}),...payload,id:editingCardId,user_id:currentUser.id};
+            await fpQueuePut({qid:fpUUID(),user_id:currentUser.id,table:'cards',payload:merged,created_at:new Date().toISOString(),attempts:0});
+            const idx=currentCards.findIndex(c=>c.id===editingCardId);
+            if(idx>=0)currentCards[idx]=merged;
+            await fpStatus();
+            closeCardModal();
+            closeCardProfile();
+            renderCards();
+            showToast('Alteração do cartão salva offline. Será sincronizada automaticamente.');
+            return;
+          }
+
+          const res=await supabaseClient.from('cards')
+            .update(payload)
+            .eq('id',editingCardId)
+            .eq('user_id',currentUser.id)
+            .select()
+            .single();
+
+          if(res.error){showToast(`Erro ao editar cartão: ${res.error.message}`);return;}
+          const idx=currentCards.findIndex(c=>c.id===editingCardId);
+          if(idx>=0)currentCards[idx]={...currentCards[idx],...res.data};
+          closeCardModal();
+          closeCardProfile();
+          renderCards();
+          showToast('Cartão atualizado.');
+          await loadCardsData();
+        }else{
+          const res=await fpInsert('cards',payload);
+          if(res.error){showToast(`Erro ao salvar cartão: ${res.error.message}`);return;}
+          if(res.data && !currentCards.some(c=>c.id===res.data.id))currentCards.push(res.data);
+          closeCardModal();
+          renderCards();
+          showToast(res.offline?'Cartão salvo offline. Será sincronizado automaticamente.':'Cartão cadastrado.');
+          if(navigator.onLine)await loadCardsData();
+        }
+      }finally{
+        saveBtn.disabled=false;
+        saveBtn.textContent='Salvar cartão';
       }
-      const res=await fpInsert('cards',payload);
-      if(res.error){showToast(`Erro ao salvar cartão: ${res.error.message}`);return;}
-      closeCardModal(); showToast(res.offline?'Cartão salvo offline. Será sincronizado automaticamente.':'Cartão cadastrado.');
-      await loadCardsData();
     });
 
     document.getElementById('purchaseForm').addEventListener('submit',async e=>{

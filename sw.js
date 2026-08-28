@@ -1,4 +1,4 @@
-const CACHE = 'finance-plus-v2-8-public-carousel-install';
+const CACHE = 'finance-plus-v2-8-1-card-profile-actions';
 const STATIC_ASSETS = ['./manifest.json','./favicon.ico','./icons/icon.svg','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install', event => {
