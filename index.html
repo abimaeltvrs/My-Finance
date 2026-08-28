@@ -310,11 +310,11 @@
             <h2>Contas do mês</h2>
             <div class="month-nav">
               <button id="prevMonthBtn" class="btn" type="button" aria-label="Mês anterior">‹</button>
-              <strong id="currentMonthLabel"></strong>
+              <strong id="currentMonthLabel"></strong><span id="syncStatus" class="label">Sincronizado</span>
               <button id="nextMonthBtn" class="btn" type="button" aria-label="Próximo mês">›</button>
             </div>
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="refreshBillsBtn" class="btn" type="button">Atualizar</button><button id="newBillBtn" class="btn btn-primary" type="button">+ Nova conta</button></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="refreshBillsBtn" class="btn" type="button">Sincronizar</button><button id="newBillBtn" class="btn btn-primary" type="button">+ Nova conta</button></div>
         </div>
         <div id="activeFilterStrip" class="filter-strip hidden">
           <div>Filtro: <span id="activeFilterName" class="filter-name"></span></div>
@@ -569,6 +569,7 @@
       await ensureProfile(data.user);
       enterApp(data.user?.user_metadata?.name || '');
       await loadMonthData();
+      await startRealtime();
     });
 
     registerForm.addEventListener('submit', async e => {
@@ -607,6 +608,7 @@
     });
 
     document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+      await stopRealtime();
       await supabaseClient.auth.signOut();
       currentUser = null;
       appView.classList.add('hidden');
@@ -621,8 +623,10 @@
         await ensureProfile(session.user);
         enterApp(session.user.user_metadata?.name || '');
         await loadMonthData();
+        await startRealtime();
       }
       if (event === 'SIGNED_OUT') {
+        await stopRealtime();
         currentUser = null;
         appView.classList.add('hidden');
         authView.classList.remove('hidden');
@@ -638,7 +642,11 @@
     let editingBillId = null;
     let currentBills = [];
     let currentPaymentByBill = new Map();
+    let currentIncomes = [];
+    let currentMonthPayments = [];
     let activeDashboardFilter = 'all';
+    let realtimeChannel = null;
+    let realtimeReloadTimer = null;
 
     const brl = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
     const monthFmt = new Intl.DateTimeFormat('pt-BR', { month:'long', year:'numeric' });
@@ -732,6 +740,8 @@
 
     async function loadMonthData(){
       if(!currentUser) return;
+      const syncStatus = document.getElementById('syncStatus');
+      if(syncStatus) syncStatus.textContent = 'Sincronizando...';
       document.getElementById('currentMonthLabel').textContent =
         monthFmt.format(currentMonth).replace(/^\w/, c => c.toUpperCase());
 
@@ -747,6 +757,7 @@
 
       if (billsRes.error) {
         list.innerHTML = `<div class="empty-state">Erro ao carregar contas: ${billsRes.error.message}</div>`;
+        if(syncStatus) syncStatus.textContent = 'Erro';
         return;
       }
 
@@ -781,11 +792,80 @@
 
       currentBills = bills;
       currentPaymentByBill = paymentByBill;
-      applyDashboardFilter();
-      renderUpcoming(bills);
-      updateSummary(bills, incomes, payments);
+      currentIncomes = incomes;
+      currentMonthPayments = payments;
+      refreshDashboardFromState();
+      if(syncStatus) syncStatus.textContent = 'Sincronizado';
     }
 
+
+
+    function refreshDashboardFromState(){
+      applyDashboardFilter();
+      renderUpcoming(currentBills);
+      updateSummary(currentBills, currentIncomes, currentMonthPayments);
+    }
+
+    function scheduleServerRefresh(){
+      clearTimeout(realtimeReloadTimer);
+      realtimeReloadTimer = setTimeout(async ()=>{
+        if(currentUser) await loadMonthData();
+      }, 250);
+    }
+
+    async function startRealtime(){
+      if(!currentUser) return;
+      if(realtimeChannel){
+        try{ await supabaseClient.removeChannel(realtimeChannel); }catch(e){}
+      }
+      realtimeChannel = supabaseClient
+        .channel(`finance-plus-${currentUser.id}`)
+        .on('postgres_changes',
+          {event:'*', schema:'public', table:'bills', filter:`user_id=eq.${currentUser.id}`},
+          scheduleServerRefresh)
+        .on('postgres_changes',
+          {event:'*', schema:'public', table:'payments', filter:`user_id=eq.${currentUser.id}`},
+          scheduleServerRefresh)
+        .on('postgres_changes',
+          {event:'*', schema:'public', table:'incomes', filter:`user_id=eq.${currentUser.id}`},
+          scheduleServerRefresh)
+        .subscribe();
+    }
+
+    async function stopRealtime(){
+      clearTimeout(realtimeReloadTimer);
+      if(realtimeChannel){
+        try{ await supabaseClient.removeChannel(realtimeChannel); }catch(e){}
+        realtimeChannel = null;
+      }
+    }
+
+    function upsertLocalBill(bill){
+      const i = currentBills.findIndex(x => x.id === bill.id);
+      if(i >= 0) currentBills[i] = {...currentBills[i], ...bill};
+      else currentBills.push(bill);
+      currentBills.sort((a,b)=>String(a.due_date).localeCompare(String(b.due_date)));
+    }
+
+    function removeLocalBill(id){
+      currentBills = currentBills.filter(x => x.id !== id);
+      currentPaymentByBill.delete(id);
+      currentMonthPayments = currentMonthPayments.filter(x => x.bill_id !== id);
+    }
+
+    function upsertLocalPayment(payment){
+      if(!payment) return;
+      currentPaymentByBill.set(payment.bill_id, payment);
+      currentMonthPayments = currentMonthPayments.filter(x => x.bill_id !== payment.bill_id && x.id !== payment.id);
+      const {start,end} = monthBounds(currentMonth);
+      const d = String(payment.paid_at || '').slice(0,10);
+      if(d >= start && d <= end) currentMonthPayments.push(payment);
+    }
+
+    function removeLocalPayment(paymentId, billId){
+      currentPaymentByBill.delete(billId);
+      currentMonthPayments = currentMonthPayments.filter(x => x.id !== paymentId && x.bill_id !== billId);
+    }
 
     function filterLabel(filter){
       return {
@@ -1027,8 +1107,12 @@
         return;
       }
 
+      removeLocalPayment(paymentId, bill.id);
+      const i = currentBills.findIndex(x => x.id === bill.id);
+      if(i >= 0) currentBills[i] = {...currentBills[i], status:newStatus};
+      refreshDashboardFromState();
       showToast('Pagamento desfeito com sucesso.');
-      await loadMonthData();
+      scheduleServerRefresh();
     }
 
     async function deleteBill(bill){
@@ -1074,8 +1158,10 @@
         return;
       }
 
+      removeLocalBill(bill.id);
+      refreshDashboardFromState();
       showToast('Lançamento excluído com sucesso.');
-      await loadMonthData();
+      scheduleServerRefresh();
     }
 
     function bindFilterCard(id, filter){
@@ -1100,7 +1186,7 @@
     });
 
     document.getElementById('newBillBtn').addEventListener('click', openBillModal);
-    document.getElementById('refreshBillsBtn').addEventListener('click', async ()=>{ await loadMonthData(); showToast('Dashboard atualizado.'); });
+    document.getElementById('refreshBillsBtn').addEventListener('click', async ()=>{ await loadMonthData(); showToast('Sincronizado com o servidor.'); });
     document.getElementById('closeBillModal').addEventListener('click', closeBillModal);
     document.getElementById('cancelBillBtn').addEventListener('click', closeBillModal);
     document.getElementById('closePaymentModal').addEventListener('click', closePaymentModal);
@@ -1191,12 +1277,22 @@
       if(error){ showToast(`Erro ao salvar: ${error.message}`); return; }
 
       const wasEditing = !!editingBillId;
+      const savedBill = data;
+      const [y,m] = payload.due_date.split('-').map(Number);
+      const targetMonth = new Date(y, m-1, 1);
+
       closeBillModal();
       showToast(wasEditing ? 'Lançamento atualizado.' : 'Conta cadastrada com sucesso.');
-      const [y,m] = payload.due_date.split('-').map(Number);
-      currentMonth = new Date(y, m-1, 1);
-      await loadMonthData();
-      setTimeout(() => loadMonthData(), 400);
+
+      if(targetMonth.getFullYear() === currentMonth.getFullYear() &&
+         targetMonth.getMonth() === currentMonth.getMonth()){
+        upsertLocalBill(savedBill);
+        refreshDashboardFromState();
+      }else{
+        currentMonth = targetMonth;
+        await loadMonthData();
+      }
+      scheduleServerRefresh();
     });
 
     document.getElementById('paymentForm').addEventListener('submit', async e=>{
@@ -1223,8 +1319,11 @@
             payment_method: method,
             notes
           })
-          .eq('id', editingPaymentId);
+          .eq('id', editingPaymentId)
+          .select()
+          .single();
         payError = result.error;
+        if(!result.error) window.__savedPayment = result.data;
       } else {
         const result = await supabaseClient.from('payments').insert({
           user_id: currentUser.id,
@@ -1233,8 +1332,9 @@
           paid_at: paidDate + 'T12:00:00',
           payment_method: method,
           notes
-        });
+        }).select().single();
         payError = result.error;
+        if(!result.error) window.__savedPayment = result.data;
       }
 
       if(payError){ showToast(`Erro ao registrar pagamento: ${payError.message}`); return; }
@@ -1246,9 +1346,19 @@
       if(billError){ showToast(`Pagamento salvo, mas houve erro ao atualizar a conta: ${billError.message}`); return; }
 
       const wasEditing = !!editingPaymentId;
+      const billId = selectedPaymentBill.id;
+      const savedPayment = window.__savedPayment;
+      delete window.__savedPayment;
+
       closePaymentModal();
+
+      if(savedPayment) upsertLocalPayment(savedPayment);
+      const i = currentBills.findIndex(x => x.id === billId);
+      if(i >= 0) currentBills[i] = {...currentBills[i], status:'pago'};
+
+      refreshDashboardFromState();
       showToast(wasEditing ? 'Pagamento atualizado.' : 'Pagamento registrado.');
-      await loadMonthData();
+      scheduleServerRefresh();
     });
 
         let deferredPrompt = null;

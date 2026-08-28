@@ -1,21 +1,15 @@
-# FINANCE+ V1.2.5
+# FINANCE+ V1.2.6
 
-Atualização instantânea do Dashboard.
+Correção de atualização dos dados.
 
-## Correção principal
-As ações não dependem mais de recarregar toda a página depois de cada alteração.
+- Atualização local instantânea após cadastrar, editar, pagar, desfazer e excluir.
+- Conferência automática com o Supabase logo após a ação.
+- Supabase Realtime para mudanças feitas em outra aba/dispositivo.
+- Indicador de sincronização.
+- Cache da página reduzido para evitar versão antiga presa no navegador/PWA.
 
-Agora a interface atualiza imediatamente após:
-- Cadastrar conta
-- Editar conta
-- Marcar como pago
-- Editar pagamento
-- Desfazer pagamento
-- Excluir lançamento
-
-Os dados continuam sendo gravados no Supabase, mas o Dashboard usa o resultado da operação para atualizar a tela na mesma hora.
-
-O botão "Atualizar" foi renomeado para "Sincronizar" e serve apenas para forçar uma releitura do servidor quando desejado.
+## Passo obrigatório no Supabase
+Execute uma vez `SUPABASE_REALTIME_V1.2.6.sql` no SQL Editor.
 
 ## Commit changes
-FINANCE+ V1.2.5 - atualização instantânea do dashboard
+FINANCE+ V1.2.6 - corrigir sincronização em tempo real
