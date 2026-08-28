@@ -1,20 +1,18 @@
-# FINANCE+ V1.3 — Cartões e Faturas
+# FINANCE+ V1.3.1
 
-## Novidades
-- Área própria de Cartões.
-- Cadastro de cartão: nome, bandeira, limite, fechamento e vencimento.
-- Cadastro de compras.
-- Parcelamento de 1x a 48x.
-- Parcelas distribuídas automaticamente pelas próximas faturas.
-- Fatura mensal calculada por cartão.
-- Limite utilizado e disponível.
-- Pagamento de fatura com data, valor e forma de pagamento.
-- Faturas pendentes entram no "A pagar" do Dashboard.
-- Faturas pagas entram nas despesas pagas pelo registro em `payments`.
-- Integração com Supabase Realtime.
+Correção para salvar compras no cartão.
+
+## Alterações
+- Validação reforçada dos campos da compra.
+- Insert agora confirma no Supabase com `.select()`.
+- Erro real do Supabase aparece na tela.
+- Compra é salva primeiro; recalcular fatura acontece depois.
+- Parcelamento em centavos evita diferença de arredondamento.
+- Verificação automática da tabela `card_transactions`.
+- SQL de correção incluído.
 
 ## Passo obrigatório
-Execute `SUPABASE_CARTOES_V1.3.sql` uma única vez no Supabase > SQL Editor antes de testar a nova área.
+Execute `SUPABASE_CORRECAO_COMPRAS_V1.3.1.sql` no Supabase > SQL Editor.
 
 ## Commit changes
-FINANCE+ V1.3 - cartões compras parceladas e faturas
+FINANCE+ V1.3.1 - corrigir salvamento de compras no cartão
