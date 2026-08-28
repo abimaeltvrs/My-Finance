@@ -264,7 +264,39 @@
     .report-tabs{display:flex;gap:8px;flex-wrap:wrap}
     .report-tabs .active{border-color:rgba(0,196,140,.6)}
     @media(max-width:800px){.report-summary{grid-template-columns:repeat(2,1fr)}.report-bar-row{grid-template-columns:1fr}.report-table{font-size:12px}}
-    </style>
+    
+    .top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .menu-card{border:1px solid var(--border);background:var(--surface);border-radius:14px;padding:14px;text-align:left;cursor:pointer;transition:.18s ease}
+    .menu-card:hover{transform:translateY(-1px);border-color:rgba(0,196,140,.45)}
+    .menu-card strong{display:block;margin-bottom:4px}
+    .menu-card span{font-size:12px;color:var(--muted)}
+    .dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .dashboard-card{cursor:pointer;transition:.18s ease}
+    .dashboard-card:hover{transform:translateY(-1px);border-color:rgba(0,196,140,.4)}
+    .dashboard-card .hint{font-size:11px;color:var(--muted);margin-top:6px}
+    .dashboard-secondary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .profile-grid,.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .setting-option{border:1px solid var(--border);border-radius:14px;padding:14px}
+    .danger-zone{border-color:rgba(239,68,68,.35)}
+    .danger-text{color:#ef4444}
+    .mode-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .mode-card{border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer}
+    .mode-card.active{border-color:rgba(0,196,140,.7);box-shadow:0 0 0 1px rgba(0,196,140,.18) inset}
+    .profile-avatar{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:28px;font-weight:800;background:var(--border)}
+    .pdf-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .dashboard-list{display:flex;flex-direction:column;gap:8px}
+    .dashboard-list-row{display:flex;justify-content:space-between;gap:10px;padding:10px;border:1px solid var(--border);border-radius:12px;cursor:pointer}
+    .dashboard-list-row:hover{border-color:rgba(0,196,140,.4)}
+    @media(max-width:900px){
+      .dashboard-grid{grid-template-columns:repeat(2,1fr)}
+      .dashboard-secondary{grid-template-columns:1fr}
+      .menu-grid{grid-template-columns:repeat(2,1fr)}
+      .profile-grid,.settings-grid{grid-template-columns:1fr}
+    }
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
   <main id="authView" class="auth-wrap">
@@ -350,7 +382,8 @@
         <div class="tagline">Sua vida financeira organizada.</div>
       </div>
       <div class="top-actions">
-        <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
+        <button id="openMainMenuBtn" class="btn" type="button">☰ Menu</button>
+          <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
       </div>
     </header>
 
@@ -423,6 +456,73 @@
 
     </div>
 
+
+    <div id="menuContent" class="view-hidden">
+      <section class="card">
+        <h2 style="margin-top:0">Menu</h2>
+        <div class="label">Acesso rápido às principais áreas do FINANCE+.</div>
+        <div class="menu-grid" style="margin-top:14px">
+          <button class="menu-card" data-menu-view="home"><strong>🏠 Dashboard</strong><span>Resumo financeiro e indicadores</span></button>
+          <button class="menu-card" data-menu-view="bills"><strong>🧾 Contas</strong><span>Contas únicas e recorrentes</span></button>
+          <button class="menu-card" data-menu-view="cards"><strong>💳 Cartões</strong><span>Compras, parcelas e faturas</span></button>
+          <button class="menu-card" data-menu-view="incomes"><strong>💰 Receitas</strong><span>Entradas e rendimentos</span></button>
+          <button class="menu-card" data-menu-view="calendar"><strong>📅 Calendário</strong><span>Movimentações por data</span></button>
+          <button class="menu-card" data-menu-view="reports"><strong>📊 Relatórios</strong><span>Mensal, anual e PDF</span></button>
+          <button class="menu-card" data-menu-view="profile"><strong>👤 Perfil</strong><span>Dados da conta e sair</span></button>
+          <button class="menu-card" data-menu-view="settings"><strong>⚙️ Configurações</strong><span>Modo do app e reset de dados</span></button>
+        </div>
+      </section>
+    </div>
+
+    <div id="profileContent" class="view-hidden">
+      <section class="card">
+        <div class="profile-grid">
+          <div>
+            <div class="profile-avatar" id="profileAvatar">F+</div>
+            <h2 id="profileNameDisplay" style="margin-bottom:4px">Usuário</h2>
+            <div id="profileEmailDisplay" class="label">—</div>
+          </div>
+          <div>
+            <h3 style="margin-top:0">Minha conta</h3>
+            <div class="label">Seu acesso permanece protegido pelo Supabase.</div>
+            <button id="profileLogoutBtn" class="btn danger" type="button" style="margin-top:14px">Sair do perfil</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="settingsContent" class="view-hidden">
+      <section class="card">
+        <h2 style="margin-top:0">Configurações</h2>
+        <div class="settings-grid">
+          <div class="setting-option">
+            <h3 style="margin-top:0">Modo do aplicativo</h3>
+            <div class="label">A opção já pode ser escolhida. As diferenças entre Básico e Avançado serão aplicadas quando você definir as regras.</div>
+            <div class="mode-choice" style="margin-top:12px">
+              <button id="modeBasicBtn" class="mode-card" type="button"><strong>Básico</strong><div class="label">Interface simplificada</div></button>
+              <button id="modeAdvancedBtn" class="mode-card" type="button"><strong>Avançado</strong><div class="label">Todos os recursos</div></button>
+            </div>
+          </div>
+
+          <div class="setting-option danger-zone">
+            <h3 class="danger-text" style="margin-top:0">Reset de dados</h3>
+            <div class="label">A conta de acesso não será apagada. Apenas os dados financeiros do usuário serão removidos.</div>
+            <button id="resetAllBtn" class="btn danger" type="button" style="margin-top:12px">Resetar todos os dados</button>
+          </div>
+
+          <div class="setting-option">
+            <h3 style="margin-top:0">Reset por período</h3>
+            <div class="label">Apaga lançamentos financeiros dentro do intervalo selecionado.</div>
+            <div class="form-grid" style="margin-top:12px">
+              <label>Data inicial<input id="resetStartDate" type="date"></label>
+              <label>Data final<input id="resetEndDate" type="date"></label>
+            </div>
+            <button id="resetPeriodBtn" class="btn danger" type="button" style="margin-top:12px">Resetar período</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <div id="reportsContent" class="view-hidden">
       <section class="card">
         <div class="cards-toolbar">
@@ -430,6 +530,7 @@
             <h2 style="margin:0">Relatórios financeiros</h2>
             <div class="label">Acompanhe receitas, pagamentos, pendências, faturas e saldo.</div>
           </div>
+          <div class="pdf-actions"><button id="downloadReportPdfBtn" class="btn" type="button">⬇ Baixar PDF</button></div>
           <div class="report-tabs">
             <button id="reportMonthlyBtn" class="btn active" type="button">Mensal</button>
             <button id="reportAnnualBtn" class="btn" type="button">Anual</button>
@@ -1167,6 +1268,7 @@
       currentMonthPayments = payments;
       currentInvoices = invoicesRes.error ? [] : (invoicesRes.data || []);
       refreshDashboardFromState();
+      refreshDashboardV18();
       if(syncStatus) syncStatus.textContent = 'Sincronizado';
     }
 
@@ -1887,6 +1989,9 @@
       const incomes = document.getElementById('incomeContent');
       const calendar = document.getElementById('calendarContent');
       const reports = document.getElementById('reportsContent');
+      const menu = document.getElementById('menuContent');
+      const profile = document.getElementById('profileContent');
+      const settings = document.getElementById('settingsContent');
       document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
 
       home.classList.add('view-hidden');
@@ -1894,6 +1999,9 @@
       incomes.classList.add('view-hidden');
       calendar.classList.add('view-hidden');
       reports.classList.add('view-hidden');
+      menu.classList.add('view-hidden');
+      profile.classList.add('view-hidden');
+      settings.classList.add('view-hidden');
 
       if(view === 'cards'){
         cards.classList.remove('view-hidden');
@@ -1911,6 +2019,14 @@
         reports.classList.remove('view-hidden');
         document.getElementById('navReports').classList.add('active');
         loadReportData();
+      }else if(view === 'menu'){
+        menu.classList.remove('view-hidden');
+      }else if(view === 'profile'){
+        profile.classList.remove('view-hidden');
+        loadProfileView();
+      }else if(view === 'settings'){
+        settings.classList.remove('view-hidden');
+        renderAppMode();
       }else{
         home.classList.remove('view-hidden');
         document.getElementById(view === 'accounts' ? 'navAccounts' : 'navHome').classList.add('active');
@@ -1938,6 +2054,200 @@
 
 
 
+
+
+    function getAppMode(){
+      return localStorage.getItem('financePlusMode') || 'advanced';
+    }
+    function renderAppMode(){
+      const mode=getAppMode();
+      document.getElementById('modeBasicBtn')?.classList.toggle('active',mode==='basic');
+      document.getElementById('modeAdvancedBtn')?.classList.toggle('active',mode==='advanced');
+    }
+    function setAppMode(mode){
+      localStorage.setItem('financePlusMode',mode);
+      renderAppMode();
+      showToast(`Modo ${mode==='basic'?'Básico':'Avançado'} selecionado. As regras serão aplicadas em uma próxima atualização.`);
+    }
+
+    async function loadProfileView(){
+      if(!currentUser) return;
+      let name=currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || 'Usuário';
+      try{
+        const {data}=await supabaseClient.from('profiles').select('name').eq('id',currentUser.id).maybeSingle();
+        if(data?.name) name=data.name;
+      }catch(e){}
+      const initials=name.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase() || 'F+';
+      document.getElementById('profileAvatar').textContent=initials;
+      document.getElementById('profileNameDisplay').textContent=name;
+      document.getElementById('profileEmailDisplay').textContent=currentUser.email||'';
+    }
+
+    function dateOnlyFromTimestamp(v){ return String(v||'').slice(0,10); }
+
+    async function resetAllFinancialData(){
+      if(!currentUser) return;
+      const ok=confirm('ATENÇÃO: isso apagará todas as contas, receitas, pagamentos, compras, faturas, cartões e lembretes. Sua conta de acesso será mantida. Deseja continuar?');
+      if(!ok) return;
+      const typed=prompt('Digite RESETAR para confirmar a limpeza completa.');
+      if(typed!=='RESETAR'){ showToast('Reset cancelado.'); return; }
+
+      // Children first because of relations.
+      const tables=['payments','reminders','card_transactions','card_invoices','bills','incomes','cards'];
+      for(const table of tables){
+        const {error}=await supabaseClient.from(table).delete().eq('user_id',currentUser.id);
+        if(error){ showToast(`Erro ao limpar ${table}: ${error.message}`); return; }
+      }
+      currentBills=[]; currentIncomes=[]; currentMonthPayments=[]; currentCards=[]; currentCardTransactions=[]; currentInvoices=[];
+      showToast('Dados financeiros resetados com sucesso.');
+      await loadMonthData();
+      showView('home');
+    }
+
+    async function resetFinancialPeriod(){
+      if(!currentUser) return;
+      const start=document.getElementById('resetStartDate').value;
+      const end=document.getElementById('resetEndDate').value;
+      if(!start||!end){showToast('Informe a data inicial e final.');return;}
+      if(start>end){showToast('A data inicial não pode ser maior que a final.');return;}
+      const ok=confirm(`Apagar os lançamentos financeiros de ${formatDateBR(start)} até ${formatDateBR(end)}? Esta ação não pode ser desfeita.`);
+      if(!ok) return;
+
+      // Payments based on actual paid_at
+      let r=await supabaseClient.from('payments').delete().eq('user_id',currentUser.id)
+        .gte('paid_at',`${start}T00:00:00`).lte('paid_at',`${end}T23:59:59`);
+      if(r.error){showToast(r.error.message);return;}
+
+      // Reminders tied to bills/invoices in period must be removed before parents.
+      const billsQ=await supabaseClient.from('bills').select('id').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end);
+      if(billsQ.error){showToast(billsQ.error.message);return;}
+      const billIds=(billsQ.data||[]).map(x=>x.id);
+      if(billIds.length){
+        r=await supabaseClient.from('reminders').delete().eq('user_id',currentUser.id).in('bill_id',billIds);
+        if(r.error){showToast(r.error.message);return;}
+      }
+
+      const invQ=await supabaseClient.from('card_invoices').select('id').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end);
+      if(invQ.error){showToast(invQ.error.message);return;}
+      const invIds=(invQ.data||[]).map(x=>x.id);
+      if(invIds.length){
+        r=await supabaseClient.from('reminders').delete().eq('user_id',currentUser.id).in('card_invoice_id',invIds);
+        if(r.error){showToast(r.error.message);return;}
+      }
+
+      const ops=[
+        supabaseClient.from('bills').delete().eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end),
+        supabaseClient.from('incomes').delete().eq('user_id',currentUser.id).gte('received_date',start).lte('received_date',end),
+        supabaseClient.from('card_transactions').delete().eq('user_id',currentUser.id).gte('purchase_date',start).lte('purchase_date',end),
+        supabaseClient.from('card_invoices').delete().eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end)
+      ];
+      const results=await Promise.all(ops);
+      const err=results.find(x=>x.error)?.error;
+      if(err){showToast(`Erro no reset do período: ${err.message}`);return;}
+
+      showToast('Período resetado com sucesso.');
+      await loadMonthData();
+      showView('home');
+    }
+
+    function escapePdfText(v){ return String(v??'').replace(/\s+/g,' ').trim(); }
+
+    async function downloadReportPDF(){
+      if(!window.jspdf?.jsPDF){
+        showToast('Não foi possível carregar o gerador de PDF. Verifique sua conexão.');
+        return;
+      }
+
+      const {start,end}=reportBounds();
+      const [billsRes,incomesRes,paymentsRes,invoicesRes]=await Promise.all([
+        supabaseClient.from('bills').select('*').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end).order('due_date'),
+        supabaseClient.from('incomes').select('*').eq('user_id',currentUser.id).gte('received_date',start).lte('received_date',end).order('received_date'),
+        supabaseClient.from('payments').select('*').eq('user_id',currentUser.id).gte('paid_at',`${start}T00:00:00`).lte('paid_at',`${end}T23:59:59`).order('paid_at'),
+        supabaseClient.from('card_invoices').select('*,cards(name)').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end).order('due_date')
+      ]);
+      const err=billsRes.error||incomesRes.error||paymentsRes.error||invoicesRes.error;
+      if(err){showToast(`Erro ao gerar PDF: ${err.message}`);return;}
+
+      const bills=billsRes.data||[], incomes=incomesRes.data||[], payments=paymentsRes.data||[], invoices=invoicesRes.data||[];
+      const incomeTotal=incomes.reduce((s,x)=>s+Number(x.amount||0),0);
+      const paidTotal=payments.reduce((s,x)=>s+Number(x.amount||0),0);
+      const pendingTotal=
+        bills.filter(x=>!['pago','cancelado'].includes(x.status)).reduce((s,x)=>s+Number(x.amount||0),0)+
+        invoices.filter(x=>!['pago','cancelado'].includes(x.status)).reduce((s,x)=>s+Number(x.amount||0),0);
+      const balance=incomeTotal-paidTotal;
+
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({unit:'mm',format:'a4'});
+      const pageW=210, margin=14;
+      let y=16;
+      const title=reportMode==='annual'
+        ? `Relatório anual ${currentMonth.getFullYear()}`
+        : `Relatório ${monthFmt.format(currentMonth)}`;
+
+      doc.setFontSize(18); doc.text('FINANCE+',margin,y);
+      y+=8; doc.setFontSize(13); doc.text(escapePdfText(title),margin,y);
+      y+=10; doc.setFontSize(10);
+      doc.text(`Receitas: ${brl.format(incomeTotal)}`,margin,y); y+=6;
+      doc.text(`Efetivamente pago: ${brl.format(paidTotal)}`,margin,y); y+=6;
+      doc.text(`Pendente / atrasado: ${brl.format(pendingTotal)}`,margin,y); y+=6;
+      doc.text(`Saldo realizado: ${brl.format(balance)}`,margin,y); y+=10;
+
+      const rows=[];
+      incomes.forEach(x=>rows.push([x.received_date,'Receita',x.description,'recebido',Number(x.amount||0)]));
+      bills.forEach(x=>rows.push([x.due_date,'Conta',x.name,x.status||'pendente',Number(x.amount||0)]));
+      invoices.forEach(x=>rows.push([x.due_date,'Fatura',x.cards?.name||'Cartão',x.status||'pendente',Number(x.amount||0)]));
+      rows.sort((a,b)=>a[0].localeCompare(b[0]));
+
+      doc.setFontSize(12); doc.text('Lançamentos',margin,y); y+=7; doc.setFontSize(9);
+      for(const row of rows){
+        if(y>282){doc.addPage();y=16;}
+        const line=`${formatDateBR(row[0])} | ${row[1]} | ${escapePdfText(row[2]).slice(0,42)} | ${row[3]} | ${brl.format(row[4])}`;
+        const parts=doc.splitTextToSize(line,pageW-(margin*2));
+        doc.text(parts,margin,y);
+        y+=5*parts.length+2;
+      }
+
+      const safePeriod=reportMode==='annual'
+        ? String(currentMonth.getFullYear())
+        : `${currentMonth.getFullYear()}-${String(currentMonth.getMonth()+1).padStart(2,'0')}`;
+      doc.save(`FINANCE_PLUS_RELATORIO_${safePeriod}.pdf`);
+    }
+
+    async function refreshDashboardV18(){
+      if(!currentUser) return;
+      const {start,end}=monthBounds(currentMonth);
+      const [incRes,payRes,invRes,billRes]=await Promise.all([
+        supabaseClient.from('incomes').select('*').eq('user_id',currentUser.id).gte('received_date',start).lte('received_date',end),
+        supabaseClient.from('payments').select('*').eq('user_id',currentUser.id).gte('paid_at',`${start}T00:00:00`).lte('paid_at',`${end}T23:59:59`),
+        supabaseClient.from('card_invoices').select('*,cards(name)').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end),
+        supabaseClient.from('bills').select('*').eq('user_id',currentUser.id).gte('due_date',start).lte('due_date',end)
+      ]);
+      if(incRes.error||payRes.error||invRes.error||billRes.error) return;
+
+      const income=(incRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
+      const paid=(payRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
+      const openInv=(invRes.data||[]).filter(x=>!['pago','cancelado'].includes(x.status)).reduce((s,x)=>s+Number(x.amount||0),0);
+      document.getElementById('dashIncomeValue').textContent=brl.format(income);
+      document.getElementById('dashCardsValue').textContent=brl.format(openInv);
+      const bal=document.getElementById('dashBalanceValue');
+      bal.textContent=brl.format(income-paid);
+      bal.className=`mini-value ${income-paid>=0?'paid':'late'}`;
+
+      const items=[];
+      (billRes.data||[]).filter(x=>!['pago','cancelado'].includes(x.status)).forEach(x=>items.push({date:x.due_date,type:'Conta',name:x.name,amount:Number(x.amount||0),view:'bills'}));
+      (invRes.data||[]).filter(x=>!['pago','cancelado'].includes(x.status)).forEach(x=>items.push({date:x.due_date,type:'Fatura',name:x.cards?.name||'Cartão',amount:Number(x.amount||0),view:'cards'}));
+      items.sort((a,b)=>a.date.localeCompare(b.date));
+      const box=document.getElementById('dashboardUpcomingList');
+      const top=items.slice(0,5);
+      box.innerHTML=top.length?'':'<div class="cards-empty">Nenhum compromisso em aberto no mês.</div>';
+      top.forEach(x=>{
+        const row=document.createElement('div');
+        row.className='dashboard-list-row';
+        row.innerHTML=`<div><strong>${escapeHtml(x.name)}</strong><div class="label">${x.type} • ${formatDateBR(x.date)}</div></div><strong>${brl.format(x.amount)}</strong>`;
+        row.addEventListener('click',()=>showView(x.view));
+        box.appendChild(row);
+      });
+    }
 
     function reportBounds(){
       if(reportMode==='annual'){
@@ -2583,6 +2893,24 @@
 
 
 
+
+
+    document.getElementById('openMainMenuBtn')?.addEventListener('click',()=>showView('menu'));
+    document.querySelectorAll('[data-menu-view]').forEach(btn=>{
+      btn.addEventListener('click',()=>showView(btn.dataset.menuView));
+    });
+    document.getElementById('profileLogoutBtn')?.addEventListener('click',async()=>{
+      await supabaseClient.auth.signOut();
+    });
+    document.getElementById('modeBasicBtn')?.addEventListener('click',()=>setAppMode('basic'));
+    document.getElementById('modeAdvancedBtn')?.addEventListener('click',()=>setAppMode('advanced'));
+    document.getElementById('resetAllBtn')?.addEventListener('click',resetAllFinancialData);
+    document.getElementById('resetPeriodBtn')?.addEventListener('click',resetFinancialPeriod);
+    document.getElementById('downloadReportPdfBtn')?.addEventListener('click',downloadReportPDF);
+    document.getElementById('dashCardIncome')?.addEventListener('click',()=>showView('incomes'));
+    document.getElementById('dashCardCards')?.addEventListener('click',()=>showView('cards'));
+    document.getElementById('dashCardBalance')?.addEventListener('click',()=>showView('reports'));
+    document.getElementById('dashOpenCalendarBtn')?.addEventListener('click',()=>showView('calendar'));
 
     document.getElementById('reportMonthlyBtn').addEventListener('click',async()=>{
       reportMode='monthly';
