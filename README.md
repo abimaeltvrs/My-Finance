@@ -1,21 +1,25 @@
-# FINANCE+ V2.7 — Modo Offline
+# FINANCE+ V2.7.1 — Correção do botão Instalar aplicativo
 
-A V2.7 adiciona fila persistente em IndexedDB e sincronização automática.
+## Correção
+- Restaurado o botão inteligente “Instalar aplicativo”.
+- O botão só aparece quando o navegador realmente disponibiliza a instalação PWA.
+- Depois que o FINANCE+ já está instalado, o botão some automaticamente.
+- Em celular, o botão fica compacto para não ocupar espaço do cabeçalho.
+- Mantido o modo offline da V2.7.
+- Mantido o Dashboard inteligente.
+- Mantida a barra inferior com 8 itens.
 
-Funciona offline para novos lançamentos de:
-- contas;
-- receitas;
-- cartões;
-- pagamentos de contas.
+## Importante
+No Chrome/Edge, o evento de instalação normalmente só aparece quando:
+- o site está em HTTPS;
+- o manifest está válido;
+- o Service Worker está ativo;
+- o app ainda não está instalado.
 
-O cabeçalho mostra Offline, quantidade pendente, Sincronizando ou Sincronizado.
-Ao recuperar a conexão, o app envia a fila automaticamente ao Supabase. Os inserts usam IDs gerados antes do envio e `upsert` na sincronização, reduzindo o risco de duplicidade em novas tentativas.
+No iPhone/iPad, o Safari não oferece o mesmo `beforeinstallprompt`; a instalação é feita por Compartilhar → Adicionar à Tela de Início.
 
-A interface PWA continua sendo mantida pelo Service Worker.
-
-Nesta etapa, compras parceladas, edição e exclusão continuam sendo operações preferencialmente online. Isso evita criar conflitos de edição sem uma estratégia completa de resolução.
-
+## SQL
 Nenhum SQL novo.
 
-Commit changes:
-FINANCE+ V2.7 - adicionar modo offline e sincronizacao automatica
+## Commit changes
+FINANCE+ V2.7.1 - restaurar botao inteligente de instalar aplicativo

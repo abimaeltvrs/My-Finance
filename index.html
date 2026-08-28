@@ -1810,12 +1810,39 @@
 #fpOfflineStatus[data-kind="offline"]{color:#f0a12b}#fpOfflineStatus[data-kind="pending"]{color:#f0c44c}
 #fpSyncNowBtn{width:29px;height:29px;border:0;border-radius:50%;background:#202a27;color:#fff;font-size:17px;padding:0}
 @media(max-width:520px){#fpOfflineStatus{max-width:85px;overflow:hidden;text-overflow:ellipsis}.fp-offline-box{padding-left:6px}}
+
+/* FINANCE+ V2.7.1 — botão inteligente de instalação */
+.fp-install-app-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:38px;
+  border:1px solid rgba(24,217,140,.35);
+  background:linear-gradient(135deg,#0f8e59,#18bd78);
+  color:#fff;
+  border-radius:12px;
+  padding:8px 12px;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.fp-install-app-btn:hover{filter:brightness(1.06)}
+.fp-install-app-btn.hidden{display:none!important}
+.fp-install-icon{font-size:15px;line-height:1}
+@media(max-width:560px){
+  .fp-install-app-btn span:last-child{display:none}
+  .fp-install-app-btn{width:38px;padding:0;border-radius:50%}
+}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
   <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 
@@ -1982,6 +2009,10 @@
         <div class="tagline">Sua vida financeira organizada.</div>
       </div>
       <div class="top-actions">
+          <button id="installAppBtn" class="fp-install-app-btn hidden" type="button" aria-label="Instalar aplicativo">
+            <span class="fp-install-icon">⬇</span>
+            <span>Instalar aplicativo</span>
+          </button>
           <div class="fp-offline-box"><span id="fpOfflineStatus" data-kind="ok">Sincronizado ✓</span><button id="fpSyncNowBtn" type="button" title="Sincronizar agora">↻</button></div>
         <button id="headerNotifyBtn" class="btn icon-btn" type="button" aria-label="Notificações"><span class="ui-icon" data-icon="bell"></span></button>
           <button id="logoutBtn" class="btn btn-ghost" type="button">Sair</button>
@@ -5186,6 +5217,53 @@ document.getElementById('basicInvoiceForm')?.addEventListener('submit',saveBasic
 document.querySelectorAll('[data-menu-view]').forEach(btn=>{
       btn.addEventListener('click',()=>showView(btn.dataset.menuView));
     });
+
+
+    // FINANCE+ V2.7.1 — instalação inteligente PWA
+    let fpDeferredInstallPrompt = null;
+
+    function fpIsStandalone(){
+      return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+    }
+
+    function fpSyncInstallButton(){
+      const btn=document.getElementById('installAppBtn');
+      if(!btn) return;
+      const canShow = !fpIsStandalone() && !!fpDeferredInstallPrompt;
+      btn.classList.toggle('hidden', !canShow);
+    }
+
+    window.addEventListener('beforeinstallprompt', event=>{
+      event.preventDefault();
+      fpDeferredInstallPrompt = event;
+      fpSyncInstallButton();
+    });
+
+    window.addEventListener('appinstalled', ()=>{
+      fpDeferredInstallPrompt = null;
+      fpSyncInstallButton();
+      if(typeof showToast==='function') showToast('FINANCE+ instalado com sucesso.');
+    });
+
+    document.getElementById('installAppBtn')?.addEventListener('click', async ()=>{
+      if(fpIsStandalone()){
+        fpSyncInstallButton();
+        return;
+      }
+      if(!fpDeferredInstallPrompt){
+        if(typeof showToast==='function') showToast('A instalação ainda não está disponível neste navegador.');
+        return;
+      }
+      const promptEvent = fpDeferredInstallPrompt;
+      fpDeferredInstallPrompt = null;
+      promptEvent.prompt();
+      try{ await promptEvent.userChoice; }catch(e){}
+      fpSyncInstallButton();
+    });
+
+    window.matchMedia?.('(display-mode: standalone)')?.addEventListener?.('change', fpSyncInstallButton);
+    fpSyncInstallButton();
 
     // FINANCE+ V2.7 — Offline
     document.getElementById('fpSyncNowBtn')?.addEventListener('click',()=>navigator.onLine?fpSync():showToast('Sem internet. Seus lançamentos pendentes estão salvos neste aparelho.'));
