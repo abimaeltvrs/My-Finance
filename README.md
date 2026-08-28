@@ -1,33 +1,33 @@
-# FINANCE+ V1.0
+# FINANCE+ V1.1
 
-Primeira base funcional da aplicação FINANCE+.
+Versão com autenticação real conectada ao Supabase.
 
-## Incluído nesta versão
-- Identidade visual inicial
-- Tela de Login
-- Tela de Cadastro
+## Incluído
+- Identidade visual FINANCE+
+- Cadastro real pelo Supabase Auth
+- Login real
+- Sessão persistente
+- Logout
+- Criação/sincronização do perfil na tabela `profiles`
 - Dashboard responsivo
-- Resumo financeiro
-- Contas e vencimentos demonstrativos
-- Ações rápidas
 - Estrutura PWA
-- Botão de instalação quando suportado pelo navegador
-- Service Worker para cache básico/offline
+- Service Worker para cache básico
 
-## Ainda não conectado
-- Supabase Auth
-- Banco de dados real
+## Configuração Supabase usada
+- Project URL configurada no `index.html`
+- Publishable key configurada no `index.html`
+- A chave usada é própria para frontend. Não use service_role no navegador.
+
+## Próxima etapa
 - Cadastro real de contas
-- Cartões
+- Listagem por usuário
+- Marcar conta como paga
 - Receitas
-- Relatórios reais
-- Notificações/lembretes
+- Cartões e faturas
+- Relatórios e lembretes
 
-## Como testar
-Abra o projeto em um servidor web local. Exemplo:
-python -m http.server 8080
+## Publicação no GitHub
+Substitua os arquivos da versão anterior pelos desta versão.
 
-Depois acesse:
-http://localhost:8080
-
-Observação: o Service Worker não funciona corretamente abrindo o arquivo diretamente por file://.
+Commit message sugerido:
+FINANCE+ V1.1 - conectar autenticação ao Supabase

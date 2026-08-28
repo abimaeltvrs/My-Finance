@@ -182,7 +182,7 @@
           <input id="loginPassword" type="password" placeholder="Sua senha" minlength="6" required />
         </div>
         <button class="btn btn-primary" style="width:100%" type="submit">Entrar no FINANCE+</button>
-        <p class="auth-note">Nesta V1.0 inicial o login é demonstrativo e não envia dados para nenhum servidor.</p>
+        <p class="auth-note">Login conectado ao Supabase. Sua sessão permanece ativa com segurança no navegador.</p>
       </form>
 
       <form id="registerForm" class="hidden">
@@ -199,7 +199,7 @@
           <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required />
         </div>
         <button class="btn btn-primary" style="width:100%" type="submit">Criar minha conta</button>
-        <p class="auth-note">A autenticação real será conectada ao Supabase na próxima etapa.</p>
+        <p class="auth-note">O cadastro é feito pelo Supabase. Se a confirmação por e-mail estiver habilitada, confirme o endereço antes do primeiro login.</p>
       </form>
     </section>
   </main>
@@ -301,7 +301,12 @@
 
   <div id="toast" class="toast hidden"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    const SUPABASE_URL = "https://ozcgtyzahnlfppnfnrlv.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_RrIIBXoXkkT8zOleA2bxMA_L9De0KeS";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     const authView = document.getElementById('authView');
     const appView = document.getElementById('appView');
     const loginForm = document.getElementById('loginForm');
@@ -332,22 +337,112 @@
     function enterApp(name){
       authView.classList.add('hidden');
       appView.classList.remove('hidden');
-      showToast(`Bem-vindo${name ? ', ' + name : ''}!`);
+      if (name) showToast(`Bem-vindo, ${name}!`);
+    }
+
+    async function ensureProfile(user){
+      if (!user) return;
+      const name = user.user_metadata?.name || user.email?.split('@')[0] || 'Usuário';
+      const { error } = await supabaseClient
+        .from('profiles')
+        .upsert({ id: user.id, name }, { onConflict: 'id' });
+      if (error) console.warn('Não foi possível sincronizar o perfil:', error.message);
+    }
+
+    async function loadSession(){
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) {
+        showToast('Falha ao verificar a sessão.');
+        return;
+      }
+      const user = data.session?.user;
+      if (user) {
+        await ensureProfile(user);
+        enterApp(user.user_metadata?.name || '');
+      }
     }
 
     tabLogin.addEventListener('click', showLogin);
     tabRegister.addEventListener('click', showRegister);
-    loginForm.addEventListener('submit', e => { e.preventDefault(); enterApp(''); });
-    registerForm.addEventListener('submit', e => {
+
+    loginForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const submit = loginForm.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      submit.textContent = 'Entrando...';
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      submit.disabled = false;
+      submit.textContent = 'Entrar no FINANCE+';
+
+      if (error) {
+        showToast(error.message === 'Invalid login credentials'
+          ? 'E-mail ou senha inválidos.'
+          : `Erro no login: ${error.message}`);
+        return;
+      }
+
+      await ensureProfile(data.user);
+      enterApp(data.user?.user_metadata?.name || '');
+    });
+
+    registerForm.addEventListener('submit', async e => {
       e.preventDefault();
       const name = document.getElementById('regName').value.trim();
-      enterApp(name);
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const submit = registerForm.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      submit.textContent = 'Criando conta...';
+
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { name } }
+      });
+
+      submit.disabled = false;
+      submit.textContent = 'Criar minha conta';
+
+      if (error) {
+        showToast(`Erro no cadastro: ${error.message}`);
+        return;
+      }
+
+      if (data.session) {
+        await ensureProfile(data.user);
+        enterApp(name);
+      } else {
+        showToast('Cadastro realizado. Verifique seu e-mail para confirmar a conta.');
+        showLogin();
+        document.getElementById('loginEmail').value = email;
+      }
     });
-    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+
+    document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+      await supabaseClient.auth.signOut();
       appView.classList.add('hidden');
       authView.classList.remove('hidden');
       showLogin();
+      showToast('Sessão encerrada.');
     });
+
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        await ensureProfile(session.user);
+        enterApp(session.user.user_metadata?.name || '');
+      }
+      if (event === 'SIGNED_OUT') {
+        appView.classList.add('hidden');
+        authView.classList.remove('hidden');
+        showLogin();
+      }
+    });
+
+    loadSession();
     document.getElementById('newBillBtn').addEventListener('click', ()=>{
       showToast('Cadastro de conta será conectado ao banco na próxima etapa.');
     });
