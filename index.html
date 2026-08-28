@@ -1887,6 +1887,18 @@
 .fp-card-color-strip{height:5px;border-radius:99px;margin:-2px 0 10px;background:var(--card-color,#6D38C5)}
 .metric-pending-income .fp-metric-icon{background:rgba(230,174,50,.12);color:#efc24d}
 
+
+/* FINANCE+ V3.0 — Dashboard financeiro mês a mês */
+.fp-dashboard-period{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:10px;margin:8px 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.025)}
+.fp-period-arrow{height:44px;font-size:25px;font-weight:900}
+.fp-period-center{text-align:center;min-width:0;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.fp-period-center>span{font-size:9px;letter-spacing:.13em;color:var(--muted);font-weight:900}
+.fp-period-center>strong{font-size:15px;min-width:130px}
+.fp-current-month-btn{border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:999px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer}
+.fp-current-month-btn.active{border-color:rgba(0,196,140,.45);color:#55dda8}
+.fp-dashboard-actions{display:flex;justify-content:flex-end;margin:0 0 10px}
+@media(max-width:520px){.fp-dashboard-period{grid-template-columns:44px minmax(0,1fr) 44px}.fp-period-center{gap:5px}.fp-period-center>span{width:100%}.fp-dashboard-actions .btn{width:100%}}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -2104,6 +2116,20 @@
       <button id="dashModeBasic" type="button">BÁSICO</button>
       <button id="dashModeAdvanced" type="button">AVANÇADO</button>
     </div>
+  </section>
+
+  <section class="fp-dashboard-period" aria-label="Período do Dashboard">
+    <button id="dashPrevMonthBtn" class="btn fp-period-arrow" type="button" aria-label="Mês anterior">‹</button>
+    <div class="fp-period-center">
+      <span>VISÃO MENSAL</span>
+      <strong id="dashMonthLabel">—</strong>
+      <button id="dashCurrentMonthBtn" class="fp-current-month-btn" type="button">Mês atual</button>
+    </div>
+    <button id="dashNextMonthBtn" class="btn fp-period-arrow" type="button" aria-label="Próximo mês">›</button>
+  </section>
+
+  <section class="fp-dashboard-actions">
+    <button id="dashPdfBtn" class="btn" type="button">⬇ PDF deste mês</button>
   </section>
 
   <section id="smartBalanceCard" class="fp-smart-balance status-positive">
@@ -4495,12 +4521,16 @@ function syncModeButtonsV251(){
       if(err){showToast(`Erro ao gerar PDF: ${err.message}`);return;}
 
       const bills=billsRes.data||[], incomes=incomesRes.data||[], payments=paymentsRes.data||[], invoices=invoicesRes.data||[];
-      const incomeTotal=incomes.reduce((s,x)=>s+Number(x.amount||0),0);
+      const receivedIncomes=incomes.filter(x=>fpIncomeStatus(x)==='recebido');
+      const pendingIncomes=incomes.filter(x=>fpIncomeStatus(x)==='pendente');
+      const incomeTotal=receivedIncomes.reduce((s,x)=>s+Number(x.amount||0),0);
+      const pendingIncomeTotal=pendingIncomes.reduce((s,x)=>s+Number(x.amount||0),0);
       const paidTotal=payments.reduce((s,x)=>s+Number(x.amount||0),0);
-      const pendingTotal=
-        bills.filter(x=>!['pago','cancelado'].includes(x.status)).reduce((s,x)=>s+Number(x.amount||0),0)+
-        invoices.filter(x=>!['pago','cancelado'].includes(x.status)).reduce((s,x)=>s+Number(x.amount||0),0);
+      const billsPending=bills.filter(x=>!['pago','cancelado'].includes(x.status)).reduce((s,x)=>s+Number(x.amount||0),0);
+      const invoicesPending=invoices.filter(x=>!['pago','cancelado'].includes(x.status)).reduce((s,x)=>s+Number(x.amount||0),0);
+      const pendingTotal=billsPending+invoicesPending;
       const balance=incomeTotal-paidTotal;
+      const projection=balance+pendingIncomeTotal-pendingTotal;
 
       const {jsPDF}=window.jspdf;
       const doc=new jsPDF({unit:'mm',format:'a4'});
@@ -4508,18 +4538,20 @@ function syncModeButtonsV251(){
       let y=16;
       const title=reportMode==='annual'
         ? `Relatório anual ${currentMonth.getFullYear()}`
-        : `Relatório ${monthFmt.format(currentMonth)}`;
+        : `Relatório Financeiro - ${monthFmt.format(currentMonth)}`;
 
       doc.setFontSize(18); doc.text('FINANCE+',margin,y);
       y+=8; doc.setFontSize(13); doc.text(escapePdfText(title),margin,y);
       y+=10; doc.setFontSize(10);
-      doc.text(`Receitas: ${brl.format(incomeTotal)}`,margin,y); y+=6;
-      doc.text(`Efetivamente pago: ${brl.format(paidTotal)}`,margin,y); y+=6;
-      doc.text(`Pendente / atrasado: ${brl.format(pendingTotal)}`,margin,y); y+=6;
-      doc.text(`Saldo realizado: ${brl.format(balance)}`,margin,y); y+=10;
+      doc.text(`Receitas recebidas: ${brl.format(incomeTotal)}`,margin,y); y+=6;
+      doc.text(`Receitas pendentes / a receber: ${brl.format(pendingIncomeTotal)}`,margin,y); y+=6;
+      doc.text(`Despesas efetivamente pagas: ${brl.format(paidTotal)}`,margin,y); y+=6;
+      doc.text(`Contas + faturas em aberto: ${brl.format(pendingTotal)}`,margin,y); y+=6;
+      doc.text(`Saldo realizado: ${brl.format(balance)}`,margin,y); y+=6;
+      doc.text(`Previsao no fim do periodo: ${brl.format(projection)}`,margin,y); y+=10;
 
       const rows=[];
-      incomes.forEach(x=>rows.push([x.received_date,'Receita',x.description,'recebido',Number(x.amount||0)]));
+      incomes.forEach(x=>rows.push([x.received_date,'Receita',x.description,fpIncomeStatus(x),Number(x.amount||0)]));
       bills.forEach(x=>rows.push([x.due_date,'Conta',x.name,x.status||'pendente',Number(x.amount||0)]));
       invoices.forEach(x=>rows.push([x.due_date,'Fatura',x.cards?.name||'Cartão',x.status||'pendente',Number(x.amount||0)]));
       rows.sort((a,b)=>a[0].localeCompare(b[0]));
@@ -4601,6 +4633,44 @@ function syncModeButtonsV251(){
       dot.setAttribute('cx',last[0]); dot.setAttribute('cy',last[1]);
     }
 
+    function fpIsCurrentDashboardMonth(){
+      const now=new Date();
+      return currentMonth.getFullYear()===now.getFullYear()&&currentMonth.getMonth()===now.getMonth();
+    }
+
+    function fpUpdateDashboardPeriod(){
+      const label=document.getElementById('dashMonthLabel');
+      if(label)label.textContent=dashboardMonthName();
+      const btn=document.getElementById('dashCurrentMonthBtn');
+      if(btn){
+        btn.classList.toggle('active',fpIsCurrentDashboardMonth());
+        btn.textContent=fpIsCurrentDashboardMonth()?'Mês atual ✓':'Mês atual';
+      }
+    }
+
+    async function fpSetDashboardMonth(delta){
+      currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+delta,1);
+      fpUpdateDashboardPeriod();
+      await refreshDashboardV26();
+    }
+
+    async function fpGoCurrentDashboardMonth(){
+      const now=new Date();
+      currentMonth=new Date(now.getFullYear(),now.getMonth(),1);
+      fpUpdateDashboardPeriod();
+      await refreshDashboardV26();
+    }
+
+    async function fpDownloadDashboardMonthPDF(){
+      const oldMode=reportMode;
+      reportMode='monthly';
+      try{
+        await downloadReportPDF();
+      }finally{
+        reportMode=oldMode;
+      }
+    }
+
     function dashboardMonthName(){
       return monthFmt.format(currentMonth).replace(/^\w/,c=>c.toUpperCase());
     }
@@ -4613,6 +4683,7 @@ function syncModeButtonsV251(){
 
     async function refreshDashboardV26(){
       if(!currentUser) return;
+      fpUpdateDashboardPeriod();
       const {start,end}=monthBounds(currentMonth);
       const prevDate=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1);
       const prevBounds=monthBounds(prevDate);
@@ -5617,11 +5688,15 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
     document.getElementById('dashPendingIncomeMetric')?.addEventListener('click',()=>showView('income'));
     document.getElementById('dashPaidMetric')?.addEventListener('click',()=>showView('reports'));
     document.getElementById('dashAvailableMetric')?.addEventListener('click',()=>showView('reports'));
+    document.getElementById('dashPrevMonthBtn')?.addEventListener('click',()=>fpSetDashboardMonth(-1));
+    document.getElementById('dashNextMonthBtn')?.addEventListener('click',()=>fpSetDashboardMonth(1));
+    document.getElementById('dashCurrentMonthBtn')?.addEventListener('click',fpGoCurrentDashboardMonth);
+    document.getElementById('dashPdfBtn')?.addEventListener('click',fpDownloadDashboardMonthPDF);
     document.getElementById('dashPayableCard')?.addEventListener('click',()=>showView('accounts'));
     document.getElementById('dashInvoicesCard')?.addEventListener('click',()=>showView('cards'));
     document.getElementById('dashSeeCalendar')?.addEventListener('click',()=>showView('calendar'));
-    document.getElementById('dashSeeReports')?.addEventListener('click',()=>showView('reports'));
-    document.getElementById('dashMonthDetails')?.addEventListener('click',()=>showView('reports'));
+    document.getElementById('dashSeeReports')?.addEventListener('click',()=>{reportMode='monthly';showView('reports');loadReportData();});
+    document.getElementById('dashMonthDetails')?.addEventListener('click',()=>{reportMode='monthly';showView('reports');loadReportData();});
 
     document.getElementById('reportMonthlyBtn').addEventListener('click',async()=>{
       reportMode='monthly';

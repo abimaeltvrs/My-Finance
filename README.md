@@ -1,51 +1,38 @@
-# FINANCE+ V2.9 — Cartões personalizados + Receitas a Receber
+# FINANCE+ V3.0 — Dashboard mês a mês + PDF mensal
 
-## 1. Cor do cartão
-No cadastro e na edição do cartão agora é possível escolher entre:
-- roxo
-- azul
-- verde
-- vermelho
-- laranja
-- preto
-- cinza
-- dourado
+## Dashboard
+O Dashboard agora possui navegação de período no topo:
+- mês anterior
+- mês seguinte
+- botão “Mês atual”
 
-A cor aparece na lista de cartões e no Perfil do cartão.
+Ao trocar o mês, TODOS os indicadores do Dashboard são recalculados para o período escolhido:
+- receitas recebidas
+- receitas pendentes / a receber
+- despesas pagas
+- disponível
+- contas a pagar
+- faturas abertas
+- previsão de fim do mês
+- gráficos
+- próximos compromissos
 
-## 2. Receitas a receber
-Toda nova receita passa a ser criada como PENDENTE.
+Isso também permite consultar meses futuros que já possuam receitas recorrentes, contas ou faturas cadastradas.
 
-O cadastro possui “Repetir por quantos meses?”.
-Exemplo: R$ 1.000, data 10/09 e 5x cria:
-1/5 em 10/09
-2/5 em 10/10
-3/5 em 10/11
-4/5 em 10/12
-5/5 em 10/01
+## PDF do mês
+Foi adicionado “PDF deste mês” diretamente no Dashboard.
 
-Cada ocorrência fica independente e PENDENTE.
-
-## 3. Confirmação
-Na lista de receitas:
-- PENDENTE → botão “Marcar recebido”
-- RECEBIDO → entra no total de receitas efetivamente recebidas
-- É possível voltar uma receita para pendente em caso de engano.
-
-## 4. Dashboard
-Agora separa:
-- Receitas recebidas
-- Receitas pendentes / a receber
-- Despesas pagas
-- Disponível
-
-A previsão de fim do mês considera:
-saldo atual + receitas pendentes - contas pendentes - faturas abertas.
-
-Receitas pendentes também aparecem nos próximos compromissos do mês.
+O PDF usa exatamente o mês selecionado e mostra:
+- receitas recebidas
+- receitas pendentes / a receber
+- despesas efetivamente pagas
+- contas + faturas em aberto
+- saldo realizado
+- previsão no fim do período
+- lançamentos do período com status
 
 ## Banco de dados
-Execute `SUPABASE_V2.9.sql` uma vez antes de usar esta versão.
+Se você já executou o `SUPABASE_V2.9.sql`, NÃO precisa executar outro SQL para a V3.0.
 
 ## Commit changes
-FINANCE+ V2.9 - adicionar cores nos cartoes e receitas recorrentes pendentes
+FINANCE+ V3.0 - adicionar dashboard mensal e PDF por mes
