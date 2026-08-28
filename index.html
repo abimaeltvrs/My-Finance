@@ -1808,8 +1808,8 @@
 
       const [cardsRes, txRes, invRes, openInvRes] = await Promise.all([
         supabaseClient.from('cards').select('*').eq('user_id',currentUser.id).order('created_at'),
-        supabaseClient.from('card_transactions').select('*').eq('user_id',currentUser.id).eq('reference_month',refMonth).order('created_at',{ascending:false}),
-        supabaseClient.from('card_invoices').select('*').eq('user_id',currentUser.id).eq('reference_month',refMonth).order('due_date'),
+        supabaseClient.from('card_transactions').select('*').eq('user_id',currentUser.id).gte('reference_month',start).lte('reference_month',end).order('created_at',{ascending:false}),
+        supabaseClient.from('card_invoices').select('*').eq('user_id',currentUser.id).gte('reference_month',start).lte('reference_month',end).order('due_date'),
         supabaseClient.from('card_invoices').select('*').eq('user_id',currentUser.id).neq('status','pago').neq('status','cancelado')
       ]);
 
@@ -1871,11 +1871,14 @@
       list.innerHTML='<div class="cards-empty">Carregando itens...</div>';
       document.getElementById('invoiceDetailModal').classList.remove('hidden');
 
+      const invRef=String(invoice.reference_month).slice(0,10);
+      const invNext=addMonthsISO(invRef,1);
       const res=await supabaseClient.from('card_transactions')
         .select('*')
         .eq('user_id',currentUser.id)
         .eq('card_id',invoice.card_id)
-        .eq('reference_month',invoice.reference_month)
+        .gte('reference_month',invRef)
+        .lt('reference_month',invNext)
         .order('purchase_date',{ascending:false})
         .order('created_at',{ascending:false});
 
@@ -1929,11 +1932,22 @@
         row.className='invoice-row invoice-clickable';
         row.addEventListener('click',()=>openInvoiceDetail(inv));
         row.innerHTML=`
-          <div><strong>${escapeHtml(card?.name||'Cartão')}</strong><div class="label">Vence ${formatDateBR(inv.due_date)} • clique para ver os itens</div></div>
+          <div><strong>${escapeHtml(card?.name||'Cartão')}</strong><div class="label">Vence ${formatDateBR(inv.due_date)} • toque/clique para abrir a fatura</div></div>
           <strong>${brl.format(Number(inv.amount||0))}</strong>
           <span class="badge ${paid?'paid':late?'late':'pending'}">${paid?'Paga':late?'Atrasada':'Pendente'}</span>`;
         const actions=document.createElement('div');
         actions.className='invoice-actions';
+
+        const detailBtn=document.createElement('button');
+        detailBtn.className='btn';
+        detailBtn.type='button';
+        detailBtn.textContent='Ver itens';
+        detailBtn.addEventListener('click',(event)=>{
+          event.stopPropagation();
+          openInvoiceDetail(inv);
+        });
+        actions.appendChild(detailBtn);
+
         if(!paid){
           const btn=document.createElement('button');
           btn.className='btn btn-primary'; btn.type='button'; btn.textContent='Pagar fatura';
@@ -2151,6 +2165,21 @@
 
         const insertedRows = ins.data || [];
 
+        // Confirma no banco que as parcelas realmente ficaram gravadas.
+        const verifyIds=insertedRows.map(x=>x.id).filter(Boolean);
+        if(verifyIds.length){
+          const verify=await supabaseClient.from('card_transactions')
+            .select('*')
+            .eq('user_id',currentUser.id)
+            .in('id',verifyIds);
+          if(verify.error){
+            throw new Error(`Compra gravada, mas não foi possível confirmar: ${verify.error.message}`);
+          }
+          if((verify.data||[]).length !== verifyIds.length){
+            throw new Error('A compra não permaneceu registrada no banco. Verifique as regras da tabela card_transactions.');
+          }
+        }
+
         let invoiceError=null;
         for(const ref of [...new Set(affected)]){
           try{
@@ -2175,13 +2204,26 @@
             : 'Compra salva. Abrindo a fatura correspondente.');
         }
 
-        // Atualiza imediatamente a lista com as linhas retornadas pelo próprio INSERT.
-        currentCardTransactions = insertedRows
-          .filter(tx=>tx.reference_month===firstRef)
-          .concat(currentCardTransactions.filter(tx=>tx.reference_month===firstRef && !insertedRows.some(i=>i.id===tx.id)));
-        renderPurchases();
-
+        // Recarrega diretamente do Supabase no mês da primeira parcela.
+        await loadCardsData();
         await loadMonthData();
+
+        // Confirma visualmente que ao menos a primeira parcela está na lista carregada.
+        const firstInsertedIds=new Set(insertedRows.filter(x=>String(x.reference_month).slice(0,10)===firstRef).map(x=>x.id));
+        const visibleConfirmed=currentCardTransactions.some(x=>firstInsertedIds.has(x.id));
+        if(!visibleConfirmed && firstInsertedIds.size){
+          const retry=await supabaseClient.from('card_transactions')
+            .select('*')
+            .eq('user_id',currentUser.id)
+            .eq('card_id',card.id)
+            .gte('reference_month',firstRef)
+            .lt('reference_month',addMonthsISO(firstRef,1))
+            .order('created_at',{ascending:false});
+          if(!retry.error){
+            currentCardTransactions=retry.data||[];
+            renderPurchases();
+          }
+        }
 
       }catch(err){
         console.error(err);
@@ -2189,8 +2231,6 @@
       }finally{
         isSavingPurchase=false;
         if(submitBtn){submitBtn.disabled=false; submitBtn.textContent='Salvar compra';}
-        // Uma única atualização definitiva após todas as gravações terminarem.
-        await loadCardsData();
       }
     });
 
