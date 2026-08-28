@@ -239,7 +239,12 @@
     .calendar-item.income{background:rgba(34,197,94,.08)}
     .calendar-item.invoice{background:rgba(59,130,246,.08)}
     .calendar-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .calendar-legend span{font-size:12px;color:var(--muted)}
+    .calendar-legend span{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+    .legend-dot,.calendar-dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:0 0 8px}
+    .dot-bill{background:#ef4444}
+    .dot-income{background:#22c55e}
+    .dot-invoice{background:#3b82f6}
+    .calendar-item{display:flex;align-items:center;gap:5px}
     .day-detail-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
     .day-detail-item{border:1px solid var(--border);border-radius:12px;padding:12px}
     @media(max-width:700px){
@@ -420,9 +425,9 @@
           </div>
         </div>
         <div class="calendar-legend">
-          <span>🔴 Contas</span>
-          <span>🟢 Receitas</span>
-          <span>🔵 Faturas</span>
+          <span><i class="legend-dot dot-bill"></i>Contas</span>
+          <span><i class="legend-dot dot-income"></i>Receitas</span>
+          <span><i class="legend-dot dot-invoice"></i>Faturas</span>
         </div>
       </section>
 
@@ -1920,21 +1925,21 @@
         bills.slice(0,2).forEach(x=>{
           const item=document.createElement('div');
           item.className='calendar-item bill';
-          item.textContent=`${x.name}`;
+          item.innerHTML=`<span class="calendar-dot dot-bill"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(x.name)}</span>`;
           item.title=x.name;
           el.appendChild(item);
         });
         incomes.slice(0,2).forEach(x=>{
           const item=document.createElement('div');
           item.className='calendar-item income';
-          item.textContent=`${x.description}`;
+          item.innerHTML=`<span class="calendar-dot dot-income"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(x.description)}</span>`;
           item.title=x.description;
           el.appendChild(item);
         });
         invoices.slice(0,2).forEach(x=>{
           const item=document.createElement('div');
           item.className='calendar-item invoice';
-          item.textContent=`${x.cards?.name||'Cartão'}`;
+          item.innerHTML=`<span class="calendar-dot dot-invoice"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(x.cards?.name||'Cartão')}</span>`;
           item.title=x.cards?.name||'Cartão';
           el.appendChild(item);
         });
