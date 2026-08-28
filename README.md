@@ -1,18 +1,15 @@
-# FINANCE+ V1.4 — Receitas
+# FINANCE+ V1.4.1
 
-## Novidades
-- Nova área Receitas.
-- Cadastro de salário, renda extra, freelance, venda, reembolso, investimentos e outros.
-- Valor recebido e data efetiva de recebimento.
-- Edição e exclusão de receitas.
-- Navegação mensal.
-- Total de receitas e quantidade de lançamentos.
-- Integração imediata com o Dashboard.
-- Saldo continua sendo calculado por receitas recebidas menos pagamentos efetivamente realizados.
-- Realtime para alterações de receitas.
+Correções:
+- Removido botão duplicado "+ Receita".
+- Estabilizado o salvamento das compras no cartão.
+- O Realtime não recarrega a área de cartões durante o processamento da compra.
+- A compra é exibida usando o retorno confirmado do Supabase.
+- Após finalizar compra + fatura, é feita uma única sincronização definitiva.
+- Consulta das parcelas usa exatamente o mês de referência da fatura.
 
 ## SQL
-Não há novo SQL obrigatório nesta versão: a tabela `incomes` já fazia parte da estrutura inicial do FINANCE+.
+Não há SQL novo obrigatório nesta versão.
 
 ## Commit changes
-FINANCE+ V1.4 - adicionar cadastro e gestão de receitas
+FINANCE+ V1.4.1 - corrigir receita duplicada e compras do cartão

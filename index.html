@@ -348,7 +348,6 @@
           <div class="section-title"><h2>Ações rápidas</h2></div>
           <div class="quick-actions">
             <button id="quickNewBill" class="btn btn-primary" type="button">+ Conta</button>
-            <button class="btn" type="button">+ Receita</button>
             <button id="quickNewCard" class="btn" type="button">+ Cartão</button>
             <button id="quickNewIncome" class="btn" type="button">+ Receita</button>
             <button class="btn" type="button">Relatório</button>
@@ -404,7 +403,7 @@
         <div class="cards-toolbar">
           <div>
             <h2 style="margin:0">Cartões e faturas</h2>
-            <div class="label">Compras, parcelas, limite e faturas mensais</div>
+            <div class="label">Compras, parcelas, limite e faturas mensais</div><div id="cardSaveHint" class="label" style="margin-top:4px">Os lançamentos salvos permanecem registrados no Supabase.</div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="newCardBtn" class="btn" type="button">+ Cartão</button>
@@ -679,6 +678,7 @@
     let currentInvoices = [];
     let allOpenInvoices = [];
     let selectedInvoice = null;
+    let isSavingPurchase = false;
 
     const authView = document.getElementById('authView');
     const appView = document.getElementById('appView');
@@ -1032,10 +1032,10 @@
           ()=>{ scheduleServerRefresh(); if(!document.getElementById('cardsContent').classList.contains('view-hidden')) loadCardsData(); })
         .on('postgres_changes',
           {event:'*', schema:'public', table:'card_transactions', filter:`user_id=eq.${currentUser.id}`},
-          ()=>{ scheduleServerRefresh(); if(!document.getElementById('cardsContent').classList.contains('view-hidden')) loadCardsData(); })
+          ()=>{ scheduleServerRefresh(); if(!isSavingPurchase && !document.getElementById('cardsContent').classList.contains('view-hidden')) loadCardsData(); })
         .on('postgres_changes',
           {event:'*', schema:'public', table:'card_invoices', filter:`user_id=eq.${currentUser.id}`},
-          ()=>{ scheduleServerRefresh(); if(!document.getElementById('cardsContent').classList.contains('view-hidden')) loadCardsData(); })
+          ()=>{ scheduleServerRefresh(); if(!isSavingPurchase && !document.getElementById('cardsContent').classList.contains('view-hidden')) loadCardsData(); })
         .subscribe();
     }
 
@@ -1786,7 +1786,7 @@
 
       const [cardsRes, txRes, invRes, openInvRes] = await Promise.all([
         supabaseClient.from('cards').select('*').eq('user_id',currentUser.id).order('created_at'),
-        supabaseClient.from('card_transactions').select('*').eq('user_id',currentUser.id).gte('reference_month',start).lte('reference_month',end).order('purchase_date',{ascending:false}),
+        supabaseClient.from('card_transactions').select('*').eq('user_id',currentUser.id).eq('reference_month',refMonth).order('created_at',{ascending:false}),
         supabaseClient.from('card_invoices').select('*').eq('user_id',currentUser.id).eq('reference_month',refMonth).order('due_date'),
         supabaseClient.from('card_invoices').select('*').eq('user_id',currentUser.id).neq('status','pago').neq('status','cancelado')
       ]);
@@ -2013,6 +2013,7 @@
 
     document.getElementById('purchaseForm').addEventListener('submit',async e=>{
       e.preventDefault();
+      isSavingPurchase=true;
       const submitBtn=e.submitter;
       if(submitBtn){submitBtn.disabled=true; submitBtn.textContent='Salvando...';}
 
@@ -2066,6 +2067,8 @@
           return;
         }
 
+        const insertedRows = ins.data || [];
+
         let invoiceError=null;
         for(const ref of [...new Set(affected)]){
           try{
@@ -2090,14 +2093,22 @@
             : 'Compra salva. Abrindo a fatura correspondente.');
         }
 
-        await loadCardsData();
+        // Atualiza imediatamente a lista com as linhas retornadas pelo próprio INSERT.
+        currentCardTransactions = insertedRows
+          .filter(tx=>tx.reference_month===firstRef)
+          .concat(currentCardTransactions.filter(tx=>tx.reference_month===firstRef && !insertedRows.some(i=>i.id===tx.id)));
+        renderPurchases();
+
         await loadMonthData();
 
       }catch(err){
         console.error(err);
         showToast(`Erro ao salvar compra: ${err?.message||'erro inesperado'}`);
       }finally{
+        isSavingPurchase=false;
         if(submitBtn){submitBtn.disabled=false; submitBtn.textContent='Salvar compra';}
+        // Uma única atualização definitiva após todas as gravações terminarem.
+        await loadCardsData();
       }
     });
 
