@@ -1619,8 +1619,73 @@
       .fp-splash-wordmark{font-size:31px}
     }
 
+
+/* FINANCE+ V2.5.1 — modo Básico/Avançado + ícone web */
+.mode-banner{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+}
+.mode-banner .btn,
+#openSettingsFromMode,
+#modeBasicBtn,
+#modeAdvancedBtn{
+  border-radius:14px!important;
+}
+.mode-choice-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+.mode-choice-grid button,
+#modeBasicBtn,#modeAdvancedBtn{
+  min-height:82px!important;
+  padding:13px!important;
+  text-align:left!important;
+  border:1px solid #22312d!important;
+  background:#0b1614!important;
+  color:#f4f7f6!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+.mode-choice-grid button.active,
+#modeBasicBtn.active,#modeAdvancedBtn.active{
+  border-color:#08d98b!important;
+  background:linear-gradient(145deg,rgba(5,207,132,.17),rgba(5,207,132,.06))!important;
+  box-shadow:inset 0 0 0 1px rgba(5,207,132,.10)!important;
+}
+.mode-choice-grid button.active:after,
+#modeBasicBtn.active:after,#modeAdvancedBtn.active:after{
+  content:"✓";
+  position:absolute;
+  right:11px;top:10px;
+  width:22px;height:22px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#08d98b;color:#032016;font-weight:900;
+}
+.mode-choice-grid button strong,
+#modeBasicBtn strong,#modeAdvancedBtn strong{
+  display:block!important;
+  margin-bottom:5px!important;
+  color:#fff!important;
+}
+.mode-choice-grid button span,
+#modeBasicBtn span,#modeAdvancedBtn span{
+  color:#92a19d!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+}
+@media(max-width:420px){
+  .mode-choice-grid{grid-template-columns:1fr!important}
+}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
 </head>
 <body>
 
@@ -3672,6 +3737,15 @@
       window.addEventListener('load',()=>setTimeout(hide,220),{once:true});
     }
 
+
+function syncModeButtonsV251(){
+  const mode=getAppMode();
+  const basic=document.getElementById('modeBasicBtn');
+  const advanced=document.getElementById('modeAdvancedBtn');
+  if(basic) basic.classList.toggle('active',mode==='basic');
+  if(advanced) advanced.classList.toggle('active',mode==='advanced');
+}
+
     function getAppMode(){
       return localStorage.getItem('financePlusMode') || 'advanced';
     }
@@ -3706,12 +3780,12 @@
     }
 
     function renderAppMode(){
-      applyAppMode();
+      applyAppMode(); syncModeButtonsV251();
     }
 
     function setAppMode(mode){
       localStorage.setItem('financePlusMode',mode);
-      applyAppMode();
+      applyAppMode(); syncModeButtonsV251();
       showToast(mode==='basic'
         ? 'Modo Básico ativado. Compras detalhadas e parcelamentos foram ocultados.'
         : 'Modo Avançado ativado. Todos os recursos detalhados estão disponíveis.');
@@ -4970,7 +5044,7 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
       window.__financeV22VisualReady=true;
       try{ applyNavigationIcons(); }catch(e){ console.warn(e); }
       try{ applyV21VisualIdentity(); }catch(e){ console.warn(e); }
-      try{ applyAppMode(); }catch(e){ console.warn(e); }
+      try{ applyAppMode(); syncModeButtonsV251(); }catch(e){ console.warn(e); }
       try{ syncSidebarActive('home'); }catch(e){ console.warn(e); }
       try{ initBottomNavV242(); setBottomNavActive('home'); }catch(e){ console.warn(e); }
       try{ initFinanceSplash(); }catch(e){ console.warn(e); }

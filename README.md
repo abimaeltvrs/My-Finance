@@ -1,37 +1,18 @@
-# FINANCE+ V2.5 — Nova identidade oficial
+# FINANCE+ V2.5.1
 
-## Nova logo
-A nova marca oficial do FINANCE+ combina:
-- letra F;
-- gráfico de crescimento;
-- seta ascendente;
-- símbolo +;
-- prata/branco + verde esmeralda sobre fundo grafite.
+Correções:
+- Logo/ícone atualizado também para navegador, área de trabalho e instalação PWA.
+- Adicionado favicon.ico real.
+- Adicionados ícones PNG 32, 48, 180, 192 e 512.
+- Manifest passa a usar PNG 192/512 para maior compatibilidade Android/desktop.
+- Apple Touch Icon atualizado.
+- Botões de Modo Básico e Modo Avançado receberam novo visual.
+- Modo selecionado recebe borda verde e indicador de confirmação.
 
-## Aplicação
-- Nova logo aplicada no cabeçalho.
-- Nova logo aplicada no login.
-- Wordmark FINANCE+ atualizado.
-- Tela curta de abertura (splash screen) com a nova identidade.
-- Tagline: “SEU DINHEIRO. SOB CONTROLE.”
+Observação:
+Se o FINANCE+ já estiver instalado no celular/computador, o sistema operacional pode manter o ícone antigo. Após publicar esta versão, remova o atalho/app instalado e instale novamente para o novo ícone aparecer.
 
-## Ícone instalado
-Foram atualizados:
-- icon.svg;
-- icon-192.svg;
-- icon-512.svg;
-- versão clara;
-- versão monocromática;
-- favicon;
-- manifest do PWA.
+SQL: não há SQL novo.
 
-Após reinstalar/atualizar o PWA, o novo ícone passa a ser utilizado na tela inicial do celular.
-
-## Funcionalidades
-Nenhuma regra financeira foi alterada.
-
-## SQL
-Não há SQL novo.
-
-## Commit changes
-FINANCE+ V2.5 - aplicar nova identidade oficial e logo
+Commit changes:
+FINANCE+ V2.5.1 - atualizar icones web desktop e modos basico avancado

@@ -1,5 +1,5 @@
-const CACHE = 'finance-plus-v2-5-brand-identity';
-const STATIC_ASSETS = ['./manifest.json','./icons/icon.svg','./icons/icon-192.svg','./icons/icon-512.svg'];
+const CACHE = 'finance-plus-v2-5-1-icons-modes';
+const STATIC_ASSETS = ['./manifest.json','./favicon.ico','./icons/icon.svg','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(STATIC_ASSETS)));
