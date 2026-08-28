@@ -595,6 +595,7 @@
     let currentMonth = new Date();
     currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     let selectedPaymentBill = null;
+    let editingBillId = null;
 
     const brl = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
     const monthFmt = new Intl.DateTimeFormat('pt-BR', { month:'long', year:'numeric' });
@@ -655,16 +656,35 @@
       el.classList.toggle('loading', loading);
     }
 
-    function openBillModal(){
-      document.getElementById('billForm').reset();
-      document.getElementById('billReminder').value = '1';
-      const y = currentMonth.getFullYear();
-      const m = String(currentMonth.getMonth()+1).padStart(2,'0');
-      document.getElementById('billDueDate').value = `${y}-${m}-10`;
+    function openBillModal(bill=null){
+      const form = document.getElementById('billForm');
+      form.reset();
+      editingBillId = bill?.id || null;
+      document.getElementById('billModalTitle').textContent = bill ? 'Editar conta' : 'Nova conta';
+      document.getElementById('saveBillBtn').textContent = bill ? 'Salvar alterações' : 'Salvar conta';
+
+      if (bill) {
+        document.getElementById('billName').value = bill.name || '';
+        document.getElementById('billCategory').value = bill.category || 'Outros';
+        document.getElementById('billAmount').value = Number(bill.amount || 0);
+        document.getElementById('billDueDate').value = bill.due_date || '';
+        document.getElementById('billRecurrence').value = bill.recurrence || 'unica';
+        document.getElementById('billNotes').value = bill.notes || '';
+        document.getElementById('billReminder').value = '1';
+      } else {
+        document.getElementById('billReminder').value = '1';
+        const y = currentMonth.getFullYear();
+        const m = String(currentMonth.getMonth()+1).padStart(2,'0');
+        document.getElementById('billDueDate').value = `${y}-${m}-10`;
+      }
+
       document.getElementById('billModal').classList.remove('hidden');
     }
 
-    function closeBillModal(){ document.getElementById('billModal').classList.add('hidden'); }
+    function closeBillModal(){
+      editingBillId = null;
+      document.getElementById('billModal').classList.add('hidden');
+    }
     function closePaymentModal(){ document.getElementById('paymentModal').classList.add('hidden'); selectedPaymentBill=null; }
 
     async function loadMonthData(){
@@ -734,6 +754,11 @@
           pay.addEventListener('click', ()=>openPayment(bill));
           actions.appendChild(pay);
         }
+
+        const edit = document.createElement('button');
+        edit.type='button'; edit.className='btn'; edit.textContent='Editar';
+        edit.addEventListener('click', ()=>openBillModal(bill));
+        actions.appendChild(edit);
 
         const del = document.createElement('button');
         del.type='button'; del.className='btn danger'; del.textContent='Excluir';
@@ -812,11 +837,26 @@
     }
 
     async function deleteBill(bill){
-      if(!confirm(`Excluir a conta "${bill.name}"?`)) return;
+      const msg = bill.status === 'pago'
+        ? `Excluir a conta "${bill.name}"? O pagamento vinculado a este lançamento também será removido do histórico.`
+        : `Excluir a conta "${bill.name}"?`;
+      if(!confirm(msg)) return;
+
+      const { error: paymentError } = await supabaseClient
+        .from('payments')
+        .delete()
+        .eq('bill_id', bill.id);
+
+      if(paymentError){
+        showToast(`Erro ao excluir pagamento vinculado: ${paymentError.message}`);
+        return;
+      }
+
       const { error } = await supabaseClient.from('bills').delete().eq('id', bill.id);
       if(error){ showToast(`Erro ao excluir: ${error.message}`); return; }
-      showToast('Conta excluída.');
-      loadMonthData();
+
+      showToast('Lançamento excluído.');
+      await loadMonthData();
     }
 
     document.getElementById('newBillBtn').addEventListener('click', openBillModal);
@@ -854,23 +894,63 @@
         notes: document.getElementById('billNotes').value.trim() || null
       };
 
-      const { data, error } = await supabaseClient.from('bills').insert(payload).select().single();
+      let data = null;
+      let error = null;
 
-      if(!error && reminderValue >= 0){
-        const reminderRes = await supabaseClient.from('reminders').insert({
-          user_id: currentUser.id,
-          bill_id: data.id,
-          remind_days_before: reminderValue,
-          enabled: true
-        });
-        if(reminderRes.error) console.warn(reminderRes.error.message);
+      if (editingBillId) {
+        const result = await supabaseClient
+          .from('bills')
+          .update({
+            name: payload.name,
+            category: payload.category,
+            amount: payload.amount,
+            due_date: payload.due_date,
+            recurrence: payload.recurrence,
+            notes: payload.notes
+          })
+          .eq('id', editingBillId)
+          .select()
+          .single();
+
+        data = result.data;
+        error = result.error;
+
+        if (!error) {
+          await supabaseClient.from('reminders').delete().eq('bill_id', editingBillId);
+          if (reminderValue >= 0) {
+            const reminderRes = await supabaseClient.from('reminders').insert({
+              user_id: currentUser.id,
+              bill_id: editingBillId,
+              remind_days_before: reminderValue,
+              enabled: true
+            });
+            if (reminderRes.error) console.warn(reminderRes.error.message);
+          }
+        }
+      } else {
+        const result = await supabaseClient.from('bills').insert(payload).select().single();
+        data = result.data;
+        error = result.error;
+
+        if(!error && reminderValue >= 0){
+          const reminderRes = await supabaseClient.from('reminders').insert({
+            user_id: currentUser.id,
+            bill_id: data.id,
+            remind_days_before: reminderValue,
+            enabled: true
+          });
+          if(reminderRes.error) console.warn(reminderRes.error.message);
+        }
       }
 
-      saveBtn.disabled=false; saveBtn.textContent='Salvar conta';
+      saveBtn.disabled=false;
+      saveBtn.textContent = editingBillId ? 'Salvar alterações' : 'Salvar conta';
 
       if(error){ showToast(`Erro ao salvar: ${error.message}`); return; }
+
+      const wasEditing = !!editingBillId;
       closeBillModal();
-      showToast('Conta cadastrada com sucesso.');
+      showToast(wasEditing ? 'Lançamento atualizado.' : 'Conta cadastrada com sucesso.');
       const [y,m] = payload.due_date.split('-').map(Number);
       currentMonth = new Date(y, m-1, 1);
       await loadMonthData();

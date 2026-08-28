@@ -1,14 +1,14 @@
-# FINANCE+ V1.2.1
+# FINANCE+ V1.2.2
 
-Correção da V1.2.
+Melhorias na gestão de lançamentos.
 
-## Correções
-- Contas salvas passam a ser recarregadas no Dashboard imediatamente.
-- Consultas agora filtram explicitamente pelo usuário autenticado.
-- Erro em receitas/pagamentos não impede a exibição das contas.
-- Botão "Atualizar" incluído no Dashboard.
-- Service Worker alterado para buscar a versão mais recente da página antes do cache.
-- Cache antigo é removido automaticamente ao ativar a nova versão.
+## Novidades
+- Botão Editar em cada lançamento
+- Alteração de nome, categoria, valor, vencimento, recorrência e observação
+- Atualização do lembrete ao editar
+- Botão Excluir com confirmação
+- Ao excluir uma conta já paga, o pagamento vinculado também é removido do histórico
+- Dashboard atualizado após editar ou excluir
 
 ## Commit changes
-FINANCE+ V1.2.1 - corrigir atualização do dashboard
+FINANCE+ V1.2.2 - editar e excluir lançamentos
