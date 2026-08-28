@@ -1,14 +1,18 @@
-# FINANCE+ V1.2.2
+# FINANCE+ V1.2.3
 
-Melhorias na gestão de lançamentos.
+Marcação de pagamento completa.
 
 ## Novidades
-- Botão Editar em cada lançamento
-- Alteração de nome, categoria, valor, vencimento, recorrência e observação
-- Atualização do lembrete ao editar
-- Botão Excluir com confirmação
-- Ao excluir uma conta já paga, o pagamento vinculado também é removido do histórico
-- Dashboard atualizado após editar ou excluir
+- Marcar lançamento como pago
+- Data real do pagamento
+- Valor efetivamente pago
+- Forma de pagamento
+- Observação do pagamento
+- Exibição dos dados do pagamento no lançamento
+- Editar pagamento
+- Desfazer pagamento
+- Ao desfazer, a conta volta para pendente ou atrasada conforme o vencimento
+- Dashboard recalculado automaticamente
 
 ## Commit changes
-FINANCE+ V1.2.2 - editar e excluir lançamentos
+FINANCE+ V1.2.3 - marcação e gestão de pagamentos

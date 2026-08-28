@@ -428,6 +428,10 @@
               <option value="Outro">Outro</option>
             </select>
           </div>
+          <div class="field full">
+            <label for="paymentNotes">Observação do pagamento</label>
+            <textarea id="paymentNotes" placeholder="Opcional"></textarea>
+          </div>
         </div>
         <div class="modal-actions">
           <button id="cancelPaymentBtn" class="btn" type="button">Cancelar</button>
@@ -595,6 +599,7 @@
     let currentMonth = new Date();
     currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     let selectedPaymentBill = null;
+    let editingPaymentId = null;
     let editingBillId = null;
 
     const brl = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
@@ -685,7 +690,7 @@
       editingBillId = null;
       document.getElementById('billModal').classList.add('hidden');
     }
-    function closePaymentModal(){ document.getElementById('paymentModal').classList.add('hidden'); selectedPaymentBill=null; }
+    function closePaymentModal(){ document.getElementById('paymentModal').classList.add('hidden'); selectedPaymentBill=null; editingPaymentId=null; }
 
     async function loadMonthData(){
       if(!currentUser) return;
@@ -714,12 +719,17 @@
       if (incomesRes.error) console.warn('Erro ao carregar receitas:', incomesRes.error.message);
       if (paymentsRes.error) console.warn('Erro ao carregar pagamentos:', paymentsRes.error.message);
 
-      renderBills(bills);
+      const paymentByBill = new Map();
+      payments.forEach(payment => {
+        if (payment.bill_id && !paymentByBill.has(payment.bill_id)) paymentByBill.set(payment.bill_id, payment);
+      });
+
+      renderBills(bills, paymentByBill);
       renderUpcoming(bills);
       updateSummary(bills, incomes, payments);
     }
 
-    function renderBills(bills){
+    function renderBills(bills, paymentByBill = new Map()){
       const list = document.getElementById('billList');
       list.innerHTML = '';
       if(!bills.length){
@@ -732,11 +742,17 @@
         const row = document.createElement('div');
         row.className = 'bill';
         row.style.gridTemplateColumns = '1fr auto';
+        const payment = paymentByBill.get(bill.id);
+        const paymentInfo = payment
+          ? `<div class="bill-meta paid">Pago em ${formatDateBR(String(payment.paid_at).slice(0,10))} • ${escapeHtml(payment.payment_method || 'Forma não informada')} • ${brl.format(Number(payment.amount || 0))}</div>${payment.notes ? `<div class="bill-meta">${escapeHtml(payment.notes)}</div>` : ''}`
+          : '';
+
         row.innerHTML = `
           <div>
             <div class="bill-title">${escapeHtml(bill.name)}</div>
             <div class="bill-meta">${escapeHtml(bill.category || 'Sem categoria')} • Vence ${formatDateBR(bill.due_date)}</div>
             <div class="bill-meta">${bill.recurrence && bill.recurrence !== 'unica' ? 'Recorrência: ' + escapeHtml(bill.recurrence) : 'Conta única'}</div>
+            ${paymentInfo}
           </div>
           <div style="text-align:right">
             <strong>${brl.format(Number(bill.amount || 0))}</strong>
@@ -751,8 +767,20 @@
         if(status !== 'pago' && status !== 'cancelado'){
           const pay = document.createElement('button');
           pay.type='button'; pay.className='btn btn-primary'; pay.textContent='Marcar como pago';
-          pay.addEventListener('click', ()=>openPayment(bill));
+          pay.addEventListener('click', ()=>openPayment(bill, null));
           actions.appendChild(pay);
+        }
+
+        if(status === 'pago' && payment){
+          const editPayment = document.createElement('button');
+          editPayment.type='button'; editPayment.className='btn'; editPayment.textContent='Editar pagamento';
+          editPayment.addEventListener('click', ()=>openPayment(bill, payment));
+          actions.appendChild(editPayment);
+
+          const undoPayment = document.createElement('button');
+          undoPayment.type='button'; undoPayment.className='btn danger'; undoPayment.textContent='Desfazer pagamento';
+          undoPayment.addEventListener('click', ()=>undoPaymentForBill(bill, payment));
+          actions.appendChild(undoPayment);
         }
 
         const edit = document.createElement('button');
@@ -828,12 +856,44 @@
       document.getElementById('financeBalance').textContent = brl.format(balance);
     }
 
-    async function openPayment(bill){
+    async function openPayment(bill, payment=null){
       selectedPaymentBill = bill;
+      editingPaymentId = payment?.id || null;
+      document.getElementById('paymentModalTitle').textContent = payment ? 'Editar pagamento' : 'Registrar pagamento';
       document.getElementById('paymentBillName').textContent = `${bill.name} • ${brl.format(Number(bill.amount||0))}`;
-      document.getElementById('paymentAmount').value = Number(bill.amount||0).toFixed(2);
-      document.getElementById('paymentDate').value = todayISO();
+      document.getElementById('paymentAmount').value = Number(payment?.amount ?? bill.amount ?? 0).toFixed(2);
+      document.getElementById('paymentDate').value = payment?.paid_at ? String(payment.paid_at).slice(0,10) : todayISO();
+      document.getElementById('paymentMethod').value = payment?.payment_method || 'PIX';
+      document.getElementById('paymentNotes').value = payment?.notes || '';
       document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
+    async function undoPaymentForBill(bill, payment){
+      if(!confirm(`Desfazer o pagamento de "${bill.name}"? A conta voltará a ficar pendente.`)) return;
+
+      const { error: delError } = await supabaseClient
+        .from('payments')
+        .delete()
+        .eq('id', payment.id);
+
+      if(delError){
+        showToast(`Erro ao desfazer pagamento: ${delError.message}`);
+        return;
+      }
+
+      const newStatus = dateDiffDays(todayISO(), bill.due_date) < 0 ? 'atrasado' : 'pendente';
+      const { error: billError } = await supabaseClient
+        .from('bills')
+        .update({ status:newStatus })
+        .eq('id', bill.id);
+
+      if(billError){
+        showToast(`Pagamento removido, mas houve erro ao atualizar a conta: ${billError.message}`);
+        return;
+      }
+
+      showToast('Pagamento desfeito.');
+      await loadMonthData();
     }
 
     async function deleteBill(bill){
@@ -964,14 +1024,36 @@
       const amount = Number(document.getElementById('paymentAmount').value);
       const paidDate = document.getElementById('paymentDate').value;
       const method = document.getElementById('paymentMethod').value;
+      const notes = document.getElementById('paymentNotes').value.trim() || null;
 
-      const { error: payError } = await supabaseClient.from('payments').insert({
-        user_id: currentUser.id,
-        bill_id: selectedPaymentBill.id,
-        amount,
-        paid_at: paidDate + 'T12:00:00',
-        payment_method: method
-      });
+      if(!Number.isFinite(amount) || amount <= 0){
+        showToast('Informe um valor de pagamento válido.');
+        return;
+      }
+
+      let payError = null;
+
+      if(editingPaymentId){
+        const result = await supabaseClient.from('payments')
+          .update({
+            amount,
+            paid_at: paidDate + 'T12:00:00',
+            payment_method: method,
+            notes
+          })
+          .eq('id', editingPaymentId);
+        payError = result.error;
+      } else {
+        const result = await supabaseClient.from('payments').insert({
+          user_id: currentUser.id,
+          bill_id: selectedPaymentBill.id,
+          amount,
+          paid_at: paidDate + 'T12:00:00',
+          payment_method: method,
+          notes
+        });
+        payError = result.error;
+      }
 
       if(payError){ showToast(`Erro ao registrar pagamento: ${payError.message}`); return; }
 
@@ -981,9 +1063,10 @@
 
       if(billError){ showToast(`Pagamento salvo, mas houve erro ao atualizar a conta: ${billError.message}`); return; }
 
+      const wasEditing = !!editingPaymentId;
       closePaymentModal();
-      showToast('Pagamento registrado.');
-      loadMonthData();
+      showToast(wasEditing ? 'Pagamento atualizado.' : 'Pagamento registrado.');
+      await loadMonthData();
     });
 
         let deferredPrompt = null;
