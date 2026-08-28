@@ -283,7 +283,7 @@
               <button id="nextMonthBtn" class="btn" type="button" aria-label="Próximo mês">›</button>
             </div>
           </div>
-          <button id="newBillBtn" class="btn btn-primary" type="button">+ Nova conta</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="refreshBillsBtn" class="btn" type="button">Atualizar</button><button id="newBillBtn" class="btn btn-primary" type="button">+ Nova conta</button></div>
         </div>
         <div class="bill-list" id="billList">
           <div class="empty-state">Carregando contas...</div>
@@ -591,8 +591,6 @@
       }
     });
 
-    loadSession();
-
 
     let currentMonth = new Date();
     currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
@@ -679,9 +677,9 @@
       list.innerHTML = '<div class="empty-state">Carregando contas...</div>';
 
       const [billsRes, incomesRes, paymentsRes] = await Promise.all([
-        supabaseClient.from('bills').select('*').gte('due_date', start).lte('due_date', end).order('due_date'),
-        supabaseClient.from('incomes').select('*').gte('received_date', start).lte('received_date', end),
-        supabaseClient.from('payments').select('*').gte('paid_at', start+'T00:00:00').lte('paid_at', end+'T23:59:59')
+        supabaseClient.from('bills').select('*').eq('user_id', currentUser.id).gte('due_date', start).lte('due_date', end).order('due_date'),
+        supabaseClient.from('incomes').select('*').eq('user_id', currentUser.id).gte('received_date', start).lte('received_date', end),
+        supabaseClient.from('payments').select('*').eq('user_id', currentUser.id).gte('paid_at', start+'T00:00:00').lte('paid_at', end+'T23:59:59')
       ]);
 
       if (billsRes.error) {
@@ -690,8 +688,11 @@
       }
 
       const bills = billsRes.data || [];
-      const incomes = incomesRes.data || [];
-      const payments = paymentsRes.data || [];
+      const incomes = incomesRes.error ? [] : (incomesRes.data || []);
+      const payments = paymentsRes.error ? [] : (paymentsRes.data || []);
+
+      if (incomesRes.error) console.warn('Erro ao carregar receitas:', incomesRes.error.message);
+      if (paymentsRes.error) console.warn('Erro ao carregar pagamentos:', paymentsRes.error.message);
 
       renderBills(bills);
       renderUpcoming(bills);
@@ -819,6 +820,7 @@
     }
 
     document.getElementById('newBillBtn').addEventListener('click', openBillModal);
+    document.getElementById('refreshBillsBtn').addEventListener('click', async ()=>{ await loadMonthData(); showToast('Dashboard atualizado.'); });
     document.getElementById('closeBillModal').addEventListener('click', closeBillModal);
     document.getElementById('cancelBillBtn').addEventListener('click', closeBillModal);
     document.getElementById('closePaymentModal').addEventListener('click', closePaymentModal);
@@ -871,7 +873,8 @@
       showToast('Conta cadastrada com sucesso.');
       const [y,m] = payload.due_date.split('-').map(Number);
       currentMonth = new Date(y, m-1, 1);
-      loadMonthData();
+      await loadMonthData();
+      setTimeout(() => loadMonthData(), 400);
     });
 
     document.getElementById('paymentForm').addEventListener('submit', async e=>{
@@ -928,6 +931,8 @@
       installBanner.classList.remove('show');
       deferredPrompt = null;
     });
+
+    loadSession();
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js'));

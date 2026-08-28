@@ -1,23 +1,14 @@
-# FINANCE+ V1.2
+# FINANCE+ V1.2.1
 
-Versão funcional de contas a pagar conectada ao Supabase.
+Correção da V1.2.
 
-## Novidades da V1.2
-- Cadastro real de contas
-- Categoria, valor, vencimento, recorrência, lembrete e observação
-- Listagem das contas do usuário autenticado
-- Navegação entre meses
-- Status calculado: pendente, pago, atrasado, agendado
-- Registro de pagamento
-- Forma e data de pagamento
-- Pagamentos gravados na tabela `payments`
-- Dashboard calculado com dados reais
-- Próximos vencimentos
-- Exclusão de conta
-- Lembrete gravado na tabela `reminders`
+## Correções
+- Contas salvas passam a ser recarregadas no Dashboard imediatamente.
+- Consultas agora filtram explicitamente pelo usuário autenticado.
+- Erro em receitas/pagamentos não impede a exibição das contas.
+- Botão "Atualizar" incluído no Dashboard.
+- Service Worker alterado para buscar a versão mais recente da página antes do cache.
+- Cache antigo é removido automaticamente ao ativar a nova versão.
 
-## Observação
-A recorrência já é gravada no cadastro, mas a geração automática das próximas ocorrências será implementada em etapa posterior para evitar duplicações e manter histórico confiável.
-
-## Commit no GitHub
-FINANCE+ V1.2 - contas a pagar e pagamentos reais
+## Commit changes
+FINANCE+ V1.2.1 - corrigir atualização do dashboard
