@@ -1,4 +1,4 @@
-const CACHE = 'finance-plus-v2-6-smart-dashboard';
+const CACHE = 'finance-plus-v2-6-1-dashboard-hotfix';
 const STATIC_ASSETS = ['./manifest.json','./favicon.ico','./icons/icon.svg','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install', event => {

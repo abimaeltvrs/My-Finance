@@ -1,39 +1,30 @@
-# FINANCE+ V2.6 — Dashboard Inteligente
+# FINANCE+ V2.6.1 — Hotfix do Dashboard
 
-## Novo Dashboard
-- Saldo do mês em destaque.
-- Gráfico inteligente com evolução diária real do saldo.
-- Verde para situação saudável.
-- Amarelo/laranja para atenção.
-- Vermelho para situação negativa.
-- Comparação automática com o mês anterior.
-- Projeção de saldo para o fim do mês.
-- Receitas, despesas pagas e disponível.
-- Total a pagar.
-- Contas vencendo hoje e nos próximos 7 dias.
-- Faturas em aberto e próximo vencimento.
-- Próximos vencimentos.
-- Gráfico Receitas x Despesas.
-- Percentual da renda já utilizada.
-- Cards clicáveis levando para as telas correspondentes.
-- Alternância Básico/Avançado diretamente no Dashboard.
+## Problema encontrado na V2.6
+O novo Dashboard substituiu uma área antiga que também continha controles operacionais de Contas.
+O JavaScript continuava procurando:
+- Nova conta;
+- Sincronizar;
+- Mês anterior;
+- Próximo mês.
 
-## Regra do gráfico
-A curva é calculada dia a dia usando:
-saldo acumulado = receitas recebidas - pagamentos realizados.
+Como esses elementos haviam sido removidos do HTML, o JavaScript interrompia a inicialização e a tela de abertura podia ficar carregando.
 
-A cor do card/gráfico é calculada automaticamente:
-- verde: saldo/projeção saudável;
-- amarelo: comprometimento elevado ou projeção baixa;
-- vermelho: saldo/projeção negativa.
+## Correção
+- Dashboard inteligente mantido.
+- Tela de Contas restaurada como uma área independente.
+- Nova conta restaurada.
+- Sincronizar restaurado.
+- Navegação de mês restaurada.
+- Lista de contas restaurada.
+- Próximos vencimentos da área de Contas restaurados.
+- Referências antigas do resumo foram protegidas para não derrubar o aplicativo.
+- Adicionada proteção para a splash screen nunca ficar presa.
+- Revisão automática confirmou que não há listener direto apontando para botão inexistente.
+- JavaScript validado por verificação de sintaxe.
 
-## Projeção
-Previsão de fechamento =
-saldo realizado atual - contas pendentes - faturas abertas.
-
-## Banco de dados
-Nenhuma tabela nova.
-Não precisa executar SQL.
+## SQL
+Não há SQL novo.
 
 ## Commit changes
-FINANCE+ V2.6 - implementar dashboard inteligente
+FINANCE+ V2.6.1 - corrigir carregamento e restaurar operacao de contas

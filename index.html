@@ -2103,6 +2103,47 @@
 </div>
 
 
+
+    <div id="accountsContent" class="view-hidden">
+      <section class="grid content-grid">
+<article class="card">
+<div class="section-title">
+<div>
+<h2>Contas do mês</h2>
+<div class="month-nav">
+<button aria-label="Mês anterior" class="btn" id="prevMonthBtn" type="button">‹</button>
+<strong id="currentMonthLabel"></strong><span class="label" id="syncStatus">Sincronizado</span>
+<button aria-label="Próximo mês" class="btn" id="nextMonthBtn" type="button">›</button>
+</div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="refreshBillsBtn" type="button">Sincronizar</button><button class="btn btn-primary" id="newBillBtn" type="button">+ Nova conta</button></div>
+</div>
+<div class="filter-strip hidden" id="activeFilterStrip">
+<div>Filtro: <span class="filter-name" id="activeFilterName"></span></div>
+<button class="btn" id="clearDashboardFilter" type="button">Mostrar todas</button>
+</div>
+<div class="bill-list" id="billList">
+<div class="empty-state">Carregando contas...</div>
+</div>
+</article>
+<aside class="side-stack">
+<article class="card">
+<div class="section-title"><h2>Próximos vencimentos</h2></div>
+<div class="bill-list" id="upcomingList"><div class="empty-state">Nenhum vencimento carregado.</div></div>
+</article>
+<article class="card">
+<div class="section-title"><h2>Ações rápidas</h2></div>
+<div class="quick-actions">
+<button class="btn btn-primary" id="quickNewBill" type="button">+ Conta</button>
+<button class="btn" id="quickNewCard" type="button">+ Cartão</button>
+<button class="btn" id="quickNewIncome" type="button">+ Receita</button>
+<button class="btn" type="button">Relatório</button>
+</div>
+</article>
+</aside>
+</section>
+    </div>
+
     <div id="menuContent" class="view-hidden">
       <section class="card">
         <h2 style="margin-top:0">Menu</h2>
@@ -2994,7 +3035,7 @@
       applyDashboardFilter();
       renderUpcoming(currentBills);
       updateSummary(currentBills, currentIncomes, currentMonthPayments);
-      refreshDashboardV26();
+      refreshDashboardV26().catch(e=>console.warn('Dashboard:',e));
     }
 
     function scheduleServerRefresh(){
@@ -3247,17 +3288,17 @@
       });
 
       const balance = incomeTotal - paidTotal;
-      document.getElementById('monthBalance').textContent = brl.format(balance);
-      document.getElementById('heroIncome').textContent = brl.format(incomeTotal);
-      document.getElementById('heroPaid').textContent = brl.format(paidTotal);
-      document.getElementById('heroPending').textContent = brl.format(pendingTotal + lateTotal);
-      document.getElementById('cardPaid').textContent = brl.format(paidTotal);
-      document.getElementById('cardPending').textContent = brl.format(pendingTotal);
-      document.getElementById('cardDueSoon').textContent = brl.format(dueSoonTotal);
-      document.getElementById('cardLate').textContent = brl.format(lateTotal);
-      document.getElementById('financeIncome').textContent = brl.format(incomeTotal);
-      document.getElementById('financePaid').textContent = brl.format(paidTotal);
-      document.getElementById('financeBalance').textContent = brl.format(balance);
+      { const el=document.getElementById('monthBalance'); if(el) el.textContent=brl.format(balance); }
+      { const el=document.getElementById('heroIncome'); if(el) el.textContent=brl.format(incomeTotal); }
+      { const el=document.getElementById('heroPaid'); if(el) el.textContent=brl.format(paidTotal); }
+      { const el=document.getElementById('heroPending'); if(el) el.textContent=brl.format(pendingTotal + lateTotal); }
+      { const el=document.getElementById('cardPaid'); if(el) el.textContent=brl.format(paidTotal); }
+      { const el=document.getElementById('cardPending'); if(el) el.textContent=brl.format(pendingTotal); }
+      { const el=document.getElementById('cardDueSoon'); if(el) el.textContent=brl.format(dueSoonTotal); }
+      { const el=document.getElementById('cardLate'); if(el) el.textContent=brl.format(lateTotal); }
+      { const el=document.getElementById('financeIncome'); if(el) el.textContent=brl.format(incomeTotal); }
+      { const el=document.getElementById('financePaid'); if(el) el.textContent=brl.format(paidTotal); }
+      { const el=document.getElementById('financeBalance'); if(el) el.textContent=brl.format(balance); }
     }
 
     async function openPayment(bill, payment=null){
@@ -3707,6 +3748,7 @@
       try{ setBottomNavActive(view); }catch(e){}
       syncSidebarActive(view);
       const home = document.getElementById('homeContent');
+      const accounts = document.getElementById('accountsContent');
       const cards = document.getElementById('cardsContent');
       const incomes = document.getElementById('incomeContent');
       const calendar = document.getElementById('calendarContent');
@@ -3717,6 +3759,7 @@
       document.querySelectorAll('#bottomNav button').forEach(b=>b.classList.remove('active'));
 
       home.classList.add('view-hidden');
+      accounts?.classList.add('view-hidden');
       cards.classList.add('view-hidden');
       incomes.classList.add('view-hidden');
       calendar.classList.add('view-hidden');
@@ -3749,11 +3792,14 @@
       }else if(view === 'settings'){
         settings.classList.remove('view-hidden');
         renderAppMode();
+      }else if(view === 'accounts'){
+        accounts?.classList.remove('view-hidden');
+        document.getElementById('navAccounts')?.classList.add('active');
+        loadMonthData();
       }else{
         home.classList.remove('view-hidden');
-        refreshDashboardV26();
-        document.getElementById(view === 'accounts' ? 'navAccounts' : 'navHome').classList.add('active');
-        if(view === 'accounts') document.getElementById('billList')?.scrollIntoView({behavior:'smooth',block:'start'});
+        refreshDashboardV26().catch(e=>console.warn('Dashboard:',e));
+        document.getElementById('navHome')?.classList.add('active');
       }
     }
 
@@ -3906,6 +3952,16 @@
       });
     }
 
+
+
+    // V2.6.1: proteção contra tela de abertura travada.
+    (function(){
+      const splash=document.getElementById('fpSplash');
+      const forceHide=()=>splash?.classList.add('hide');
+      setTimeout(forceHide,1600);
+      window.addEventListener('error',forceHide);
+      window.addEventListener('unhandledrejection',forceHide);
+    })();
 
     function initFinanceSplash(){
       const splash=document.getElementById('fpSplash');
