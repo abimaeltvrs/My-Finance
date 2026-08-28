@@ -1,40 +1,59 @@
-# FINANCE+ V2.0 — Nova interface responsiva
+# FINANCE+ V2.1 — Identidade Visual Oficial
 
-Atualização visual ampla para Android, iOS e Web.
+Atualização visual baseada no conceito aprovado para Android, iOS e Web.
 
-## Navegação
-- Nova barra inferior flutuante no celular.
-- Ícones vetoriais consistentes para Início, Contas, Cartões, Agenda, Relatórios e Receitas.
-- Área ativa destacada.
-- Respeita a safe area inferior do iPhone.
-- No desktop a navegação se adapta para formato horizontal.
-- Botão Menu com ícone compacto no celular.
-- Sair continua disponível dentro do Perfil e no desktop.
+## Identidade
+- Fundo grafite/preto profundo.
+- Verde esmeralda como cor principal.
+- Azul para faturas.
+- Laranja para pendências.
+- Vermelho para atrasos.
+- Roxo como cor complementar.
+- Cartões com cantos arredondados e hierarquia visual mais limpa.
+- Ícones SVG consistentes em toda a aplicação.
+
+## Android / iOS
+- Barra de navegação inferior com aparência de aplicativo nativo.
+- Área ativa destacada em verde.
+- Botão flutuante central para novo lançamento.
+- Safe areas preservadas em iPhone.
+- Cabeçalho mais limpo.
+- Componentes e alvos de toque otimizados para celular.
+
+## Web / Desktop
+- Novo menu lateral persistente.
+- Dashboard ocupa a área principal.
+- Acesso direto a Dashboard, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Configurações.
+- Botão Sair disponível no menu lateral.
+- A barra inferior deixa de aparecer no desktop.
+
+## Dashboard
+- Cartão principal de saldo com gradiente esmeralda.
+- Indicadores com melhor contraste.
+- Cards com marcadores de cor.
+- Próximos compromissos com aparência mais limpa e clicável.
 
 ## Calendário
-- Células mais compactas no celular.
-- Dia atual destacado.
-- Indicadores coloridos preservados.
-- Textos continuam em uma única linha.
-- Setas de navegação substituídas por ícones.
-- Melhor adaptação a telas pequenas.
+- Layout mais compacto.
+- Dia atual em verde.
+- Contas = vermelho.
+- Receitas = verde.
+- Faturas = azul.
+- Nomes continuam em linha única.
+- Melhor adaptação para telas pequenas.
 
-## Ícones
-- Novo conjunto SVG próprio, sem depender de emojis.
-- Mesma linguagem visual em Android, iOS e Web.
-- Ícones adicionados também ao Menu principal.
-
-## Layout
-- Bordas e botões mais consistentes.
-- Áreas de toque maiores para celular.
-- Melhor comportamento responsivo.
-- Suporte às safe areas de aparelhos com notch/barra inferior.
+## Relatórios
+- Cards e tabela adaptados à nova identidade.
+- Barras de categoria em verde esmeralda.
+- Mensal/Anual com destaque consistente.
+- Exportação PDF permanece ativa.
 
 ## Funcionalidades
-Nenhuma regra financeira foi removida. Modo Básico e Avançado permanecem funcionando.
+Nenhuma regra financeira foi removida.
+Modo Básico e Modo Avançado permanecem funcionando normalmente.
 
 ## SQL
 Não há SQL novo obrigatório.
 
 ## Commit changes
-FINANCE+ V2.0 - renovar interface menu calendario e icones
+FINANCE+ V2.1 - aplicar identidade visual oficial
