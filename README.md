@@ -1,18 +1,15 @@
-# FINANCE+ V1.5 — Calendário financeiro
+# FINANCE+ V1.5.1
 
-## Novidades
-- Nova área Calendário.
-- Visualização mensal.
-- Contas a vencer aparecem no dia do vencimento.
-- Receitas aparecem na data do recebimento.
-- Faturas de cartão aparecem na data de vencimento.
-- Legenda por tipo de movimentação.
-- Ao clicar em um dia, abre o detalhamento completo das movimentações daquela data.
-- Navegação entre meses.
-- Atualização integrada ao Realtime.
+## Ajuste visual do calendário
+- Nomes dos lançamentos ficam sempre em uma única linha.
+- Textos longos são cortados com reticências (...).
+- O conteúdo não aumenta nem deforma o tamanho do dia no calendário.
+- Removidos os prefixos visíveis "Conta:", "Receita:" e "Fatura:" para ganhar espaço.
+- O nome completo continua disponível ao abrir o dia.
+- No desktop, o nome completo também aparece ao passar o mouse.
 
 ## SQL
-Não há SQL novo obrigatório nesta versão.
+Não há SQL novo obrigatório.
 
 ## Commit changes
-FINANCE+ V1.5 - adicionar calendário financeiro
+FINANCE+ V1.5.1 - ajustar nomes no calendário
