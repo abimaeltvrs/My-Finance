@@ -1,35 +1,31 @@
-# FINANCE+ V2.2 — Nova logo + capa oficial + correção visual
+# FINANCE+ V2.3 — Barra inferior fixa completa
 
-## Correção importante
-A V2.1 possuía uma inicialização visual dentro da tag externa do jsPDF. O navegador ignorava esse código.
-A V2.2 corrige a inicialização e força a atualização visual real.
+## Menu inferior
+- Todos os principais itens agora ficam na barra inferior:
+  Início, Contas, Cartões, Receitas, Calendário, Relatórios, Perfil e Configurações.
+- Nenhum item quebra de linha.
+- Todos os ícones permanecem na mesma linha.
+- A barra inferior fica fixa e visível durante toda a navegação.
+- Quando os itens não cabem na tela, a barra passa a ter rolagem horizontal suave.
+- Ao trocar de tela, o item ativo é automaticamente centralizado.
+- Há animação suave durante a troca das opções.
 
-## Nova logo
-- Novo símbolo FINANCE+.
-- F estilizado + gráfico financeiro.
-- Gradiente verde esmeralda.
-- Aplicada no login e no cabeçalho do aplicativo.
-- Ícones PWA 192 e 512 também foram substituídos pela nova identidade.
+## Android / iOS
+- Barra adaptada à largura disponível.
+- Safe area inferior do iPhone preservada.
+- Rolagem horizontal por toque/swipe.
+- Barra não desaparece ao mudar de página.
 
-## Nova capa/cabeçalho
-- Capa esmeralda abaixo do cabeçalho.
-- Mensagem “Seu dinheiro. Sob controle.”
-- Elementos gráficos financeiros.
-- Destaques para visão mensal, calendário e relatórios.
-- Layout adaptado para Android, iOS e Web.
+## Web
+- A mesma barra inferior continua visível no desktop.
+- Os itens ficam em linha única.
 
-## PWA / cache
-- Cache alterado para `finance-plus-v2-2-force-refresh`.
-- Navegação/HTML usa no-store.
-- Na ativação, caches antigos são eliminados.
-- Isso evita que o celular continue exibindo a versão visual antiga.
-
-## Funcionalidades
-Nenhuma regra financeira foi alterada.
-Modo Básico e Avançado continuam preservados.
+## Alterações
+- O botão flutuante central foi removido para evitar sobreposição.
+- Todas as opções principais passam a fazer parte da mesma navegação inferior.
 
 ## SQL
 Não há SQL novo.
 
 ## Commit changes
-FINANCE+ V2.2 - nova logo capa e corrigir atualizacao visual
+FINANCE+ V2.3 - menu inferior fixo completo e animado

@@ -864,6 +864,129 @@
       .fp-cover-badges span:nth-child(3){display:none}
     }
 
+
+    /* FINANCE+ V2.3 — menu inferior fixo e sempre visível */
+    .mobile-bottom-nav{
+      position:fixed!important;
+      left:50%!important;
+      transform:translateX(-50%)!important;
+      bottom:max(7px,var(--safe-bottom))!important;
+      width:min(calc(100% - 12px),760px)!important;
+      height:72px!important;
+      padding:6px!important;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:flex-start!important;
+      gap:4px!important;
+      overflow-x:auto!important;
+      overflow-y:hidden!important;
+      white-space:nowrap!important;
+      scrollbar-width:none!important;
+      -ms-overflow-style:none!important;
+      overscroll-behavior-x:contain;
+      scroll-snap-type:x proximity;
+      scroll-behavior:smooth;
+      z-index:999!important;
+      background:rgba(8,18,16,.96)!important;
+      border:1px solid rgba(255,255,255,.08)!important;
+      border-radius:22px!important;
+      box-shadow:0 18px 48px rgba(0,0,0,.42)!important;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+    .mobile-bottom-nav::-webkit-scrollbar{display:none!important}
+
+    .mobile-bottom-nav button{
+      flex:0 0 auto!important;
+      min-width:72px!important;
+      height:58px!important;
+      padding:5px 8px!important;
+      border:0!important;
+      border-radius:15px!important;
+      background:transparent!important;
+      color:#7f8c89!important;
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:4px!important;
+      white-space:nowrap!important;
+      scroll-snap-align:center;
+      font-size:9px!important;
+      font-weight:700!important;
+      line-height:1!important;
+      transition:
+        background .22s ease,
+        color .22s ease,
+        transform .22s ease,
+        opacity .22s ease!important;
+    }
+    .mobile-bottom-nav button span:last-child{
+      display:block!important;
+      white-space:nowrap!important;
+      overflow:visible!important;
+      text-overflow:clip!important;
+      max-width:none!important;
+    }
+    .mobile-bottom-nav button .ui-icon{
+      width:21px!important;
+      height:21px!important;
+      flex:0 0 21px!important;
+      transition:transform .22s ease!important;
+    }
+    .mobile-bottom-nav button.active{
+      color:var(--fp-green)!important;
+      background:rgba(0,200,122,.12)!important;
+      transform:translateY(-1px)!important;
+    }
+    .mobile-bottom-nav button.active .ui-icon{
+      transform:scale(1.08)!important;
+    }
+    .mobile-bottom-nav.nav-moving button:not(.active){
+      opacity:.68;
+    }
+
+    body{
+      padding-bottom:calc(92px + var(--safe-bottom))!important;
+    }
+
+    @media(max-width:420px){
+      .mobile-bottom-nav{
+        width:calc(100% - 8px)!important;
+        border-radius:20px!important;
+        padding:5px!important;
+      }
+      .mobile-bottom-nav button{
+        min-width:66px!important;
+        padding-left:6px!important;
+        padding-right:6px!important;
+        font-size:8.5px!important;
+      }
+    }
+
+    @media(min-width:1000px){
+      .mobile-bottom-nav{
+        display:flex!important;
+        position:fixed!important;
+        left:50%!important;
+        transform:translateX(-50%)!important;
+        bottom:14px!important;
+        top:auto!important;
+        width:min(calc(100% - 260px),980px)!important;
+        max-width:980px!important;
+        height:68px!important;
+        margin:0!important;
+      }
+      .mobile-bottom-nav button{
+        flex:1 0 auto!important;
+        min-width:92px!important;
+        flex-direction:row!important;
+        gap:7px!important;
+        font-size:11px!important;
+      }
+      body{padding-bottom:100px!important}
+    }
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
@@ -1300,7 +1423,16 @@
         </article>
         <aside class="card">
           <div class="section-title"><h2>Compras e parcelas</h2></div>
-          <div id="purchaseList" class="advanced-only" class="purchase-list"><div class="mobile-bottom-nav cards-empty">Nenhuma compra.</div></div>
+          <div id="purchaseList" class="advanced-only" class="purchase-list"><div class="mobile-bottom-nav cards-empty">
+      <button id="navHome" type="button" data-bottom-view="home"><span class="ui-icon" data-icon="home"></span><span>Início</span></button>
+      <button id="navBills" type="button" data-bottom-view="bills"><span class="ui-icon" data-icon="bills"></span><span>Contas</span></button>
+      <button id="navCards" type="button" data-bottom-view="cards"><span class="ui-icon" data-icon="cards"></span><span>Cartões</span></button>
+      <button id="navMore" type="button" data-bottom-view="incomes"><span class="ui-icon" data-icon="income"></span><span>Receitas</span></button>
+      <button id="navCalendar" type="button" data-bottom-view="calendar"><span class="ui-icon" data-icon="calendar"></span><span>Calendário</span></button>
+      <button id="navReports" type="button" data-bottom-view="reports"><span class="ui-icon" data-icon="reports"></span><span>Relatórios</span></button>
+      <button id="navProfile" type="button" data-bottom-view="profile"><span class="ui-icon" data-icon="user"></span><span>Perfil</span></button>
+      <button id="navSettings" type="button" data-bottom-view="settings"><span class="ui-icon" data-icon="settings"></span><span>Config.</span></button>
+</div></div>
         </aside>
       </section>
     </div>
@@ -2664,6 +2796,7 @@
 
 
     function showView(view){
+      try{ setBottomNavActive(view); }catch(e){}
       syncSidebarActive(view);
       const home = document.getElementById('homeContent');
       const cards = document.getElementById('cardsContent');
@@ -2740,7 +2873,7 @@
 
     function applyNavigationIcons(){
       document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=ICONS[el.dataset.icon]||'';});
-      const map={navHome:'home',navBills:'bills',navCards:'cards',navCalendar:'calendar',navReports:'reports',navMore:'income'};
+      const map={navHome:'home',navBills:'bills',navCards:'cards',navMore:'income',navCalendar:'calendar',navReports:'reports',navProfile:'user',navSettings:'settings'};
       Object.entries(map).forEach(([id,name])=>{
         const b=document.getElementById(id);
         if(b){
@@ -2803,6 +2936,60 @@
       document.querySelectorAll('[data-side-view]').forEach(btn=>{
         btn.classList.toggle('active',btn.dataset.sideView===view);
       });
+    }
+
+
+    function getBottomNav(){
+      return document.querySelector('.mobile-bottom-nav');
+    }
+
+    function setBottomNavActive(view){
+      const nav=getBottomNav();
+      if(!nav) return;
+
+      const buttons=[...nav.querySelectorAll('[data-bottom-view]')];
+      buttons.forEach(btn=>{
+        btn.classList.toggle('active',btn.dataset.bottomView===view);
+      });
+
+      const active=buttons.find(btn=>btn.dataset.bottomView===view);
+      if(active){
+        nav.classList.add('nav-moving');
+        try{
+          active.scrollIntoView({
+            behavior:'smooth',
+            block:'nearest',
+            inline:'center'
+          });
+        }catch(e){
+          const target=active.offsetLeft-(nav.clientWidth-active.offsetWidth)/2;
+          nav.scrollTo({left:Math.max(0,target),behavior:'smooth'});
+        }
+        clearTimeout(window.__financeNavAnimTimer);
+        window.__financeNavAnimTimer=setTimeout(()=>nav.classList.remove('nav-moving'),320);
+      }
+    }
+
+    function initBottomNavigationV23(){
+      const nav=getBottomNav();
+      if(!nav || nav.dataset.v23Ready==='1') return;
+      nav.dataset.v23Ready='1';
+
+      nav.querySelectorAll('[data-bottom-view]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const view=btn.dataset.bottomView;
+          showView(view);
+          setBottomNavActive(view);
+        });
+      });
+
+      // swipe/scroll feedback
+      let scrollTimer=null;
+      nav.addEventListener('scroll',()=>{
+        nav.classList.add('nav-moving');
+        clearTimeout(scrollTimer);
+        scrollTimer=setTimeout(()=>nav.classList.remove('nav-moving'),150);
+      },{passive:true});
     }
 
     function getAppMode(){
@@ -3737,14 +3924,8 @@
       selectedInvoice=null;
       document.getElementById('invoicePaymentModal').classList.add('hidden');
     }
-
-    document.getElementById('navHome').addEventListener('click',()=>showView('home'));
-    document.getElementById('navAccounts').addEventListener('click',()=>showView('accounts'));
-    document.getElementById('navCards').addEventListener('click',()=>showView('cards'));
-    document.getElementById('navReports').addEventListener('click',()=>showView('reports'));
-    document.getElementById('navMore').addEventListener('click',()=>showView('income'));
-    document.getElementById('navCalendar').addEventListener('click',()=>showView('calendar'));
-    document.getElementById('quickNewBill')?.addEventListener('click',openBillModal);
+document.getElementById('navAccounts').addEventListener('click',()=>showView('accounts'));
+document.getElementById('quickNewBill')?.addEventListener('click',openBillModal);
     document.getElementById('quickNewCard')?.addEventListener('click',()=>{showView('cards');openCardModal();});
     document.getElementById('quickNewIncome')?.addEventListener('click',()=>{showView('income');openIncomeModal();});
     document.getElementById('newCardBtn').addEventListener('click',openCardModal);
@@ -4110,12 +4291,11 @@
       try{ applyV21VisualIdentity(); }catch(e){ console.warn(e); }
       try{ applyAppMode(); }catch(e){ console.warn(e); }
       try{ syncSidebarActive('home'); }catch(e){ console.warn(e); }
+      try{ initBottomNavigationV23(); setBottomNavActive('home'); }catch(e){ console.warn(e); }
     }
 
 </script>
 
-  <button id="fpFab" class="fp-fab" type="button" aria-label="Novo lançamento">
-    <span class="ui-icon" data-icon="plus"></span>
-  </button>
+  
 </body>
 </html>
