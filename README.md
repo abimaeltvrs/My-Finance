@@ -1,44 +1,41 @@
-# FINANCE+ V3.1 - Relatorio PDF profissional
+# FINANCE+ V3.2 — Edição e exclusão liberadas
 
-O PDF foi redesenhado para acompanhar a identidade visual do FINANCE+.
+## Regra geral
+Os lançamentos criados pelo usuário devem permitir edição e exclusão.
 
-## Novo visual
-- cabecalho grafite premium
-- marca FINANCE+ vetorial
-- verde esmeralda como cor principal
-- titulo e periodo do relatorio
-- data/hora de geracao
-- cards de resumo executivo
-- status em etiquetas visuais
-- separacao clara por secoes
-- rodape com FINANCE+, periodo e numeracao de paginas
-
-## Resumo executivo
-O relatorio mostra:
-- saldo realizado
-- previsao final
-- total em aberto
-- receitas recebidas
-- receitas a receber
-- despesas pagas
-- percentual de utilizacao da receita
-- alerta de itens atrasados ou previsao negativa
-
-## Detalhamento
-Tabelas separadas para:
-- receitas
+Nesta versão foram reforçadas as ações para:
 - contas a pagar
-- faturas de cartao
-- pagamentos realizados
+- receitas
+- cartões
+- compras/parcelas do cartão
+- faturas manuais do Modo Básico
 
-Cada tabela mostra data/vencimento, descricao, categoria/referencia, status e valor.
+## Receitas recorrentes
+O seletor agora possui TODAS as opções:
+1x, 2x, 3x, 4x, 5x, 6x, 7x, 8x, 9x, 10x, 11x e 12x.
 
-## Periodo
-Ao gerar pelo Dashboard, o PDF usa exatamente o mes selecionado.
-A area Relatorios continua permitindo relatorio mensal ou anual.
+Cada ocorrência mensal continua aparecendo separadamente e pode ser editada ou excluída.
+
+## Compras no cartão
+Compras e parcelas agora exibem:
+- Editar
+- Excluir
+
+Ao editar ou excluir uma compra/parcela, a fatura afetada é recalculada automaticamente.
+
+## Cartões
+No perfil do cartão agora existe:
+- Editar cartão
+- Excluir cartão
+
+A exclusão pede confirmação e remove os dados vinculados conforme as relações do banco.
+
+## Faturas no Modo Básico
+As faturas informadas manualmente agora podem ser editadas e excluídas.
+Faturas pagas precisam ter o pagamento desfeito antes da exclusão/alteração.
 
 ## Banco de dados
-Nao ha novo SQL na V3.1.
+Não há SQL novo para a V3.2.
 
 ## Commit changes
-FINANCE+ V3.1 - criar relatorio PDF profissional
+FINANCE+ V3.2 - liberar edicao e exclusao dos lancamentos

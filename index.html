@@ -2692,6 +2692,11 @@
               <option value="4">4x • 4 meses</option>
               <option value="5">5x • 5 meses</option>
               <option value="6">6x • 6 meses</option>
+              <option value="7">7x • 7 meses</option>
+              <option value="8">8x • 8 meses</option>
+              <option value="9">9x • 9 meses</option>
+              <option value="10">10x • 10 meses</option>
+              <option value="11">11x • 11 meses</option>
               <option value="12">12x • 12 meses</option>
             </select>
           </div>
@@ -2789,6 +2794,7 @@
       </div>
 
       <div class="modal-actions">
+        <button id="deleteCardFromProfileBtn" class="btn danger" type="button">Excluir cartão</button>
         <button id="editCardFromProfileBtn" class="btn btn-primary" type="button">Editar cartão</button>
       </div>
     </section>
@@ -2797,21 +2803,21 @@
   <div id="purchaseModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <section class="modal">
       <div class="modal-header">
-        <div><h2>Nova compra</h2><div class="label">O parcelamento será distribuído automaticamente nas próximas faturas.</div></div>
+        <div><h2 id="purchaseModalTitle">Nova compra</h2><div id="purchaseModalSubtitle" class="label">O parcelamento será distribuído automaticamente nas próximas faturas.</div></div>
         <button id="closePurchaseModal" class="btn" type="button">Fechar</button>
       </div>
       <form id="purchaseForm">
         <div class="form-grid">
           <div class="field full"><label for="purchaseCard">Cartão</label><select id="purchaseCard" required></select></div>
           <div class="field full"><label for="purchaseDescription">Descrição</label><input id="purchaseDescription" required placeholder="Ex.: Mercado"></div>
-          <div class="field"><label for="purchaseAmount">Valor total</label><input id="purchaseAmount" type="number" min="0.01" step="0.01" required></div>
+          <div class="field"><label id="purchaseAmountLabel" for="purchaseAmount">Valor total</label><input id="purchaseAmount" type="number" min="0.01" step="0.01" required></div>
           <div class="field"><label for="purchaseDate">Data da compra</label><input id="purchaseDate" type="date" required></div>
           <div class="field"><label for="purchaseInstallments">Parcelas</label><input id="purchaseInstallments" type="number" min="1" max="48" value="1" required></div>
           <div class="field full"><label for="purchaseNotes">Observação</label><textarea id="purchaseNotes" placeholder="Opcional"></textarea></div>
         </div>
         <div class="modal-actions">
           <button id="cancelPurchaseBtn" class="btn" type="button">Cancelar</button>
-          <button class="btn btn-primary" type="submit">Salvar compra</button>
+          <button id="savePurchaseBtn" class="btn btn-primary" type="submit">Salvar compra</button>
         </div>
       </form>
     </section>
@@ -2977,6 +2983,9 @@
     let selectedInvoice = null;
     let selectedCardProfile = null;
     let editingCardId = null;
+    let editingPurchaseId = null;
+    let editingPurchaseOriginal = null;
+    let editingBasicInvoiceId = null;
     let isSavingPurchase = false;
 
     const authView = document.getElementById('authView');
@@ -4423,22 +4432,30 @@ function syncModeButtonsV251(){
     }
 
 
-    function openBasicInvoiceModal(){
+    function openBasicInvoiceModal(invoice=null){
       if(!currentCards.length){
         showToast('Cadastre um cartão primeiro.');
         return;
       }
+      editingBasicInvoiceId=invoice?.id||null;
       const select=document.getElementById('basicInvoiceCard');
       select.innerHTML=currentCards.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-      const ym=`${currentMonth.getFullYear()}-${String(currentMonth.getMonth()+1).padStart(2,'0')}`;
+      const ym=invoice?.reference_month
+        ? String(invoice.reference_month).slice(0,7)
+        : `${currentMonth.getFullYear()}-${String(currentMonth.getMonth()+1).padStart(2,'0')}`;
+      document.getElementById('basicInvoiceCard').value=invoice?.card_id||currentCards[0]?.id||'';
       document.getElementById('basicInvoiceMonth').value=ym;
-      document.getElementById('basicInvoiceAmount').value='';
+      document.getElementById('basicInvoiceAmount').value=invoice?.amount??'';
       document.getElementById('basicInvoiceNotes').value='';
-      updateBasicInvoiceDueDate();
+      if(invoice?.due_date) document.getElementById('basicInvoiceDueDate').value=invoice.due_date;
+      else updateBasicInvoiceDueDate();
+      const title=document.querySelector('#basicInvoiceModal h2');
+      if(title)title.textContent=invoice?'Editar fatura':'Fatura do cartão';
       document.getElementById('basicInvoiceModal').classList.remove('hidden');
     }
 
     function closeBasicInvoiceModal(){
+      editingBasicInvoiceId=null;
       document.getElementById('basicInvoiceModal').classList.add('hidden');
     }
 
@@ -4469,24 +4486,30 @@ function syncModeButtonsV251(){
 
       const referenceMonth=`${month}-01`;
 
-      // One invoice per card/reference month: update if already present.
-      const existing=await supabaseClient.from('card_invoices')
-        .select('*')
-        .eq('user_id',currentUser.id)
-        .eq('card_id',cardId)
-        .eq('reference_month',referenceMonth)
-        .maybeSingle();
+      // One invoice per card/reference month. When editing, update the selected invoice.
+      let existing;
+      if(editingBasicInvoiceId){
+        existing=await supabaseClient.from('card_invoices')
+          .select('*').eq('id',editingBasicInvoiceId).eq('user_id',currentUser.id).maybeSingle();
+      }else{
+        existing=await supabaseClient.from('card_invoices')
+          .select('*')
+          .eq('user_id',currentUser.id)
+          .eq('card_id',cardId)
+          .eq('reference_month',referenceMonth)
+          .maybeSingle();
+      }
 
       if(existing.error){showToast(existing.error.message);return;}
 
       let result;
       if(existing.data){
         if(existing.data.status==='pago'){
-          showToast('Esta fatura já está paga. Desfaça o pagamento antes de alterar o valor.');
+          showToast('Esta fatura já está paga. Desfaça o pagamento antes de alterar.');
           return;
         }
         result=await supabaseClient.from('card_invoices')
-          .update({amount,due_date:dueDate,status:'pendente'})
+          .update({card_id:cardId,reference_month:referenceMonth,amount,due_date:dueDate,status:'pendente'})
           .eq('id',existing.data.id)
           .eq('user_id',currentUser.id)
           .select()
@@ -5759,14 +5782,20 @@ function syncModeButtonsV251(){
       if(!tx.length){
         list.innerHTML='<div class="cards-empty">Nenhum lançamento encontrado para este cartão.</div>';
       }else{
-        list.innerHTML=tx.map(x=>`
-          <div class="purchase-row">
-            <div>
-              <strong>${escapeHtml(x.description||'Compra')}</strong>
-              <div class="label">${x.purchase_date?formatDateBR(x.purchase_date):'—'}${Number(x.installments_total||1)>1?` • ${x.installment_number}/${x.installments_total}`:''}</div>
-            </div>
-            <strong>${brl.format(Number(x.amount||0))}</strong>
-          </div>`).join('');
+        list.innerHTML='';
+        tx.forEach(x=>{
+          const row=document.createElement('div');
+          row.className='purchase-row';
+          row.innerHTML=`<div><strong>${escapeHtml(x.description||'Compra')}</strong>
+            <div class="label">${x.purchase_date?formatDateBR(x.purchase_date):'—'}${Number(x.installments_total||1)>1?` • ${x.installment_number}/${x.installments_total}`:''}</div></div>
+            <strong>${brl.format(Number(x.amount||0))}</strong>`;
+          const actions=document.createElement('div');actions.className='invoice-actions';
+          const edit=document.createElement('button');edit.className='btn';edit.type='button';edit.textContent='Editar';
+          edit.addEventListener('click',()=>{closeCardProfile();openPurchaseModal(x);});
+          const del=document.createElement('button');del.className='btn danger';del.type='button';del.textContent='Excluir';
+          del.addEventListener('click',()=>deletePurchase(x));
+          actions.append(edit,del);row.appendChild(actions);list.appendChild(row);
+        });
       }
       document.getElementById('cardProfileModal').classList.remove('hidden');
     }
@@ -5776,22 +5805,39 @@ function syncModeButtonsV251(){
       selectedCardProfile=null;
     }
 
-    function openPurchaseModal(){
+    function openPurchaseModal(tx=null){
       if(!currentCards.length){
         showToast('Cadastre um cartão primeiro.');
         openCardModal();
         return;
       }
-      const select = document.getElementById('purchaseCard');
-      select.innerHTML = currentCards.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-      document.getElementById('purchaseDescription').value='';
-      document.getElementById('purchaseAmount').value='';
-      document.getElementById('purchaseDate').value=todayISO();
-      document.getElementById('purchaseInstallments').value=1;
-      document.getElementById('purchaseNotes').value='';
+      editingPurchaseId=tx?.id||null;
+      editingPurchaseOriginal=tx?{...tx}:null;
+      const editing=!!editingPurchaseId;
+      const select=document.getElementById('purchaseCard');
+      select.innerHTML=currentCards.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+      select.value=tx?.card_id||currentCards[0]?.id||'';
+      document.getElementById('purchaseDescription').value=tx?.description||'';
+      document.getElementById('purchaseAmount').value=tx?.amount??'';
+      document.getElementById('purchaseDate').value=tx?.purchase_date||todayISO();
+      document.getElementById('purchaseInstallments').value=editing?1:1;
+      document.getElementById('purchaseInstallments').disabled=editing;
+      document.getElementById('purchaseNotes').value=tx?.notes||'';
+      document.getElementById('purchaseModalTitle').textContent=editing?'Editar compra/parcela':'Nova compra';
+      document.getElementById('purchaseModalSubtitle').textContent=editing
+        ? 'A edição altera este lançamento da fatura. O total da fatura será recalculado automaticamente.'
+        : 'O parcelamento será distribuído automaticamente nas próximas faturas.';
+      document.getElementById('purchaseAmountLabel').textContent=editing?'Valor do lançamento':'Valor total';
+      document.getElementById('savePurchaseBtn').textContent=editing?'Salvar alterações':'Salvar compra';
       document.getElementById('purchaseModal').classList.remove('hidden');
     }
-    function closePurchaseModal(){ document.getElementById('purchaseModal').classList.add('hidden'); }
+    function closePurchaseModal(){
+      editingPurchaseId=null;
+      editingPurchaseOriginal=null;
+      const inst=document.getElementById('purchaseInstallments');
+      if(inst)inst.disabled=false;
+      document.getElementById('purchaseModal').classList.add('hidden');
+    }
 
     async function rebuildInvoice(card, referenceMonth){
       const nextMonth = addMonthsISO(referenceMonth,1);
@@ -5966,6 +6012,16 @@ function syncModeButtonsV251(){
             ${tx.notes?`<div class="label">${escapeHtml(tx.notes)}</div>`:''}
           </div>
           <strong>${brl.format(Number(tx.amount||0))}</strong>`;
+        const actions=document.createElement('div');
+        actions.className='invoice-actions';
+        const edit=document.createElement('button');
+        edit.className='btn';edit.type='button';edit.textContent='Editar';
+        edit.addEventListener('click',()=>{closeInvoiceDetail();openPurchaseModal(tx);});
+        const del=document.createElement('button');
+        del.className='btn danger';del.type='button';del.textContent='Excluir';
+        del.addEventListener('click',()=>deletePurchase(tx));
+        actions.append(edit,del);
+        row.appendChild(actions);
         list.appendChild(row);
       });
     }
@@ -6007,6 +6063,17 @@ function syncModeButtonsV251(){
         });
         actions.appendChild(detailBtn);
 
+        if(getAppMode()==='basic'){
+          const editInv=document.createElement('button');
+          editInv.className='btn';editInv.type='button';editInv.textContent='Editar';
+          editInv.addEventListener('click',(event)=>{event.stopPropagation();openBasicInvoiceModal(inv);});
+          actions.appendChild(editInv);
+          const delInv=document.createElement('button');
+          delInv.className='btn danger';delInv.type='button';delInv.textContent='Excluir';
+          delInv.addEventListener('click',(event)=>{event.stopPropagation();deleteBasicInvoice(inv);});
+          actions.appendChild(delInv);
+        }
+
         if(!paid){
           const btn=document.createElement('button');
           btn.className='btn btn-primary'; btn.type='button'; btn.textContent='Pagar fatura';
@@ -6019,6 +6086,51 @@ function syncModeButtonsV251(){
         row.appendChild(actions);
         el.appendChild(row);
       });
+    }
+
+    async function deletePurchase(tx){
+      if(!tx||!confirm(`Excluir o lançamento "${tx.description}" desta fatura?`))return;
+      const card=currentCards.find(c=>c.id===tx.card_id);
+      const oldRef=String(tx.reference_month||'').slice(0,10);
+      const res=await supabaseClient.from('card_transactions')
+        .delete().eq('id',tx.id).eq('user_id',currentUser.id).select('id');
+      if(res.error){showToast(`Erro ao excluir compra: ${res.error.message}`);return;}
+      try{
+        if(card&&oldRef)await rebuildInvoice(card,oldRef);
+      }catch(err){
+        console.error(err);
+        showToast(`Compra excluída, mas houve erro ao recalcular a fatura: ${err.message}`);
+      }
+      showToast('Compra/parcela excluída e fatura recalculada.');
+      await loadCardsData();
+      await refreshDashboardV26();
+    }
+
+    async function deleteCard(card){
+      if(!card)return;
+      if(!confirm(`Excluir o cartão "${card.name}"? As compras e faturas vinculadas também serão removidas.`))return;
+      const res=await supabaseClient.from('cards')
+        .delete().eq('id',card.id).eq('user_id',currentUser.id).select('id');
+      if(res.error){showToast(`Erro ao excluir cartão: ${res.error.message}`);return;}
+      closeCardProfile();
+      currentCards=currentCards.filter(c=>c.id!==card.id);
+      showToast('Cartão excluído.');
+      await loadCardsData();
+      await refreshDashboardV26();
+    }
+
+    async function deleteBasicInvoice(inv){
+      if(!inv||!confirm(`Excluir esta fatura de ${brl.format(Number(inv.amount||0))}?`))return;
+      if(inv.status==='pago'){
+        showToast('Desfaça o pagamento da fatura antes de excluí-la.');
+        return;
+      }
+      const res=await supabaseClient.from('card_invoices')
+        .delete().eq('id',inv.id).eq('user_id',currentUser.id).select('id');
+      if(res.error){showToast(`Erro ao excluir fatura: ${res.error.message}`);return;}
+      showToast('Fatura excluída.');
+      await loadCardsData();
+      await refreshDashboardV26();
     }
 
     function renderPurchases(){
@@ -6036,6 +6148,16 @@ function syncModeButtonsV251(){
           <div><strong>${escapeHtml(tx.description)}</strong>
           <div class="label">${escapeHtml(card?.name||'Cartão')} • ${formatDateBR(tx.purchase_date)}${Number(tx.installments_total)>1?` • ${tx.installment_number}/${tx.installments_total}`:''}</div></div>
           <strong>${brl.format(Number(tx.amount||0))}</strong>`;
+        const actions=document.createElement('div');
+        actions.className='invoice-actions';
+        const edit=document.createElement('button');
+        edit.className='btn';edit.type='button';edit.textContent='Editar';
+        edit.addEventListener('click',()=>openPurchaseModal(tx));
+        const del=document.createElement('button');
+        del.className='btn danger';del.type='button';del.textContent='Excluir';
+        del.addEventListener('click',()=>deletePurchase(tx));
+        actions.append(edit,del);
+        row.appendChild(actions);
         el.appendChild(row);
       });
     }
@@ -6062,6 +6184,10 @@ document.getElementById('quickNewBill')?.addEventListener('click',openBillModal)
       btn.addEventListener('click',()=>fpSetCardColor(btn.dataset.color));
     });
     document.getElementById('closeCardProfileBtn')?.addEventListener('click',closeCardProfile);
+    document.getElementById('deleteCardFromProfileBtn')?.addEventListener('click',()=>{
+      const card=selectedCardProfile;
+      if(card)deleteCard(card);
+    });
     document.getElementById('editCardFromProfileBtn')?.addEventListener('click',()=>{
       const card=selectedCardProfile;
       if(!card)return;
@@ -6379,6 +6505,43 @@ document.querySelectorAll('[data-menu-view]').forEach(btn=>{
 
         if(!description||!purchaseDate||!Number.isFinite(total)||total<=0){
           showToast('Preencha corretamente os dados da compra.');
+          return;
+        }
+
+
+        if(editingPurchaseId){
+          const oldTx=editingPurchaseOriginal;
+          const oldCard=currentCards.find(c=>c.id===oldTx?.card_id);
+          const oldRef=String(oldTx?.reference_month||'').slice(0,10);
+          const newRef=purchaseReferenceMonth(card,purchaseDate);
+          const patch={
+            card_id:card.id,
+            description,
+            purchase_date:purchaseDate,
+            amount:Number(total.toFixed(2)),
+            installment_number:Number(oldTx?.installment_number||1),
+            installments_total:Number(oldTx?.installments_total||1),
+            reference_month:newRef,
+            notes
+          };
+          const upd=await supabaseClient.from('card_transactions')
+            .update(patch)
+            .eq('id',editingPurchaseId)
+            .eq('user_id',currentUser.id)
+            .select().single();
+          if(upd.error){showToast(`Erro ao editar compra: ${upd.error.message}`);return;}
+
+          const affectedRefs=new Set([oldRef,newRef].filter(Boolean));
+          for(const ref of affectedRefs){
+            const refCard=(ref===oldRef&&oldCard)?oldCard:card;
+            try{await rebuildInvoice(refCard,ref);}catch(err){console.error(err);}
+          }
+          closePurchaseModal();
+          showToast('Compra/parcela atualizada e fatura recalculada.');
+          const [ry,rm]=newRef.split('-').map(Number);
+          currentMonth=new Date(ry,rm-1,1);
+          await loadCardsData();
+          await refreshDashboardV26();
           return;
         }
 
