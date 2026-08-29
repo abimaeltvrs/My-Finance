@@ -1,4 +1,4 @@
-const CACHE = 'finance-plus-v3-0-1-recurring-bills-fix';
+const CACHE = 'finance-plus-v3-1-professional-pdf';
 const STATIC_ASSETS = ['./manifest.json','./favicon.ico','./icons/icon.svg','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install', event => {

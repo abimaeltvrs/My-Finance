@@ -2129,7 +2129,7 @@
   </section>
 
   <section class="fp-dashboard-actions">
-    <button id="dashPdfBtn" class="btn" type="button">⬇ PDF deste mês</button>
+    <button id="dashPdfBtn" class="btn" type="button">⬇ Relatório profissional</button>
   </section>
 
   <section id="smartBalanceCard" class="fp-smart-balance status-positive">
@@ -2360,7 +2360,7 @@
             <h2 style="margin:0">Relatórios financeiros</h2>
             <div class="label">Acompanhe receitas, pagamentos, pendências, faturas e saldo.</div>
           </div>
-          <div class="pdf-actions"><button id="downloadReportPdfBtn" class="btn" type="button">⬇ Baixar PDF</button></div>
+          <div class="pdf-actions"><button id="downloadReportPdfBtn" class="btn" type="button">⬇ Relatório PDF</button></div>
           <div class="report-tabs">
             <button id="reportMonthlyBtn" class="btn active" type="button">Mensal</button>
             <button id="reportAnnualBtn" class="btn" type="button">Anual</button>
@@ -4596,9 +4596,221 @@ function syncModeButtonsV251(){
 
     function escapePdfText(v){ return String(v??'').replace(/\s+/g,' ').trim(); }
 
+    function fpPdfStatusLabel(status){
+      const s=String(status||'pendente').toLowerCase();
+      const labels={
+        recebido:'RECEBIDO',pendente:'PENDENTE',pago:'PAGO',atrasado:'ATRASADO',
+        agendado:'AGENDADO',cancelado:'CANCELADO'
+      };
+      return labels[s]||s.toUpperCase();
+    }
+
+    function fpPdfStatusTone(status){
+      const s=String(status||'pendente').toLowerCase();
+      if(['recebido','pago'].includes(s)) return 'good';
+      if(s==='atrasado') return 'bad';
+      if(['pendente','agendado'].includes(s)) return 'warn';
+      return 'muted';
+    }
+
+    function fpPdfMoney(v){ return brl.format(Number(v||0)); }
+
+    function fpPdfDateTimeNow(){
+      try{
+        return new Intl.DateTimeFormat('pt-BR',{
+          dateStyle:'short',timeStyle:'short'
+        }).format(new Date());
+      }catch(e){
+        return new Date().toLocaleString('pt-BR');
+      }
+    }
+
+    function fpPdfDrawBrand(doc, x, y, scale=1){
+      // Marca vetorial inspirada na identidade FINANCE+: F prateado + gráfico verde + sinal +
+      doc.setDrawColor(232,236,235);
+      doc.setFillColor(232,236,235);
+      doc.roundedRect(x, y, 4*scale, 21*scale, 1*scale, 1*scale, 'F');
+      doc.roundedRect(x, y, 17*scale, 4*scale, 1*scale, 1*scale, 'F');
+      doc.roundedRect(x, y+8*scale, 12*scale, 4*scale, 1*scale, 1*scale, 'F');
+
+      doc.setDrawColor(0,196,140);
+      doc.setLineWidth(2*scale);
+      doc.line(x+3*scale,y+18*scale,x+9*scale,y+13*scale);
+      doc.line(x+9*scale,y+13*scale,x+13*scale,y+15*scale);
+      doc.line(x+13*scale,y+15*scale,x+20*scale,y+6*scale);
+      doc.line(x+16.5*scale,y+6*scale,x+20*scale,y+6*scale);
+      doc.line(x+20*scale,y+6*scale,x+20*scale,y+9.5*scale);
+
+      doc.setLineWidth(1.6*scale);
+      doc.line(x+22*scale,y+2*scale,x+28*scale,y+2*scale);
+      doc.line(x+25*scale,y-1*scale,x+25*scale,y+5*scale);
+    }
+
+    function fpPdfAddFooter(doc, periodLabel){
+      const pages=doc.getNumberOfPages();
+      for(let i=1;i<=pages;i++){
+        doc.setPage(i);
+        const pageW=doc.internal.pageSize.getWidth();
+        const pageH=doc.internal.pageSize.getHeight();
+        doc.setDrawColor(225,230,228);
+        doc.setLineWidth(.25);
+        doc.line(14,pageH-14,pageW-14,pageH-14);
+        doc.setFont('helvetica','normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(115,124,121);
+        doc.text(`FINANCE+  |  ${escapePdfText(periodLabel)}`,14,pageH-9);
+        doc.text(`Pagina ${i} de ${pages}`,pageW-14,pageH-9,{align:'right'});
+      }
+    }
+
+    function fpPdfSectionTitle(doc, title, y, subtitle=''){
+      const pageW=doc.internal.pageSize.getWidth();
+      doc.setFillColor(0,196,140);
+      doc.roundedRect(14,y,3,9,1,1,'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(12);
+      doc.setTextColor(30,36,34);
+      doc.text(escapePdfText(title),21,y+5.8);
+      if(subtitle){
+        doc.setFont('helvetica','normal');
+        doc.setFontSize(7.8);
+        doc.setTextColor(118,128,124);
+        doc.text(escapePdfText(subtitle),pageW-14,y+5.8,{align:'right'});
+      }
+      return y+13;
+    }
+
+    function fpPdfEnsureSpace(doc, y, needed, headerFn){
+      const pageH=doc.internal.pageSize.getHeight();
+      if(y+needed > pageH-21){
+        doc.addPage();
+        if(headerFn) headerFn();
+        return 25;
+      }
+      return y;
+    }
+
+    function fpPdfSummaryCard(doc,{x,y,w,h,label,value,accent='green',sub=''}) {
+      const tones={
+        green:[0,196,140], amber:[225,164,41], red:[220,76,82],
+        blue:[61,128,235], graphite:[65,74,71]
+      };
+      const c=tones[accent]||tones.graphite;
+      doc.setFillColor(248,250,249);
+      doc.setDrawColor(225,230,228);
+      doc.roundedRect(x,y,w,h,3,3,'FD');
+      doc.setFillColor(...c);
+      doc.roundedRect(x,y,2.4,h,1.2,1.2,'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7.4);
+      doc.setTextColor(102,113,109);
+      doc.text(escapePdfText(label).toUpperCase(),x+6,y+7);
+      doc.setFontSize(13);
+      doc.setTextColor(28,34,32);
+      const valueText=escapePdfText(value);
+      doc.text(valueText,x+6,y+15.2);
+      if(sub){
+        doc.setFont('helvetica','normal');
+        doc.setFontSize(6.8);
+        doc.setTextColor(125,135,131);
+        doc.text(escapePdfText(sub),x+6,y+h-4);
+      }
+    }
+
+    function fpPdfStatusPill(doc, text, status, x, y, width=25){
+      const tone=fpPdfStatusTone(status);
+      const map={
+        good:{bg:[226,247,239],fg:[0,135,91]},
+        warn:{bg:[253,245,221],fg:[153,104,0]},
+        bad:{bg:[253,231,232],fg:[183,48,54]},
+        muted:{bg:[238,241,240],fg:[105,114,111]}
+      };
+      const c=map[tone]||map.muted;
+      doc.setFillColor(...c.bg);
+      doc.roundedRect(x,y-3.4,width,5.8,2.5,2.5,'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(6.1);
+      doc.setTextColor(...c.fg);
+      doc.text(escapePdfText(text),x+width/2,y+.4,{align:'center'});
+    }
+
+    function fpPdfTable(doc,{y,columns,rows,headerFn,emptyText='Nenhum lancamento neste periodo.'}){
+      const startX=14;
+      const tableW=182;
+      const headerH=8;
+      const lineGap=3.6;
+      const cellPad=2;
+      const colX=[];
+      let cursor=startX;
+      columns.forEach(c=>{colX.push(cursor);cursor+=c.w;});
+
+      const drawHeader=()=>{
+        doc.setFillColor(238,242,240);
+        doc.roundedRect(startX,y,tableW,headerH,2,2,'F');
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(6.8);
+        doc.setTextColor(82,92,88);
+        columns.forEach((c,i)=>{
+          doc.text(c.label.toUpperCase(),colX[i]+cellPad,y+5.1);
+        });
+        y+=headerH+1.5;
+      };
+
+      y=fpPdfEnsureSpace(doc,y,headerH+10,headerFn);
+      drawHeader();
+
+      if(!rows.length){
+        doc.setFont('helvetica','italic');
+        doc.setFontSize(8);
+        doc.setTextColor(125,135,131);
+        doc.text(emptyText,startX+2,y+6);
+        return y+11;
+      }
+
+      for(const row of rows){
+        const wrapped=columns.map((c,i)=>{
+          const raw=escapePdfText(row[i]??'');
+          return c.wrap===false ? [raw] : doc.splitTextToSize(raw,Math.max(5,c.w-(cellPad*2)));
+        });
+        const maxLines=Math.max(1,...wrapped.map(x=>x.length));
+        const rowH=Math.max(8,maxLines*lineGap+3.2);
+
+        if(y+rowH>doc.internal.pageSize.getHeight()-21){
+          doc.addPage();
+          if(headerFn)headerFn();
+          y=25;
+          drawHeader();
+        }
+
+        doc.setDrawColor(232,236,234);
+        doc.setLineWidth(.2);
+        doc.line(startX,y+rowH,196,y+rowH);
+
+        columns.forEach((c,i)=>{
+          let text=wrapped[i];
+          doc.setFont('helvetica',c.bold?'bold':'normal');
+          doc.setFontSize(c.fontSize||7.2);
+          doc.setTextColor(42,49,47);
+
+          if(c.type==='money'){
+            const v=String(row[i]??'');
+            doc.text(v,colX[i]+c.w-cellPad,y+5,{align:'right'});
+          }else if(c.type==='status'){
+            const statusRaw=String(row[i]??'pendente');
+            const label=fpPdfStatusLabel(statusRaw);
+            fpPdfStatusPill(doc,label,statusRaw,colX[i]+cellPad,y+4.2,Math.min(c.w-4,25));
+          }else{
+            doc.text(text,colX[i]+cellPad,y+5);
+          }
+        });
+        y+=rowH;
+      }
+      return y+3;
+    }
+
     async function downloadReportPDF(){
       if(!window.jspdf?.jsPDF){
-        showToast('Não foi possível carregar o gerador de PDF. Verifique sua conexão.');
+        showToast('Nao foi possivel carregar o gerador de PDF. Verifique sua conexao.');
         return;
       }
 
@@ -4612,7 +4824,11 @@ function syncModeButtonsV251(){
       const err=billsRes.error||incomesRes.error||paymentsRes.error||invoicesRes.error;
       if(err){showToast(`Erro ao gerar PDF: ${err.message}`);return;}
 
-      const bills=billsRes.data||[], incomes=incomesRes.data||[], payments=paymentsRes.data||[], invoices=invoicesRes.data||[];
+      const bills=billsRes.data||[];
+      const incomes=incomesRes.data||[];
+      const payments=paymentsRes.data||[];
+      const invoices=invoicesRes.data||[];
+
       const receivedIncomes=incomes.filter(x=>fpIncomeStatus(x)==='recebido');
       const pendingIncomes=incomes.filter(x=>fpIncomeStatus(x)==='pendente');
       const incomeTotal=receivedIncomes.reduce((s,x)=>s+Number(x.amount||0),0);
@@ -4623,46 +4839,210 @@ function syncModeButtonsV251(){
       const pendingTotal=billsPending+invoicesPending;
       const balance=incomeTotal-paidTotal;
       const projection=balance+pendingIncomeTotal-pendingTotal;
+      const utilization=incomeTotal>0?(paidTotal/incomeTotal)*100:0;
+      const overdueTotal=bills.filter(x=>x.status==='atrasado').reduce((s,x)=>s+Number(x.amount||0),0)+
+        invoices.filter(x=>x.status==='atrasado').reduce((s,x)=>s+Number(x.amount||0),0);
 
       const {jsPDF}=window.jspdf;
-      const doc=new jsPDF({unit:'mm',format:'a4'});
-      const pageW=210, margin=14;
-      let y=16;
-      const title=reportMode==='annual'
-        ? `Relatório anual ${currentMonth.getFullYear()}`
-        : `Relatório Financeiro - ${monthFmt.format(currentMonth)}`;
+      const doc=new jsPDF({unit:'mm',format:'a4',compress:true});
+      const pageW=210;
+      let y=0;
 
-      doc.setFontSize(18); doc.text('FINANCE+',margin,y);
-      y+=8; doc.setFontSize(13); doc.text(escapePdfText(title),margin,y);
-      y+=10; doc.setFontSize(10);
-      doc.text(`Receitas recebidas: ${brl.format(incomeTotal)}`,margin,y); y+=6;
-      doc.text(`Receitas pendentes / a receber: ${brl.format(pendingIncomeTotal)}`,margin,y); y+=6;
-      doc.text(`Despesas efetivamente pagas: ${brl.format(paidTotal)}`,margin,y); y+=6;
-      doc.text(`Contas + faturas em aberto: ${brl.format(pendingTotal)}`,margin,y); y+=6;
-      doc.text(`Saldo realizado: ${brl.format(balance)}`,margin,y); y+=6;
-      doc.text(`Previsao no fim do periodo: ${brl.format(projection)}`,margin,y); y+=10;
+      const periodLabel=reportMode==='annual'
+        ? `Ano ${currentMonth.getFullYear()}`
+        : monthFmt.format(currentMonth).replace(/^\w/,c=>c.toUpperCase());
+      const reportTitle=reportMode==='annual'
+        ? `Relatorio Financeiro Anual - ${currentMonth.getFullYear()}`
+        : `Relatorio Financeiro - ${periodLabel}`;
 
-      const rows=[];
-      incomes.forEach(x=>rows.push([x.received_date,'Receita',x.description,fpIncomeStatus(x),Number(x.amount||0)]));
-      bills.forEach(x=>rows.push([x.due_date,'Conta',x.name,x.status||'pendente',Number(x.amount||0)]));
-      invoices.forEach(x=>rows.push([x.due_date,'Fatura',x.cards?.name||'Cartão',x.status||'pendente',Number(x.amount||0)]));
-      rows.sort((a,b)=>a[0].localeCompare(b[0]));
+      const drawPageHeader=()=>{
+        const currentY=8;
+        fpPdfDrawBrand(doc,14,currentY,0.72);
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(11);
+        doc.setTextColor(35,42,40);
+        doc.text('FINANCE+',39,currentY+6);
+        doc.setFont('helvetica','normal');
+        doc.setFontSize(6.8);
+        doc.setTextColor(118,128,124);
+        doc.text('SEU DINHEIRO. SOB CONTROLE.',39,currentY+10);
+        doc.setDrawColor(226,231,229);
+        doc.line(14,21,pageW-14,21);
+      };
 
-      doc.setFontSize(12); doc.text('Lançamentos',margin,y); y+=7; doc.setFontSize(9);
-      for(const row of rows){
-        if(y>282){doc.addPage();y=16;}
-        const line=`${formatDateBR(row[0])} | ${row[1]} | ${escapePdfText(row[2]).slice(0,42)} | ${row[3]} | ${brl.format(row[4])}`;
-        const parts=doc.splitTextToSize(line,pageW-(margin*2));
-        doc.text(parts,margin,y);
-        y+=5*parts.length+2;
-      }
+      // Capa/cabecalho principal
+      doc.setFillColor(24,29,28);
+      doc.rect(0,0,pageW,48,'F');
+      fpPdfDrawBrand(doc,14,12,1);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(20);
+      doc.setTextColor(248,250,249);
+      doc.text('FINANCE+',49,22);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8);
+      doc.setTextColor(164,176,171);
+      doc.text('SEU DINHEIRO. SOB CONTROLE.',49,28);
+
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(15);
+      doc.setTextColor(248,250,249);
+      doc.text(reportTitle,pageW-14,20,{align:'right'});
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(174,186,181);
+      doc.text(`Gerado em ${fpPdfDateTimeNow()}`,pageW-14,27,{align:'right'});
+      doc.text(`Periodo: ${formatDateBR(start)} a ${formatDateBR(end)}`,pageW-14,32,{align:'right'});
+
+      y=56;
+      y=fpPdfSectionTitle(doc,'Resumo executivo',y,'Visao consolidada do periodo');
+
+      fpPdfSummaryCard(doc,{x:14,y,w:57,h:25,label:'Saldo realizado',value:fpPdfMoney(balance),accent:balance>=0?'green':'red',sub:'Recebido - pago'});
+      fpPdfSummaryCard(doc,{x:76.5,y,w:57,h:25,label:'Previsao final',value:fpPdfMoney(projection),accent:projection>=0?'blue':'red',sub:'Inclui valores previstos'});
+      fpPdfSummaryCard(doc,{x:139,y,w:57,h:25,label:'Em aberto',value:fpPdfMoney(pendingTotal),accent:pendingTotal>0?'amber':'green',sub:'Contas + faturas'});
+      y+=31;
+
+      fpPdfSummaryCard(doc,{x:14,y,w:57,h:25,label:'Receitas recebidas',value:fpPdfMoney(incomeTotal),accent:'green',sub:`${receivedIncomes.length} lancamento(s)`});
+      fpPdfSummaryCard(doc,{x:76.5,y,w:57,h:25,label:'A receber',value:fpPdfMoney(pendingIncomeTotal),accent:'amber',sub:`${pendingIncomes.length} pendente(s)`});
+      fpPdfSummaryCard(doc,{x:139,y,w:57,h:25,label:'Despesas pagas',value:fpPdfMoney(paidTotal),accent:'graphite',sub:`${payments.length} pagamento(s)`});
+      y+=32;
+
+      // Analise rapida
+      doc.setFillColor(245,248,247);
+      doc.setDrawColor(225,230,228);
+      doc.roundedRect(14,y,182,24,3,3,'FD');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8);
+      doc.setTextColor(38,46,43);
+      doc.text('ANALISE DO PERIODO',20,y+7);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(7.4);
+      doc.setTextColor(88,99,95);
+      const utilizationText=incomeTotal>0
+        ? `${utilization.toFixed(1).replace('.',',')}% das receitas recebidas foram utilizadas em pagamentos.`
+        : 'Ainda nao ha receita recebida suficiente para calcular o percentual de utilizacao.';
+      doc.text(utilizationText,20,y+13);
+      const riskText=overdueTotal>0
+        ? `Atencao: existem ${fpPdfMoney(overdueTotal)} em itens atrasados no periodo.`
+        : projection<0
+          ? `Atencao: a previsao de fechamento do periodo esta negativa em ${fpPdfMoney(Math.abs(projection))}.`
+          : 'Situacao projetada positiva considerando os recebimentos e compromissos cadastrados.';
+      doc.text(riskText,20,y+18);
+      y+=31;
+
+      // Receitas
+      y=fpPdfSectionTitle(doc,'Receitas',y,`${incomes.length} lancamento(s)`);
+      const incomeRows=incomes.map(x=>[
+        formatDateBR(x.received_date),
+        x.description||'Receita',
+        x.category||'-',
+        fpIncomeStatus(x),
+        fpPdfMoney(x.amount)
+      ]);
+      y=fpPdfTable(doc,{
+        y,headerFn:drawPageHeader,
+        columns:[
+          {label:'Data',w:24,wrap:false},
+          {label:'Descricao',w:61},
+          {label:'Categoria',w:34},
+          {label:'Status',w:29,type:'status',wrap:false},
+          {label:'Valor',w:34,type:'money',bold:true,wrap:false}
+        ],
+        rows:incomeRows
+      });
+
+      // Contas
+      y=fpPdfEnsureSpace(doc,y,20,drawPageHeader);
+      y=fpPdfSectionTitle(doc,'Contas a pagar',y,`${bills.length} lancamento(s)`);
+      const billRows=bills.map(x=>[
+        formatDateBR(x.due_date),
+        x.name||'Conta',
+        x.category||'-',
+        x.status||'pendente',
+        fpPdfMoney(x.amount)
+      ]);
+      y=fpPdfTable(doc,{
+        y,headerFn:drawPageHeader,
+        columns:[
+          {label:'Vencimento',w:24,wrap:false},
+          {label:'Conta',w:61},
+          {label:'Categoria',w:34},
+          {label:'Status',w:29,type:'status',wrap:false},
+          {label:'Valor',w:34,type:'money',bold:true,wrap:false}
+        ],
+        rows:billRows
+      });
+
+      // Faturas
+      y=fpPdfEnsureSpace(doc,y,20,drawPageHeader);
+      y=fpPdfSectionTitle(doc,'Faturas de cartao',y,`${invoices.length} fatura(s)`);
+      const invoiceRows=invoices.map(x=>[
+        formatDateBR(x.due_date),
+        x.cards?.name||'Cartao',
+        x.reference_month ? x.reference_month.slice(0,7) : '-',
+        x.status||'pendente',
+        fpPdfMoney(x.amount)
+      ]);
+      y=fpPdfTable(doc,{
+        y,headerFn:drawPageHeader,
+        columns:[
+          {label:'Vencimento',w:24,wrap:false},
+          {label:'Cartao',w:61},
+          {label:'Referencia',w:34,wrap:false},
+          {label:'Status',w:29,type:'status',wrap:false},
+          {label:'Valor',w:34,type:'money',bold:true,wrap:false}
+        ],
+        rows:invoiceRows
+      });
+
+      // Pagamentos efetivos
+      y=fpPdfEnsureSpace(doc,y,20,drawPageHeader);
+      y=fpPdfSectionTitle(doc,'Pagamentos realizados',y,`${payments.length} pagamento(s)`);
+      const billMap=new Map(bills.map(x=>[x.id,x.name]));
+      const invoiceMap=new Map(invoices.map(x=>[x.id,x.cards?.name||'Fatura de cartao']));
+      const paymentRows=payments.map(x=>{
+        const ref=x.bill_id?billMap.get(x.bill_id):x.card_invoice_id?invoiceMap.get(x.card_invoice_id):null;
+        return [
+          formatDateBR(String(x.paid_at||'').slice(0,10)),
+          ref||x.notes||'Pagamento',
+          x.payment_method||'-',
+          'pago',
+          fpPdfMoney(x.amount)
+        ];
+      });
+      y=fpPdfTable(doc,{
+        y,headerFn:drawPageHeader,
+        columns:[
+          {label:'Data',w:24,wrap:false},
+          {label:'Referencia',w:61},
+          {label:'Forma',w:34},
+          {label:'Status',w:29,type:'status',wrap:false},
+          {label:'Valor',w:34,type:'money',bold:true,wrap:false}
+        ],
+        rows:paymentRows
+      });
+
+      // Observacao final
+      y=fpPdfEnsureSpace(doc,y,26,drawPageHeader);
+      doc.setFillColor(248,250,249);
+      doc.setDrawColor(225,230,228);
+      doc.roundedRect(14,y,182,18,3,3,'FD');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(54,63,60);
+      doc.text('NOTA',20,y+6);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(6.8);
+      doc.setTextColor(105,115,111);
+      const note='Este relatorio e gerado com base nos lancamentos registrados no FINANCE+. Valores previstos podem mudar conforme pagamentos, recebimentos e novos lancamentos forem atualizados.';
+      doc.text(doc.splitTextToSize(note,168),20,y+11);
+
+      fpPdfAddFooter(doc,periodLabel);
 
       const safePeriod=reportMode==='annual'
         ? String(currentMonth.getFullYear())
         : `${currentMonth.getFullYear()}-${String(currentMonth.getMonth()+1).padStart(2,'0')}`;
       doc.save(`FINANCE_PLUS_RELATORIO_${safePeriod}.pdf`);
     }
-
 
     function getDashboardMonthDates(){
       const y=currentMonth.getFullYear(), m=currentMonth.getMonth();

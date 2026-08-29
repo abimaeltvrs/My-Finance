@@ -1,33 +1,44 @@
-# FINANCE+ V3.0.1 — Correção de contas fixas
+# FINANCE+ V3.1 - Relatorio PDF profissional
 
-Corrigido o cadastro de contas recorrentes.
+O PDF foi redesenhado para acompanhar a identidade visual do FINANCE+.
 
-## Mensal
-Ao cadastrar uma conta como Mensal:
-- o lançamento do mês escolhido é criado;
-- os próximos 12 meses são criados automaticamente;
-- todos os lançamentos futuros entram como PENDENTE;
-- ao navegar no Dashboard mês a mês, a conta aparece em “A pagar” no respectivo mês.
+## Novo visual
+- cabecalho grafite premium
+- marca FINANCE+ vetorial
+- verde esmeralda como cor principal
+- titulo e periodo do relatorio
+- data/hora de geracao
+- cards de resumo executivo
+- status em etiquetas visuais
+- separacao clara por secoes
+- rodape com FINANCE+, periodo e numeracao de paginas
 
-Exemplo:
-Internet — R$ 120 — vencimento dia 10 — Mensal
-gera:
-10/08, 10/09, 10/10, ... nos próximos 12 meses.
+## Resumo executivo
+O relatorio mostra:
+- saldo realizado
+- previsao final
+- total em aberto
+- receitas recebidas
+- receitas a receber
+- despesas pagas
+- percentual de utilizacao da receita
+- alerta de itens atrasados ou previsao negativa
 
-## Semanal
-Gera as próximas 52 semanas.
+## Detalhamento
+Tabelas separadas para:
+- receitas
+- contas a pagar
+- faturas de cartao
+- pagamentos realizados
 
-## Anual
-Gera os próximos 5 anos.
+Cada tabela mostra data/vencimento, descricao, categoria/referencia, status e valor.
 
-## Edição
-Ao editar uma conta pertencente a uma série recorrente, os lançamentos futuros ainda pendentes também recebem os dados atualizados.
+## Periodo
+Ao gerar pelo Dashboard, o PDF usa exatamente o mes selecionado.
+A area Relatorios continua permitindo relatorio mensal ou anual.
 
-## Offline
-Uma nova série recorrente cadastrada offline é colocada na fila de sincronização junto com os próximos vencimentos.
-
-## Supabase
-Execute `SUPABASE_V3.0.1.sql` uma vez. O script é idempotente.
+## Banco de dados
+Nao ha novo SQL na V3.1.
 
 ## Commit changes
-FINANCE+ V3.0.1 - corrigir contas fixas nos meses futuros
+FINANCE+ V3.1 - criar relatorio PDF profissional
