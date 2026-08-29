@@ -2582,6 +2582,7 @@
               <option value="anual">Anual</option>
             </select>
             <div id="billRecurrenceHint" class="label" style="margin-top:6px">Conta única: será criado apenas este lançamento.</div>
+            <div class="label" style="margin-top:4px">Os lançamentos futuros ficam PENDENTES até serem pagos.</div>
           </div>
           <div class="field">
             <label for="billReminder">Lembrete</label>
@@ -3869,7 +3870,7 @@
       const hint=document.getElementById('billRecurrenceHint');
       const messages={
         unica:'Conta única: será criado apenas este lançamento.',
-        mensal:'Mensal: o sistema criará automaticamente os próximos 12 meses.',
+        mensal:'Mensal: será criada agora e também nos próximos 12 meses como conta a pagar.',
         semanal:'Semanal: o sistema criará automaticamente as próximas 52 semanas.',
         anual:'Anual: o sistema criará automaticamente os próximos 5 anos.'
       };
@@ -3882,93 +3883,184 @@
       if(!currentUser) return;
 
       const saveBtn = document.getElementById('saveBillBtn');
-      saveBtn.disabled=true; saveBtn.textContent='Salvando...';
+      const originalLabel = editingBillId ? 'Salvar alterações' : 'Salvar conta';
+      saveBtn.disabled=true;
+      saveBtn.textContent='Salvando...';
 
-      const reminderValue = Number(document.getElementById('billReminder').value);
-      const payload = {
-        user_id: currentUser.id,
-        name: document.getElementById('billName').value.trim(),
-        category: document.getElementById('billCategory').value,
-        amount: Number(document.getElementById('billAmount').value),
-        due_date: document.getElementById('billDueDate').value,
-        recurrence: document.getElementById('billRecurrence').value,
-        status: 'pendente',
-        notes: document.getElementById('billNotes').value.trim() || null
-      };
+      try{
+        const reminderValue = Number(document.getElementById('billReminder').value);
+        const payload = {
+          user_id: currentUser.id,
+          name: document.getElementById('billName').value.trim(),
+          category: document.getElementById('billCategory').value,
+          amount: Number(document.getElementById('billAmount').value),
+          due_date: document.getElementById('billDueDate').value,
+          recurrence: document.getElementById('billRecurrence').value,
+          status: 'pendente',
+          notes: document.getElementById('billNotes').value.trim() || null
+        };
 
-      let data = null;
-      let error = null;
+        if(!payload.name || !payload.due_date || !Number.isFinite(payload.amount) || payload.amount < 0){
+          showToast('Preencha corretamente os dados da conta.');
+          return;
+        }
 
-      if (editingBillId) {
-        const result = await supabaseClient
-          .from('bills')
-          .update({
-            name: payload.name,
-            category: payload.category,
-            amount: payload.amount,
-            due_date: payload.due_date,
-            recurrence: payload.recurrence,
-            notes: payload.notes
-          })
-          .eq('id', editingBillId)
-          .select()
-          .single();
+        const wasEditing = !!editingBillId;
+        let data = null;
+        let error = null;
+        let generatedCount = 0;
 
-        data = result.data;
-        error = result.error;
+        if (wasEditing) {
+          if(!navigator.onLine){
+            const original=currentBills.find(x=>x.id===editingBillId);
+            const merged={...(original||{}),...payload,id:editingBillId,user_id:currentUser.id};
+            await fpQueuePut({
+              qid:fpUUID(),user_id:currentUser.id,table:'bills',
+              payload:merged,created_at:new Date().toISOString(),attempts:0
+            });
+            data=merged;
+            upsertLocalBill(merged);
+            await fpStatus();
+          }else{
+            const result = await supabaseClient
+              .from('bills')
+              .update({
+                name: payload.name,
+                category: payload.category,
+                amount: payload.amount,
+                due_date: payload.due_date,
+                recurrence: payload.recurrence,
+                notes: payload.notes
+              })
+              .eq('id', editingBillId)
+              .eq('user_id', currentUser.id)
+              .select()
+              .single();
 
-        if (!error) {
-          await supabaseClient.from('reminders').delete().eq('bill_id', editingBillId);
-          if (reminderValue >= 0) {
+            data = result.data;
+            error = result.error;
+
+            if (!error) {
+              await supabaseClient.from('reminders').delete().eq('bill_id', editingBillId);
+              if (reminderValue >= 0) {
+                const reminderRes = await supabaseClient.from('reminders').insert({
+                  user_id: currentUser.id,
+                  bill_id: editingBillId,
+                  remind_days_before: reminderValue,
+                  enabled: true
+                });
+                if(reminderRes.error) console.warn(reminderRes.error.message);
+              }
+
+              if(data.recurrence && data.recurrence!=='unica'){
+                try{
+                  const generated=await generateRecurringBills(data);
+                  generatedCount=generated.length;
+                  await updateFutureRecurringBills(data);
+                }catch(recErr){
+                  console.error('Recorrência:',recErr);
+                  showToast(`Conta salva, mas houve erro ao atualizar recorrência: ${recErr.message}`);
+                }
+              }
+            }
+          }
+        } else {
+          // A conta raiz é gravada primeiro. Em seguida criamos as ocorrências futuras.
+          const result = await fpInsert('bills',payload);
+          data = result.data;
+          error = result.error || null;
+
+          if(error){
+            showToast(`Erro ao salvar: ${error.message}`);
+            return;
+          }
+
+          if(result.offline){
+            showToast('Conta salva offline. Será sincronizada automaticamente.');
+          }
+
+          if(navigator.onLine && reminderValue >= 0 && data?.id){
             const reminderRes = await supabaseClient.from('reminders').insert({
               user_id: currentUser.id,
-              bill_id: editingBillId,
+              bill_id: data.id,
               remind_days_before: reminderValue,
               enabled: true
             });
-            if (reminderRes.error) console.warn(reminderRes.error.message);
+            if(reminderRes.error) console.warn(reminderRes.error.message);
+          }
+
+          if(payload.recurrence && payload.recurrence!=='unica' && data?.id){
+            if(navigator.onLine){
+              try{
+                const generated=await generateRecurringBills(data);
+                generatedCount=generated.length;
+              }catch(recErr){
+                console.error('Recorrência:',recErr);
+                showToast(`Conta cadastrada, mas não foi possível gerar os próximos vencimentos: ${recErr.message}`);
+              }
+            }else{
+              // Offline: já deixa as futuras ocorrências na fila de sincronização.
+              const seriesId=data.id;
+              const steps=recurrenceSteps(payload.recurrence);
+              for(let i=1;i<=steps;i++){
+                const futurePayload={
+                  ...payload,
+                  id:fpUUID(),
+                  due_date:addRecurrenceDate(payload.due_date,payload.recurrence,i),
+                  recurrence_series_id:seriesId,
+                  recurrence_index:i
+                };
+                const queued=await fpInsert('bills',futurePayload);
+                if(!queued.error) generatedCount++;
+              }
+              // Atualiza a raiz na fila para identificá-la como início da série.
+              await fpQueuePut({
+                qid:fpUUID(),user_id:currentUser.id,table:'bills',
+                payload:{...data,recurrence_series_id:seriesId,recurrence_index:0},
+                created_at:new Date().toISOString(),attempts:0
+              });
+              await fpStatus();
+            }
           }
         }
-      } else {
-        const result = await fpInsert('bills',payload);
-        data = result.data;
-        error = null;
-        if(result.offline) showToast('Conta salva offline. Será sincronizada automaticamente.');
 
-        if(!error && reminderValue >= 0){
-          const reminderRes = await supabaseClient.from('reminders').insert({
-            user_id: currentUser.id,
-            bill_id: data.id,
-            remind_days_before: reminderValue,
-            enabled: true
-          });
-          if(reminderRes.error) console.warn(reminderRes.error.message);
+        if(error){
+          showToast(`Erro ao salvar: ${error.message}`);
+          return;
         }
+
+        const savedBill=data;
+        const [y,m]=payload.due_date.split('-').map(Number);
+        const targetMonth=new Date(y,m-1,1);
+
+        closeBillModal();
+
+        if(wasEditing){
+          showToast('Lançamento atualizado.');
+        }else if(payload.recurrence==='mensal'){
+          showToast(`Conta fixa cadastrada. ${generatedCount} mês(es) futuro(s) gerados como pendentes.`);
+        }else if(payload.recurrence==='semanal'){
+          showToast(`Conta recorrente cadastrada. ${generatedCount} vencimento(s) futuro(s) gerados.`);
+        }else if(payload.recurrence==='anual'){
+          showToast(`Conta anual cadastrada. ${generatedCount} ano(s) futuro(s) gerados.`);
+        }else{
+          showToast('Conta cadastrada com sucesso.');
+        }
+
+        if(targetMonth.getFullYear()===currentMonth.getFullYear() &&
+           targetMonth.getMonth()===currentMonth.getMonth()){
+          if(savedBill)upsertLocalBill(savedBill);
+          refreshDashboardFromState();
+        }else{
+          currentMonth=targetMonth;
+          await loadMonthData();
+        }
+
+        scheduleServerRefresh();
+      }finally{
+        saveBtn.disabled=false;
+        saveBtn.textContent=originalLabel;
       }
-
-      saveBtn.disabled=false;
-      saveBtn.textContent = editingBillId ? 'Salvar alterações' : 'Salvar conta';
-
-      if(error){ showToast(`Erro ao salvar: ${error.message}`); return; }
-
-      const wasEditing = !!editingBillId;
-      const savedBill = data;
-
-      const [y,m] = payload.due_date.split('-').map(Number);
-      const targetMonth = new Date(y, m-1, 1);
-
-      closeBillModal();
-      showToast(wasEditing ? 'Lançamento atualizado.' : 'Conta cadastrada com sucesso.');
-
-      if(targetMonth.getFullYear() === currentMonth.getFullYear() &&
-         targetMonth.getMonth() === currentMonth.getMonth()){
-        upsertLocalBill(savedBill);
-        refreshDashboardFromState();
-      }else{
-        currentMonth = targetMonth;
-        await loadMonthData();
-      }
-      scheduleServerRefresh();
     });
 
     document.getElementById('paymentForm').addEventListener('submit', async e=>{

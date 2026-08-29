@@ -1,38 +1,33 @@
-# FINANCE+ V3.0 — Dashboard mês a mês + PDF mensal
+# FINANCE+ V3.0.1 — Correção de contas fixas
 
-## Dashboard
-O Dashboard agora possui navegação de período no topo:
-- mês anterior
-- mês seguinte
-- botão “Mês atual”
+Corrigido o cadastro de contas recorrentes.
 
-Ao trocar o mês, TODOS os indicadores do Dashboard são recalculados para o período escolhido:
-- receitas recebidas
-- receitas pendentes / a receber
-- despesas pagas
-- disponível
-- contas a pagar
-- faturas abertas
-- previsão de fim do mês
-- gráficos
-- próximos compromissos
+## Mensal
+Ao cadastrar uma conta como Mensal:
+- o lançamento do mês escolhido é criado;
+- os próximos 12 meses são criados automaticamente;
+- todos os lançamentos futuros entram como PENDENTE;
+- ao navegar no Dashboard mês a mês, a conta aparece em “A pagar” no respectivo mês.
 
-Isso também permite consultar meses futuros que já possuam receitas recorrentes, contas ou faturas cadastradas.
+Exemplo:
+Internet — R$ 120 — vencimento dia 10 — Mensal
+gera:
+10/08, 10/09, 10/10, ... nos próximos 12 meses.
 
-## PDF do mês
-Foi adicionado “PDF deste mês” diretamente no Dashboard.
+## Semanal
+Gera as próximas 52 semanas.
 
-O PDF usa exatamente o mês selecionado e mostra:
-- receitas recebidas
-- receitas pendentes / a receber
-- despesas efetivamente pagas
-- contas + faturas em aberto
-- saldo realizado
-- previsão no fim do período
-- lançamentos do período com status
+## Anual
+Gera os próximos 5 anos.
 
-## Banco de dados
-Se você já executou o `SUPABASE_V2.9.sql`, NÃO precisa executar outro SQL para a V3.0.
+## Edição
+Ao editar uma conta pertencente a uma série recorrente, os lançamentos futuros ainda pendentes também recebem os dados atualizados.
+
+## Offline
+Uma nova série recorrente cadastrada offline é colocada na fila de sincronização junto com os próximos vencimentos.
+
+## Supabase
+Execute `SUPABASE_V3.0.1.sql` uma vez. O script é idempotente.
 
 ## Commit changes
-FINANCE+ V3.0 - adicionar dashboard mensal e PDF por mes
+FINANCE+ V3.0.1 - corrigir contas fixas nos meses futuros
