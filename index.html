@@ -2812,6 +2812,24 @@ html[data-theme="light"] .fp-landing-trust{color:#66756f!important}
   #authView .auth-hero{grid-column:1}
   #authView .auth-card{grid-column:2;grid-row:1 / span 2;position:sticky;top:28px}
 }
+
+/* FINANCE+ V3.8 — Caixa acumulado */
+.fp-cash-settings{
+  margin:12px 0;padding:16px;border:1px solid #27352f;border-radius:18px;background:#0d1715
+}
+.fp-cash-settings-head h3{margin:3px 0 5px;font-size:15px}
+.fp-cash-settings-head p,.fp-cash-help{color:#879690;font-size:10px;line-height:1.5}
+.fp-settings-kicker{font-size:9px;letter-spacing:.12em;font-weight:900;color:#18d98c}
+.fp-cash-settings-form{display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:9px;align-items:end;margin-top:12px}
+.fp-cash-settings-form label{grid-column:1/-1;color:#91a09b;font-size:10px;font-weight:800}
+.fp-cash-settings-form .fp-money-field{min-height:42px}
+.fp-cash-help{display:block;margin-top:9px}
+html[data-theme="light"] .fp-cash-settings{background:#fff!important;border-color:#dce5e0!important}
+html[data-theme="light"] .fp-cash-settings-head h3{color:#17201d!important}
+html[data-theme="light"] .fp-cash-settings-head p,
+html[data-theme="light"] .fp-cash-help,
+html[data-theme="light"] .fp-cash-settings-form label{color:#66756f!important}
+@media(max-width:520px){.fp-cash-settings-form{grid-template-columns:1fr}.fp-cash-settings-form button{width:100%}}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -3094,7 +3112,7 @@ document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('fp
     </button>
     <button id="dashAvailableMetric" class="fp-metric-card metric-available" type="button">
       <div class="fp-metric-icon">▣</div>
-      <div><span>DISPONÍVEL</span><strong id="dashAvailableValue">R$ 0,00</strong><small>Disponível para usar</small></div>
+      <div><span>RESULTADO DO MÊS</span><strong id="dashAvailableValue">R$ 0,00</strong><small>Receitas recebidas − pagamentos</small></div>
     </button>
   </section>
 
@@ -5288,6 +5306,7 @@ document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('fp
         loadProfileView();
       }else if(view === 'settings'){
         settings.classList.remove('view-hidden');
+        fpLoadInitialCashBalance();
         renderAppMode();
       }else if(view === 'accounts'){
         accounts?.classList.remove('view-hidden');
@@ -6405,6 +6424,61 @@ function syncModeButtonsV251(){
       health.textContent=hasNegative?'Requer atenção':hasAttention?'Acompanhe':'Saúde positiva';
     }
 
+
+    let fpInitialCashBalance = 0;
+
+    async function fpLoadInitialCashBalance(){
+      if(!currentUser)return 0;
+      const {data,error}=await supabaseClient
+        .from('profiles')
+        .select('initial_cash_balance')
+        .eq('id',currentUser.id)
+        .maybeSingle();
+      if(error){
+        console.warn('Saldo inicial:',error.message);
+        return fpInitialCashBalance||0;
+      }
+      fpInitialCashBalance=Number(data?.initial_cash_balance||0);
+      const input=document.getElementById('initialCashBalance');
+      if(input)input.value=fpInitialCashBalance.toFixed(2);
+      return fpInitialCashBalance;
+    }
+
+    async function fpGetCurrentCashBalance(){
+      if(!currentUser)return 0;
+      const initial=await fpLoadInitialCashBalance();
+      const [incRes,payRes]=await Promise.all([
+        supabaseClient.from('incomes').select('amount,status').eq('user_id',currentUser.id),
+        supabaseClient.from('payments').select('amount').eq('user_id',currentUser.id)
+      ]);
+      if(incRes.error||payRes.error){
+        console.warn('Caixa: não foi possível calcular o saldo acumulado.');
+        return initial;
+      }
+      const received=(incRes.data||[])
+        .filter(x=>fpIncomeStatus(x)==='recebido')
+        .reduce((s,x)=>s+Number(x.amount||0),0);
+      const paid=(payRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
+      return initial+received-paid;
+    }
+
+    async function fpSaveInitialCashBalance(){
+      if(!currentUser)return;
+      const input=document.getElementById('initialCashBalance');
+      const value=Number(input?.value||0);
+      if(!Number.isFinite(value)||value<0){showToast('Informe um saldo inicial válido.');return}
+      const btn=document.getElementById('saveInitialCashBtn');
+      if(btn){btn.disabled=true;btn.textContent='Salvando...'}
+      const {error}=await supabaseClient.from('profiles')
+        .update({initial_cash_balance:value})
+        .eq('id',currentUser.id);
+      if(btn){btn.disabled=false;btn.textContent='Salvar saldo inicial'}
+      if(error){showToast(`Erro ao salvar saldo inicial: ${error.message}`);return}
+      fpInitialCashBalance=value;
+      showToast('Saldo inicial atualizado.');
+      await refreshDashboardV26();
+    }
+
     async function refreshDashboardV26(){
       if(!currentUser) return;
       fpUpdateDashboardPeriod();
@@ -6430,6 +6504,7 @@ function syncModeButtonsV251(){
       const pendingIncome=pendingIncomes.reduce((s,x)=>s+Number(x.amount||0),0);
       const paid=payments.reduce((s,x)=>s+Number(x.amount||0),0);
       const balance=income-paid;
+      const currentCashBalance=await fpGetCurrentCashBalance();
       const prevIncome=(prevIncRes.data||[]).filter(x=>(x.status||'recebido')==='recebido').reduce((s,x)=>s+Number(x.amount||0),0);
       const prevPaid=(prevPayRes.data||[]).reduce((s,x)=>s+Number(x.amount||0),0);
       const prevBalance=prevIncome-prevPaid;
@@ -6446,8 +6521,8 @@ function syncModeButtonsV251(){
       const greeting=document.getElementById('dashboardGreeting');
       if(greeting) greeting.textContent=`Olá${displayName?`, ${displayName}`:''}! 👋`;
 
-      document.getElementById('smartBalanceValue').textContent=brl.format(balance);
-      document.getElementById('smartBalanceProjection').textContent=`Previsão no fim do mês: ${brl.format(projection)}`;
+      document.getElementById('smartBalanceValue').textContent=brl.format(currentCashBalance);
+      document.getElementById('smartBalanceProjection').textContent=`Resultado previsto do mês: ${brl.format(projection)}`;
 
       let trendText='Sem comparação suficiente com o mês passado';
       if(Math.abs(prevBalance)>0.01){
@@ -7380,7 +7455,23 @@ function syncModeButtonsV251(){
         row.className='purchase-row';
         row.innerHTML=`
           <div><strong>${escapeHtml(tx.description)}</strong>
-          <div class="label">${escapeHtml(card?.name||'Cartão')} • ${formatDateBR(tx.purchase_date)}${Number(tx.installments_total)>1?` • ${tx.installment_number}/${tx.installments_total}`:''}</div></div>
+          
+      <section class="fp-cash-settings">
+        <div class="fp-cash-settings-head">
+          <div>
+            <span class="fp-settings-kicker">CAIXA</span>
+            <h3>Saldo inicial</h3>
+            <p>Informe quanto você já possuía quando começou a usar o FINANCE+.</p>
+          </div>
+        </div>
+        <div class="fp-cash-settings-form">
+          <label for="initialCashBalance">Saldo inicial do caixa</label>
+          <div class="fp-money-field"><span>R$</span><input id="initialCashBalance" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></div>
+          <button id="saveInitialCashBtn" class="btn btn-primary" type="button">Salvar saldo inicial</button>
+        </div>
+        <small class="fp-cash-help">Depois disso, receitas recebidas aumentam o caixa e pagamentos realizados diminuem o caixa automaticamente.</small>
+      </section>
+<div class="label">${escapeHtml(card?.name||'Cartão')} • ${formatDateBR(tx.purchase_date)}${Number(tx.installments_total)>1?` • ${tx.installment_number}/${tx.installments_total}`:''}</div></div>
           <strong>${brl.format(Number(tx.amount||0))}</strong>`;
         const actions=document.createElement('div');
         actions.className='invoice-actions';
@@ -8177,6 +8268,10 @@ document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasi
   document.getElementById('investDays')?.addEventListener('change',simulate);
   readCache();
 })();
+</script>
+
+<script>
+document.getElementById('saveInitialCashBtn')?.addEventListener('click',fpSaveInitialCashBalance);
 </script>
 </body>
 </html>

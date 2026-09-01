@@ -1,32 +1,18 @@
-# FINANCE+ V3.7 — Landing pública
+# FINANCE+ V3.8 — Caixa acumulado
 
-Correção da experiência Web para visitantes.
+O FINANCE+ agora diferencia:
+- Saldo atual: dinheiro acumulado disponível desde o início do uso.
+- Resultado do mês: receitas recebidas no mês menos pagamentos realizados no mês.
 
-## Regra
-Quem acessa o FINANCE+ sem sessão autenticada vê somente a página pública:
-- apresentação/propaganda do FINANCE+
-- benefícios e principais recursos
-- carrossel informativo
-- botão de instalação
-- login
-- criação de conta
+Fórmula do Saldo Atual:
+saldo inicial + todas as receitas recebidas - todos os pagamentos realizados.
 
-A interface financeira real fica completamente oculta até o login:
-- Dashboard
-- menu inferior
-- cartões
-- contas
-- receitas
-- calendário
-- relatórios
-- investimentos
-- configurações
+Em Configurações existe agora `Caixa > Saldo inicial`.
+Exemplo: saldo inicial R$ 2.000 + receita recebida R$ 1.000 - pagamento R$ 600 = saldo atual R$ 2.400.
 
-Também foi adicionado um bloqueio visual durante a verificação da sessão para impedir que o Dashboard apareça rapidamente antes do Supabase confirmar se existe usuário autenticado.
+Receitas pendentes não aumentam o caixa. Contas/faturas apenas cadastradas também não diminuem o caixa; a saída ocorre quando há pagamento registrado.
 
-Usuários que já possuem uma sessão válida continuam entrando diretamente no aplicativo.
-
-Não há SQL novo.
+Execute uma vez o arquivo `FINANCE_PLUS_V3.8_SQL.sql` no Supabase antes de testar.
 
 Commit changes:
-FINANCE+ V3.7 - criar landing publica e ocultar area interna antes do login
+FINANCE+ V3.8 - adicionar caixa acumulado e saldo inicial
