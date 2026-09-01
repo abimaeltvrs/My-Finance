@@ -1,22 +1,21 @@
-# FINANCE+ V3.3.2 — Correção de Aparência
+# FINANCE+ V3.3.3 — Correção completa do tema
 
-Correção da tela Configurações.
+## Corrigido
+- Tema Claro agora é aplicado em todo o aplicativo.
+- Tema Escuro preserva o visual original grafite/verde.
+- Preferência de tema fica salva no dispositivo.
+- Tema é restaurado automaticamente ao abrir o app.
+- Barra do navegador/PWA acompanha o tema.
 
-Agora devem aparecer, na mesma tela:
+## Configurações
+Os seletores de:
+- Modo Básico / Avançado
+- Claro / Escuro
 
-1. Modo do aplicativo
-   - Básico
-   - Avançado
+foram refinados para seguir o padrão visual do FINANCE+, com cartões, seleção verde e melhor leitura no celular.
 
-2. Aparência
-   - Claro
-   - Escuro
-
-O seletor Básico/Avançado continua somente em Configurações e não aparece no topo do Dashboard.
-
-A escolha do tema fica salva no dispositivo e não altera nem apaga dados financeiros.
-
-Não há SQL novo nesta versão.
+## Banco de dados
+Nenhuma alteração SQL é necessária.
 
 Commit changes:
-FINANCE+ V3.3.2 - corrigir tema claro e escuro nas configuracoes
+FINANCE+ V3.3.3 - corrigir tema claro escuro e melhorar botoes
