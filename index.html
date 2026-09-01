@@ -2707,6 +2707,70 @@ html[data-theme="light"] .fp-invest-disclaimer{border-color:#dce5e0!important}
   .fp-sim-form label:first-child{grid-column:1/-1}
   .fp-tip-grid{grid-template-columns:1fr}
 }
+
+/* FINANCE+ V3.6 — Inteligência financeira no Dashboard */
+.fp-ai-card{
+  margin:0 0 14px;padding:17px;border-radius:20px;border:1px solid #244238;
+  background:
+    radial-gradient(circle at 94% 5%,rgba(24,217,140,.12),transparent 28%),
+    linear-gradient(145deg,#0e1b17,#0a1412);
+  box-shadow:0 10px 28px rgba(0,0,0,.12)
+}
+.fp-ai-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.fp-ai-title{display:flex;align-items:center;gap:10px}
+.fp-ai-mark{
+  width:38px;height:38px;display:grid;place-items:center;border-radius:12px;
+  background:rgba(24,217,140,.12);border:1px solid rgba(24,217,140,.27);
+  color:#1ddd91;font-size:18px
+}
+.fp-ai-title span:not(.fp-ai-mark){display:block;font-size:9px;letter-spacing:.12em;font-weight:900;color:#18d98c}
+.fp-ai-title strong{display:block;margin-top:2px;font-size:15px}
+.fp-ai-health{
+  padding:6px 9px;border-radius:999px;background:#15211e;color:#9cacA6;
+  border:1px solid #2b3935;font-size:9px;font-weight:850;white-space:nowrap
+}
+.fp-ai-health.good{background:#0d2a1f;color:#3fe0a0;border-color:#1d6347}
+.fp-ai-health.warning{background:#2b210d;color:#f2bd60;border-color:#60471a}
+.fp-ai-health.alert{background:#2a1515;color:#ff8989;border-color:#653131}
+.fp-ai-insights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.fp-ai-insight{
+  min-width:0;padding:12px;border-radius:14px;background:#101b18;border:1px solid #26342f
+}
+.fp-ai-insight-top{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.fp-ai-insight-icon{
+  flex:0 0 25px;width:25px;height:25px;border-radius:8px;display:grid;place-items:center;
+  background:#172720;color:#1ddd91;font-size:11px;font-weight:900
+}
+.fp-ai-insight strong{display:block;font-size:11px;line-height:1.25}
+.fp-ai-insight p{margin:0;color:#8e9d97;font-size:9px;line-height:1.45}
+.fp-ai-insight.positive .fp-ai-insight-icon{background:#102b20;color:#34df9a}
+.fp-ai-insight.attention .fp-ai-insight-icon{background:#2a210f;color:#efbd65}
+.fp-ai-insight.negative .fp-ai-insight-icon{background:#2a1717;color:#ff8787}
+.fp-ai-loading{grid-column:1/-1;color:#8e9d97;font-size:10px;padding:8px}
+.fp-ai-footer{margin-top:10px;padding-top:9px;border-top:1px solid #23312c}
+.fp-ai-footer small{color:#72817b;font-size:8px;line-height:1.4}
+html[data-theme="light"] .fp-ai-card{
+  background:radial-gradient(circle at 94% 5%,rgba(0,168,107,.08),transparent 28%),#fff!important;
+  border-color:#d5e5dd!important;box-shadow:0 7px 22px rgba(27,49,41,.05)!important
+}
+html[data-theme="light"] .fp-ai-title strong,
+html[data-theme="light"] .fp-ai-insight strong{color:#17201d!important}
+html[data-theme="light"] .fp-ai-title span:not(.fp-ai-mark){color:#008f5c!important}
+html[data-theme="light"] .fp-ai-mark{background:#e9f8f0!important;color:#008f5c!important;border-color:#c3e6d5!important}
+html[data-theme="light"] .fp-ai-health{background:#f3f6f4!important;color:#64736d!important;border-color:#dce5e0!important}
+html[data-theme="light"] .fp-ai-health.good{background:#e9f8f0!important;color:#087a50!important;border-color:#c5e6d6!important}
+html[data-theme="light"] .fp-ai-health.warning{background:#fff5df!important;color:#966100!important;border-color:#ecd5a3!important}
+html[data-theme="light"] .fp-ai-health.alert{background:#fdecec!important;color:#b63b3b!important;border-color:#efc6c6!important}
+html[data-theme="light"] .fp-ai-insight{background:#f8faf9!important;border-color:#dfe7e3!important}
+html[data-theme="light"] .fp-ai-insight p{color:#66756f!important}
+html[data-theme="light"] .fp-ai-footer{border-color:#e1e8e4!important}
+html[data-theme="light"] .fp-ai-footer small{color:#71807a!important}
+@media(max-width:720px){
+  .fp-ai-insights{grid-template-columns:1fr}
+  .fp-ai-insight{display:grid;grid-template-columns:auto 1fr;column-gap:8px}
+  .fp-ai-insight-top{grid-column:1/-1}
+  .fp-ai-head{align-items:flex-start}
+}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -2979,7 +3043,24 @@ html[data-theme="light"] .fp-invest-disclaimer{border-color:#dce5e0!important}
     </button>
   </section>
 
-  <section class="fp-dashboard-duo">
+  
+  <section class="fp-ai-card" id="financialIntelligenceCard">
+    <div class="fp-ai-head">
+      <div class="fp-ai-title">
+        <span class="fp-ai-mark">✦</span>
+        <div><span>INTELIGÊNCIA FINANCEIRA</span><strong>Análise do seu mês</strong></div>
+      </div>
+      <span id="fpAiHealth" class="fp-ai-health">Analisando...</span>
+    </div>
+    <div id="fpAiInsights" class="fp-ai-insights">
+      <div class="fp-ai-loading">Analisando seus lançamentos...</div>
+    </div>
+    <div class="fp-ai-footer">
+      <small>Insights automáticos baseados nos dados cadastrados no FINANCE+. Não constitui recomendação financeira.</small>
+    </div>
+  </section>
+
+<section class="fp-dashboard-duo">
     <button id="dashPayableCard" class="fp-detail-card fp-card-button" type="button">
       <div class="fp-detail-top">
         <div class="fp-detail-icon payable">▤</div>
@@ -6172,6 +6253,99 @@ function syncModeButtonsV251(){
       document.getElementById('dashModeAdvanced')?.classList.toggle('active',mode==='advanced');
     }
 
+
+    function fpRenderFinancialIntelligence(data){
+      const box=document.getElementById('fpAiInsights');
+      const health=document.getElementById('fpAiHealth');
+      if(!box||!health)return;
+
+      const {income,pendingIncome,paid,balance,projection,prevIncome,prevPaid,
+             openBills,openInvoices,dueToday,due7}=data;
+      const insights=[];
+      const expenseChange=prevPaid>0?((paid-prevPaid)/prevPaid)*100:null;
+      const incomeChange=prevIncome>0?((income-prevIncome)/prevIncome)*100:null;
+      const usage=income>0?(paid/income)*100:null;
+      const commitments=openBills.reduce((s,x)=>s+Number(x.amount||0),0)+
+        openInvoices.reduce((s,x)=>s+Number(x.amount||0),0);
+
+      if(expenseChange!==null){
+        if(expenseChange>10){
+          insights.push({kind:'attention',icon:'↑',title:'Gastos em alta',
+            text:`Suas despesas pagas estão ${Math.abs(expenseChange).toFixed(0)}% maiores que no mês anterior.`});
+        }else if(expenseChange<-5){
+          insights.push({kind:'positive',icon:'↓',title:'Redução de despesas',
+            text:`Você gastou ${Math.abs(expenseChange).toFixed(0)}% menos que no mês anterior até agora.`});
+        }else{
+          insights.push({kind:'positive',icon:'≈',title:'Gastos estáveis',
+            text:'Suas despesas estão próximas do nível registrado no mês anterior.'});
+        }
+      }
+
+      if(usage!==null){
+        if(usage>=100){
+          insights.push({kind:'negative',icon:'!',title:'Renda comprometida',
+            text:`Os pagamentos já equivalem a ${Math.round(usage)}% das receitas recebidas neste mês.`});
+        }else if(usage>=80){
+          insights.push({kind:'attention',icon:'%',title:'Atenção ao orçamento',
+            text:`Você já utilizou ${Math.round(usage)}% das receitas recebidas neste mês.`});
+        }else{
+          insights.push({kind:'positive',icon:'%',title:'Orçamento sob controle',
+            text:`Até agora, ${Math.round(usage)}% das receitas recebidas foram utilizadas.`});
+        }
+      }else{
+        insights.push({kind:'attention',icon:'+',title:'Cadastre suas receitas',
+          text:'Com receitas registradas, o FINANCE+ consegue medir melhor o comprometimento da sua renda.'});
+      }
+
+      if(projection<0){
+        insights.push({kind:'negative',icon:'↘',title:'Projeção negativa',
+          text:`Considerando valores a receber e compromissos em aberto, a previsão do mês é ${brl.format(projection)}.`});
+      }else if(commitments>0){
+        insights.push({kind:'positive',icon:'↗',title:'Projeção do mês',
+          text:`Após considerar pendências e valores a receber, a previsão é terminar com ${brl.format(projection)}.`});
+      }else if(balance>0){
+        insights.push({kind:'positive',icon:'✓',title:'Saldo positivo',
+          text:`Seu saldo realizado no mês está positivo em ${brl.format(balance)}.`});
+      }
+
+      if(dueToday>0){
+        insights.push({kind:'negative',icon:'⏱',title:'Vencimentos hoje',
+          text:`Há ${brl.format(dueToday)} em contas com vencimento hoje.`});
+      }else if(due7>0){
+        insights.push({kind:'attention',icon:'◷',title:'Próximos vencimentos',
+          text:`Você tem ${brl.format(due7)} em contas vencendo nos próximos 7 dias.`});
+      }
+
+      if(incomeChange!==null&&Math.abs(incomeChange)>=10){
+        insights.push({kind:incomeChange>0?'positive':'attention',icon:incomeChange>0?'↗':'↘',
+          title:incomeChange>0?'Receitas cresceram':'Receitas diminuíram',
+          text:`As receitas recebidas estão ${Math.abs(incomeChange).toFixed(0)}% ${incomeChange>0?'acima':'abaixo'} do mês anterior.`});
+      }
+
+      if(pendingIncome>0){
+        insights.push({kind:'positive',icon:'◎',title:'Valores a receber',
+          text:`Ainda há ${brl.format(pendingIncome)} em receitas previstas para este mês.`});
+      }
+
+      const selected=insights.slice(0,3);
+      if(!selected.length){
+        box.innerHTML='<div class="fp-ai-loading">Cadastre movimentações para receber análises financeiras automáticas.</div>';
+        health.textContent='Poucos dados';
+        health.className='fp-ai-health';
+        return;
+      }
+      box.innerHTML=selected.map(x=>`
+        <article class="fp-ai-insight ${x.kind}">
+          <div class="fp-ai-insight-top"><span class="fp-ai-insight-icon">${x.icon}</span><strong>${x.title}</strong></div>
+          <p>${x.text}</p>
+        </article>`).join('');
+
+      const hasNegative=selected.some(x=>x.kind==='negative');
+      const hasAttention=selected.some(x=>x.kind==='attention');
+      health.className='fp-ai-health '+(hasNegative?'alert':hasAttention?'warning':'good');
+      health.textContent=hasNegative?'Requer atenção':hasAttention?'Acompanhe':'Saúde positiva';
+    }
+
     async function refreshDashboardV26(){
       if(!currentUser) return;
       fpUpdateDashboardPeriod();
@@ -6244,6 +6418,11 @@ function syncModeButtonsV251(){
       const due7=openBills.filter(x=>{const d=dateDiffDays(today,x.due_date);return d>=0&&d<=7}).reduce((s,x)=>s+Number(x.amount||0),0);
       document.getElementById('dashDueToday').textContent=brl.format(dueToday);
       document.getElementById('dashDue7').textContent=brl.format(due7);
+
+      fpRenderFinancialIntelligence({
+        income,pendingIncome,paid,balance,projection,prevIncome,prevPaid,
+        openBills,openInvoices,dueToday,due7
+      });
 
       const nextInvoice=[...openInvoices].filter(x=>x.due_date).sort((a,b)=>a.due_date.localeCompare(b.due_date))[0];
       document.getElementById('dashInvoiceNextDate').textContent=nextInvoice?formatDateBR(nextInvoice.due_date):'—';

@@ -1,33 +1,27 @@
-# FINANCE+ V3.5 — Investimentos
+# FINANCE+ V3.6 — Inteligência Financeira
 
-Novo módulo independente de Mercado & Investimentos.
+Novo bloco de análise automática no Dashboard.
 
-## Incluído
-- Novo item `Invest.` no menu deslizável, depois de Relatórios.
-- As quatro opções iniciais continuam: Início, Receitas, Contas e Calendário.
-- CDI atualizado pela BrasilAPI.
-- Selic atualizada pela BrasilAPI.
-- IPCA do último mês oficial disponível via série 433 do Banco Central.
-- Data/hora da última atualização.
-- Cache local de 6 horas e fallback para o último dado salvo se a fonte estiver temporariamente indisponível.
-- Referências de CDB a 100%, 110% e 120% do CDI.
-- Simulador de CDB:
-  - valor aplicado
-  - percentual do CDI
-  - prazo de 30 dias a 3 anos
-  - valor bruto
-  - rendimento bruto
-  - IR regressivo estimado
-  - valor líquido estimado
-- Dicas educativas sobre liquidez, reserva de emergência, % do CDI e FGC.
-- Tema claro e escuro.
-- Nenhum produto financeiro específico é recomendado.
+A Inteligência Financeira usa apenas os dados financeiros já cadastrados pelo próprio usuário para gerar insights, sem enviar os dados para uma IA externa.
 
-## Fontes
-- BrasilAPI / endpoint de taxas
-- Banco Central do Brasil / SGS série 433 (IPCA mensal)
+Análises incluídas:
+- comparação das despesas pagas com o mês anterior
+- comparação das receitas com o mês anterior
+- percentual da renda já comprometida
+- projeção do saldo no fim do mês
+- vencimentos de hoje
+- contas dos próximos 7 dias
+- receitas ainda previstas para receber
+- classificação visual: Saúde positiva, Acompanhe ou Requer atenção
 
-Não há SQL novo.
+O sistema mostra no máximo 3 insights prioritários para manter o Dashboard limpo.
+
+Importante:
+- não é recomendação de investimento
+- não movimenta dinheiro
+- não altera lançamentos
+- não exige nova tabela ou SQL
+- funciona nos temas claro e escuro
 
 Commit changes:
-FINANCE+ V3.5 - adicionar modulo de investimentos e indicadores ao vivo
+FINANCE+ V3.6 - adicionar inteligencia financeira ao dashboard
