@@ -2576,6 +2576,137 @@
   #bottomNav.fp-bottom-nav button,#bottomNav.fp-bottom-nav .fp-nav-icon,#bottomNav.fp-bottom-nav button::after{transition:none!important}
   .fp-v34-enter-r,.fp-v34-enter-l{animation:none!important}
 }
+
+/* =========================================================
+   FINANCE+ V3.5 — MERCADO & INVESTIMENTOS
+   ========================================================= */
+#investmentsContent{max-width:1200px;margin:0 auto;padding-bottom:12px}
+.fp-invest-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:18px;
+  margin:8px 0 14px
+}
+.fp-invest-head h2{font-size:28px;margin:3px 0 5px}
+.fp-invest-head p{margin:0;color:var(--muted);font-size:13px}
+.fp-invest-kicker{font-size:10px;letter-spacing:.14em;font-weight:900;color:#18d98c}
+.fp-invest-status{
+  display:flex;align-items:center;min-height:38px;padding:9px 12px;margin-bottom:12px;
+  border:1px solid #263530;border-radius:12px;background:#0d1715;color:#9fafaa;font-size:11px
+}
+.fp-invest-status[data-kind="ok"]{color:#65dfa6;border-color:#1f533f;background:#0d2119}
+.fp-invest-status[data-kind="error"]{color:#f1b75d;border-color:#5a431c;background:#241b0c}
+.fp-invest-rates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fp-rate-card{
+  min-width:0;padding:17px;border:1px solid #27332f;border-radius:18px;
+  background:linear-gradient(155deg,#101b18,#0a1412);box-shadow:0 8px 25px rgba(0,0,0,.13)
+}
+.fp-rate-primary{border-color:#176343;background:linear-gradient(145deg,#103126,#0a1a15)}
+.fp-rate-top{display:flex;align-items:center;justify-content:space-between;color:#91a09b;font-size:11px;font-weight:900;letter-spacing:.08em}
+.fp-rate-card strong{display:block;margin:9px 0 4px;font-size:26px;letter-spacing:-.03em}
+.fp-rate-card small{color:#879691}
+.fp-live-dot{width:7px;height:7px;border-radius:50%;background:#13d98a;box-shadow:0 0 0 4px rgba(19,217,138,.12)}
+.fp-invest-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.fp-invest-card{
+  border:1px solid #27332f;border-radius:18px;background:#0d1715;padding:18px;
+  box-shadow:0 8px 25px rgba(0,0,0,.10)
+}
+.fp-invest-section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+.fp-invest-section-title>div{display:flex;align-items:center;gap:11px;min-width:0}
+.fp-invest-section-title strong{display:block;font-size:14px}
+.fp-invest-section-title small{display:block;color:#8d9b96;font-size:10px;margin-top:3px}
+.fp-mini-icon{
+  flex:0 0 38px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  background:#122a21;color:#1bdb8e;border:1px solid #20503d;font-weight:900;font-size:16px
+}
+.fp-cdb-reference-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.fp-cdb-ref{padding:14px 10px;border:1px solid #25332e;border-radius:14px;background:#101b18;text-align:center}
+.fp-cdb-ref span,.fp-cdb-ref small{display:block;color:#899892;font-size:9px}
+.fp-cdb-ref strong{display:block;color:#1ddd91;font-size:21px;margin:7px 0 3px}
+.fp-invest-note{margin-top:12px;padding:11px;border-radius:12px;background:#101f1a;color:#91a29b;font-size:10px;line-height:1.5}
+.fp-sim-form{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:9px}
+.fp-sim-form label{display:grid;gap:6px;color:#91a09b;font-size:10px;font-weight:750}
+.fp-sim-form input,.fp-sim-form select{width:100%;min-width:0}
+.fp-money-field,.fp-percent-field{
+  display:flex;align-items:center;border:1px solid var(--border);background:#0b1513;border-radius:12px;overflow:hidden
+}
+.fp-money-field span,.fp-percent-field span{padding:0 0 0 11px;color:#71817b;font-weight:800;font-size:11px}
+.fp-percent-field span{padding:0 11px 0 0}
+.fp-money-field input,.fp-percent-field input{border:0!important;background:transparent!important;box-shadow:none!important}
+.fp-sim-result{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.fp-sim-result>div{padding:12px;border-radius:12px;background:#101b18;border:1px solid #25332e}
+.fp-sim-result span{display:block;color:#899892;font-size:9px}
+.fp-sim-result strong{display:block;margin-top:5px;font-size:15px}
+.fp-sim-result .fp-sim-net{background:#0d2b20;border-color:#1a6144}
+.fp-sim-result .fp-sim-net strong{color:#25dc92}
+.fp-sim-caption{display:block;margin-top:10px;color:#788781;line-height:1.45}
+.fp-invest-tips{margin-top:12px}
+.fp-tip-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.fp-tip-grid article{padding:14px;border:1px solid #26332f;border-radius:14px;background:#101a18}
+.fp-tip-grid strong{font-size:11px}
+.fp-tip-grid p{margin:7px 0 0;color:#899892;font-size:10px;line-height:1.48}
+.fp-invest-disclaimer{margin-top:12px;padding-top:11px;border-top:1px solid #26332f;color:#788781;font-size:9px;line-height:1.5}
+
+html[data-theme="light"] #investmentsContent{color:#17201d!important}
+html[data-theme="light"] .fp-invest-head p{color:#66756f!important}
+html[data-theme="light"] .fp-invest-kicker{color:#008f5c!important}
+html[data-theme="light"] .fp-invest-status{
+  background:#fff!important;color:#63716c!important;border-color:#dbe4df!important
+}
+html[data-theme="light"] .fp-invest-status[data-kind="ok"]{
+  background:#eaf8f1!important;color:#087a50!important;border-color:#c7e8d8!important
+}
+html[data-theme="light"] .fp-invest-status[data-kind="error"]{
+  background:#fff6e8!important;color:#956000!important;border-color:#ecd4a2!important
+}
+html[data-theme="light"] .fp-rate-card,
+html[data-theme="light"] .fp-invest-card,
+html[data-theme="light"] .fp-cdb-ref,
+html[data-theme="light"] .fp-sim-result>div,
+html[data-theme="light"] .fp-tip-grid article{
+  background:#fff!important;color:#17201d!important;border-color:#dce5e0!important;
+  box-shadow:0 7px 22px rgba(27,49,41,.05)!important
+}
+html[data-theme="light"] .fp-rate-primary{
+  background:linear-gradient(145deg,#edf9f3,#fff)!important;border-color:#bde2d1!important
+}
+html[data-theme="light"] .fp-rate-card small,
+html[data-theme="light"] .fp-rate-top,
+html[data-theme="light"] .fp-invest-section-title small,
+html[data-theme="light"] .fp-cdb-ref span,
+html[data-theme="light"] .fp-cdb-ref small,
+html[data-theme="light"] .fp-sim-result span,
+html[data-theme="light"] .fp-tip-grid p,
+html[data-theme="light"] .fp-sim-caption,
+html[data-theme="light"] .fp-invest-disclaimer{color:#66756f!important}
+html[data-theme="light"] .fp-cdb-ref strong{color:#008f5c!important}
+html[data-theme="light"] .fp-mini-icon{background:#e9f8f0!important;color:#008f5c!important;border-color:#c5e5d5!important}
+html[data-theme="light"] .fp-invest-note{background:#f3f7f5!important;color:#60706a!important}
+html[data-theme="light"] .fp-money-field,
+html[data-theme="light"] .fp-percent-field{background:#fff!important;border-color:#cfd9d4!important}
+html[data-theme="light"] .fp-money-field span,
+html[data-theme="light"] .fp-percent-field span{color:#6a7973!important}
+html[data-theme="light"] .fp-sim-result .fp-sim-net{background:#eaf8f1!important;border-color:#bfe3d2!important}
+html[data-theme="light"] .fp-sim-result .fp-sim-net strong{color:#008f5c!important}
+html[data-theme="light"] .fp-invest-disclaimer{border-color:#dce5e0!important}
+
+@media(max-width:800px){
+  .fp-invest-head{align-items:flex-start}
+  .fp-invest-head h2{font-size:23px}
+  .fp-invest-grid{grid-template-columns:1fr}
+  .fp-tip-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){
+  .fp-invest-rates{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .fp-rate-card{padding:13px 10px;border-radius:15px}
+  .fp-rate-card strong{font-size:19px}
+  .fp-rate-card small{font-size:8px}
+  .fp-rate-top{font-size:9px}
+  .fp-cdb-reference-grid{gap:6px}
+  .fp-cdb-ref{padding:12px 5px}
+  .fp-cdb-ref strong{font-size:17px}
+  .fp-sim-form{grid-template-columns:1fr 1fr}
+  .fp-sim-form label:first-child{grid-column:1/-1}
+  .fp-tip-grid{grid-template-columns:1fr}
+}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -3106,7 +3237,117 @@
       </section>
     </div>
 
-    <div id="calendarContent" class="view-hidden">
+    
+    <div id="investmentsContent" class="view-hidden">
+      <section class="fp-invest-head">
+        <div>
+          <div class="fp-invest-kicker">MERCADO & INVESTIMENTOS</div>
+          <h2>Indicadores e renda fixa</h2>
+          <p>Acompanhe referências do mercado e simule CDBs com base no CDI.</p>
+        </div>
+        <button id="investRefreshBtn" class="btn" type="button" aria-label="Atualizar indicadores">
+          <span aria-hidden="true">↻</span> Atualizar
+        </button>
+      </section>
+
+      <div id="investStatus" class="fp-invest-status" role="status" aria-live="polite">
+        Carregando indicadores...
+      </div>
+
+      <section class="fp-invest-rates" aria-label="Indicadores de mercado">
+        <article class="fp-rate-card fp-rate-primary">
+          <div class="fp-rate-top"><span>CDI</span><span class="fp-live-dot"></span></div>
+          <strong id="investCdi">--</strong>
+          <small>ao ano • referência para CDB</small>
+        </article>
+        <article class="fp-rate-card">
+          <div class="fp-rate-top"><span>SELIC</span></div>
+          <strong id="investSelic">--</strong>
+          <small>ao ano</small>
+        </article>
+        <article class="fp-rate-card">
+          <div class="fp-rate-top"><span>IPCA</span></div>
+          <strong id="investIpca">--</strong>
+          <small id="investIpcaLabel">último mês disponível</small>
+        </article>
+      </section>
+
+      <section class="fp-invest-grid">
+        <article class="fp-invest-card">
+          <div class="fp-invest-section-title">
+            <div>
+              <span class="fp-mini-icon">%</span>
+              <div><strong>Quanto rende um CDB?</strong><small>Referência bruta baseada no CDI atual</small></div>
+            </div>
+          </div>
+          <div class="fp-cdb-reference-grid">
+            <div class="fp-cdb-ref"><span>100% do CDI</span><strong id="cdb100Rate">--</strong><small>a.a. estimado</small></div>
+            <div class="fp-cdb-ref"><span>110% do CDI</span><strong id="cdb110Rate">--</strong><small>a.a. estimado</small></div>
+            <div class="fp-cdb-ref"><span>120% do CDI</span><strong id="cdb120Rate">--</strong><small>a.a. estimado</small></div>
+          </div>
+          <div class="fp-invest-note">
+            A taxa exibida é uma referência matemática sobre o CDI. O rendimento real depende do produto,
+            prazo, tributação e condições da instituição.
+          </div>
+        </article>
+
+        <article class="fp-invest-card">
+          <div class="fp-invest-section-title">
+            <div>
+              <span class="fp-mini-icon">↗</span>
+              <div><strong>Simulador de CDB</strong><small>Estimativa de rendimento bruto e líquido</small></div>
+            </div>
+          </div>
+
+          <div class="fp-sim-form">
+            <label>Valor aplicado
+              <div class="fp-money-field"><span>R$</span><input id="investAmount" type="number" min="1" step="0.01" value="1000" inputmode="decimal"></div>
+            </label>
+            <label>Percentual do CDI
+              <div class="fp-percent-field"><input id="investCdiPercent" type="number" min="1" max="300" step="1" value="100"><span>%</span></div>
+            </label>
+            <label>Prazo
+              <select id="investDays">
+                <option value="30">30 dias</option>
+                <option value="90">90 dias</option>
+                <option value="180">180 dias</option>
+                <option value="365" selected>1 ano</option>
+                <option value="730">2 anos</option>
+                <option value="1095">3 anos</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="fp-sim-result">
+            <div><span>Valor final bruto</span><strong id="investGrossFinal">R$ --</strong></div>
+            <div><span>Rendimento bruto</span><strong id="investGrossProfit">R$ --</strong></div>
+            <div><span>IR estimado</span><strong id="investTax">R$ --</strong></div>
+            <div class="fp-sim-net"><span>Valor final líquido</span><strong id="investNetFinal">R$ --</strong></div>
+          </div>
+          <small id="investSimCaption" class="fp-sim-caption">Aguardando CDI atualizado.</small>
+        </article>
+      </section>
+
+      <section class="fp-invest-card fp-invest-tips">
+        <div class="fp-invest-section-title">
+          <div>
+            <span class="fp-mini-icon">i</span>
+            <div><strong>Dicas para investir melhor</strong><small>Informação simples para decisões mais conscientes</small></div>
+          </div>
+        </div>
+        <div class="fp-tip-grid">
+          <article><strong>Reserva de emergência</strong><p>Para valores que podem ser necessários a qualquer momento, priorize liquidez e baixo risco.</p></article>
+          <article><strong>Compare o % do CDI</strong><p>Um CDB de 110% do CDI tende a render mais que um de 100%, desde que prazo, risco e tributação sejam comparáveis.</p></article>
+          <article><strong>Olhe o prazo</strong><p>CDBs geralmente têm IR regressivo: quanto maior o prazo, menor pode ser a alíquota sobre o rendimento.</p></article>
+          <article><strong>Não olhe só a taxa</strong><p>Liquidez, vencimento, emissor e cobertura do FGC também fazem parte da análise.</p></article>
+        </div>
+        <div class="fp-invest-disclaimer">
+          Conteúdo educativo. O FINANCE+ não recomenda produtos específicos e não substitui orientação financeira profissional.
+        </div>
+      </section>
+    </div>
+
+<div id="calendarContent" class="view-hidden">
       <section class="card">
         <div class="cards-toolbar">
           <div>
@@ -3229,6 +3470,9 @@
       </button>
 <button id="navReports" type="button" data-bottom-view="reports" aria-label="Relatórios">
         <span class="fp-nav-icon" data-icon="reports"></span><span class="fp-nav-label">Relatórios</span>
+      </button>
+<button id="navInvestments" type="button" data-bottom-view="investments" aria-label="Investimentos">
+        <span class="fp-nav-icon" data-icon="investments"></span><span class="fp-nav-label">Invest.</span>
       </button>
 <button id="navProfile" type="button" data-bottom-view="profile" aria-label="Perfil">
         <span class="fp-nav-icon" data-icon="user"></span><span class="fp-nav-label">Perfil</span>
@@ -3612,6 +3856,7 @@
       cards:`<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg>`,
       calendar:`<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg>`,
       reports:`<svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/><path d="M3 20h18"/></svg>`,
+      investments:`<svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M3 19h18"/><path d="m14 7 3-3 3 3M17 4v7"/></svg>`,
       income:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>`,
       menu:`<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>`,
       user:`<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>`,
@@ -4859,6 +5104,7 @@
       const incomes = document.getElementById('incomeContent');
       const calendar = document.getElementById('calendarContent');
       const reports = document.getElementById('reportsContent');
+      const investments = document.getElementById('investmentsContent');
       const menu = document.getElementById('menuContent');
       const profile = document.getElementById('profileContent');
       const settings = document.getElementById('settingsContent');
@@ -4870,6 +5116,7 @@
       incomes.classList.add('view-hidden');
       calendar.classList.add('view-hidden');
       reports.classList.add('view-hidden');
+      investments?.classList.add('view-hidden');
       menu.classList.add('view-hidden');
       profile.classList.add('view-hidden');
       settings.classList.add('view-hidden');
@@ -4886,6 +5133,10 @@
         calendar.classList.remove('view-hidden');
         document.getElementById('navCalendar').classList.add('active');
         loadCalendarData();
+      }else if(view === 'investments'){
+        investments?.classList.remove('view-hidden');
+        document.getElementById('navInvestments')?.classList.add('active');
+        loadInvestmentMarketData();
       }else if(view === 'reports'){
         reports.classList.remove('view-hidden');
         document.getElementById('navReports').classList.add('active');
@@ -7540,6 +7791,153 @@ document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasi
   nav.addEventListener('scroll',edge,{passive:true});
   addEventListener('resize',edge,{passive:true});
   nav.scrollLeft=0;edge();
+})();
+</script>
+
+<script>
+/* FINANCE+ V3.5 — mercado, indicadores e simulador de CDB */
+(function financePlusInvestmentsV35(){
+  const CACHE_KEY='financePlusMarketCacheV1';
+  const CACHE_MS=6*60*60*1000;
+  let market={cdi:null,selic:null,ipca:null,ipcaDate:null,updatedAt:null};
+
+  const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const pct=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%':'--';
+
+  function taxRate(days){
+    if(days<=180)return .225;
+    if(days<=360)return .20;
+    if(days<=720)return .175;
+    return .15;
+  }
+
+  function render(){
+    const cdi=Number(market.cdi);
+    const selic=Number(market.selic);
+    const ipca=Number(market.ipca);
+    const set=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text};
+    set('investCdi',pct(cdi));
+    set('investSelic',pct(selic));
+    set('investIpca',pct(ipca));
+    if(market.ipcaDate)set('investIpcaLabel','mês de '+market.ipcaDate);
+    set('cdb100Rate',pct(cdi));
+    set('cdb110Rate',pct(cdi*1.10));
+    set('cdb120Rate',pct(cdi*1.20));
+    simulate();
+  }
+
+  function simulate(){
+    const amount=Math.max(0,Number(document.getElementById('investAmount')?.value||0));
+    const cdiPct=Math.min(300,Math.max(1,Number(document.getElementById('investCdiPercent')?.value||100)));
+    const days=Math.max(30,Number(document.getElementById('investDays')?.value||365));
+    const cdi=Number(market.cdi);
+    const caption=document.getElementById('investSimCaption');
+    if(!Number.isFinite(cdi)||cdi<=0||amount<=0){
+      ['investGrossFinal','investGrossProfit','investTax','investNetFinal'].forEach(id=>{
+        const el=document.getElementById(id);if(el)el.textContent='R$ --';
+      });
+      if(caption)caption.textContent='Aguardando CDI atualizado.';
+      return;
+    }
+    const annual=(cdi/100)*(cdiPct/100);
+    const grossRate=Math.pow(1+annual,days/365)-1;
+    const grossProfit=amount*grossRate;
+    const ir=grossProfit*taxRate(days);
+    const grossFinal=amount+grossProfit;
+    const netFinal=grossFinal-ir;
+    document.getElementById('investGrossFinal').textContent=money(grossFinal);
+    document.getElementById('investGrossProfit').textContent=money(grossProfit);
+    document.getElementById('investTax').textContent=money(ir);
+    document.getElementById('investNetFinal').textContent=money(netFinal);
+    if(caption){
+      caption.textContent=`Estimativa com CDI de ${pct(cdi)}, CDB a ${cdiPct}% do CDI e IR de ${(taxRate(days)*100).toLocaleString('pt-BR')}%. Não considera IOF nem taxas específicas do produto.`;
+    }
+  }
+
+  function status(text,kind=''){
+    const el=document.getElementById('investStatus');
+    if(!el)return;
+    el.textContent=text;
+    el.dataset.kind=kind;
+  }
+
+  async function fetchJson(url,timeout=9000){
+    const ctl=new AbortController();
+    const timer=setTimeout(()=>ctl.abort(),timeout);
+    try{
+      const r=await fetch(url,{cache:'no-store',signal:ctl.signal,headers:{'Accept':'application/json'}});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      return await r.json();
+    }finally{clearTimeout(timer)}
+  }
+
+  function readCache(){
+    try{
+      const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
+      if(c&&c.data){
+        market={...market,...c.data};
+        render();
+        return c;
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function saveCache(){
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify({savedAt:Date.now(),data:market}))}catch(e){}
+  }
+
+  async function load(force=false){
+    const statusEl=document.getElementById('investStatus');
+    if(!statusEl)return;
+    const cache=readCache();
+    if(!force&&cache&&Date.now()-Number(cache.savedAt||0)<CACHE_MS){
+      const when=market.updatedAt?new Date(market.updatedAt).toLocaleString('pt-BR'):'recentemente';
+      status(`Dados oficiais em cache • atualizados ${when}`,'ok');
+      return;
+    }
+
+    status('Atualizando CDI, Selic e IPCA...');
+    const tasks=await Promise.allSettled([
+      fetchJson('https://brasilapi.com.br/api/taxas/v1'),
+      fetchJson('https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/1?formato=json')
+    ]);
+
+    let changed=false;
+    if(tasks[0].status==='fulfilled'&&Array.isArray(tasks[0].value)){
+      const rates=tasks[0].value;
+      const cdi=rates.find(x=>String(x.nome||'').toUpperCase()==='CDI');
+      const selic=rates.find(x=>String(x.nome||'').toUpperCase()==='SELIC');
+      if(cdi&&Number.isFinite(Number(cdi.valor))){market.cdi=Number(cdi.valor);changed=true}
+      if(selic&&Number.isFinite(Number(selic.valor))){market.selic=Number(selic.valor);changed=true}
+    }
+    if(tasks[1].status==='fulfilled'&&Array.isArray(tasks[1].value)&&tasks[1].value[0]){
+      const row=tasks[1].value[0];
+      const val=Number(String(row.valor).replace(',','.'));
+      if(Number.isFinite(val)){
+        market.ipca=val;
+        market.ipcaDate=row.data||null;
+        changed=true;
+      }
+    }
+
+    if(changed){
+      market.updatedAt=new Date().toISOString();
+      saveCache();render();
+      status(`Indicadores atualizados • ${new Date(market.updatedAt).toLocaleString('pt-BR')} • fontes: BrasilAPI e Banco Central`,'ok');
+    }else if(cache&&cache.data){
+      render();
+      status('Sem conexão com as fontes agora. Exibindo os últimos dados salvos.','error');
+    }else{
+      status('Não foi possível carregar os indicadores. Verifique a internet e tente novamente.','error');
+    }
+  }
+
+  window.loadInvestmentMarketData=()=>load(false);
+  document.getElementById('investRefreshBtn')?.addEventListener('click',()=>load(true));
+  ['investAmount','investCdiPercent'].forEach(id=>document.getElementById(id)?.addEventListener('input',simulate));
+  document.getElementById('investDays')?.addEventListener('change',simulate);
+  readCache();
 })();
 </script>
 </body>

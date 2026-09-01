@@ -1,15 +1,33 @@
-# FINANCE+ V3.4
+# FINANCE+ V3.5 — Investimentos
 
-Menu inferior reorganizado para deixar a navegação mobile mais limpa.
+Novo módulo independente de Mercado & Investimentos.
 
-- Primeiras opções: Início, Receitas, Contas e Calendário.
-- Deslizando a barra: Cartões, Relatórios, Perfil e Configurações.
-- O menu inicia sempre nas quatro opções principais.
-- Ícone ativo sobe levemente e recebe indicador verde animado.
-- Ao trocar de área há uma transição curta e suave.
-- Tema claro e escuro preservados.
-- Investimentos ainda não foi incluído: será adicionado quando o módulo for criado.
-- Sem alteração de SQL.
+## Incluído
+- Novo item `Invest.` no menu deslizável, depois de Relatórios.
+- As quatro opções iniciais continuam: Início, Receitas, Contas e Calendário.
+- CDI atualizado pela BrasilAPI.
+- Selic atualizada pela BrasilAPI.
+- IPCA do último mês oficial disponível via série 433 do Banco Central.
+- Data/hora da última atualização.
+- Cache local de 6 horas e fallback para o último dado salvo se a fonte estiver temporariamente indisponível.
+- Referências de CDB a 100%, 110% e 120% do CDI.
+- Simulador de CDB:
+  - valor aplicado
+  - percentual do CDI
+  - prazo de 30 dias a 3 anos
+  - valor bruto
+  - rendimento bruto
+  - IR regressivo estimado
+  - valor líquido estimado
+- Dicas educativas sobre liquidez, reserva de emergência, % do CDI e FGC.
+- Tema claro e escuro.
+- Nenhum produto financeiro específico é recomendado.
+
+## Fontes
+- BrasilAPI / endpoint de taxas
+- Banco Central do Brasil / SGS série 433 (IPCA mensal)
+
+Não há SQL novo.
 
 Commit changes:
-FINANCE+ V3.4 - reorganizar menu inferior e adicionar animacoes
+FINANCE+ V3.5 - adicionar modulo de investimentos e indicadores ao vivo
