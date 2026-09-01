@@ -3075,7 +3075,7 @@ document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('fp
 
   <section id="smartBalanceCard" class="fp-smart-balance status-positive">
     <div class="fp-smart-balance-copy">
-      <div class="fp-card-kicker">SALDO DO MÊS <span class="fp-info-dot" title="Receitas recebidas menos pagamentos realizados no mês">i</span></div>
+      <div class="fp-card-kicker">SALDO ATUAL <span class="fp-info-dot" title="Receitas recebidas menos pagamentos realizados no mês">i</span></div>
       <div id="smartBalanceValue" class="fp-smart-balance-value">R$ 0,00</div>
       <div id="smartBalanceTrend" class="fp-smart-trend">Calculando evolução...</div>
       <div id="smartBalanceProjection" class="fp-smart-projection">Previsão no fim do mês: —</div>
@@ -3283,6 +3283,20 @@ document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('fp
       <section class="card">
         <h2 style="margin-top:0">Configurações</h2>
         <div class="settings-grid">
+          <div class="setting-option fp-cash-settings">
+            <div class="fp-cash-settings-head">
+              <span class="fp-settings-kicker">CAIXA</span>
+              <h3>Saldo inicial</h3>
+              <p>Informe quanto você já possuía antes de começar a registrar suas movimentações no FINANCE+.</p>
+            </div>
+            <div class="fp-cash-settings-form">
+              <label for="initialCashBalance">Saldo inicial do caixa</label>
+              <div class="fp-money-field"><span>R$</span><input id="initialCashBalance" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></div>
+              <button id="saveInitialCashBtn" class="btn btn-primary" type="button">Salvar saldo inicial</button>
+            </div>
+            <small class="fp-cash-help">Receitas recebidas aumentam o saldo atual. Pagamentos realizados diminuem o saldo atual automaticamente.</small>
+          </div>
+
           <div class="setting-option">
             <h3 style="margin-top:0">Modo do aplicativo</h3>
             <div class="label">Escolha como deseja usar o FINANCE+. Esta opção fica somente em Configurações e pode ser alterada a qualquer momento sem apagar seus dados.</div>
@@ -7455,22 +7469,6 @@ function syncModeButtonsV251(){
         row.className='purchase-row';
         row.innerHTML=`
           <div><strong>${escapeHtml(tx.description)}</strong>
-          
-      <section class="fp-cash-settings">
-        <div class="fp-cash-settings-head">
-          <div>
-            <span class="fp-settings-kicker">CAIXA</span>
-            <h3>Saldo inicial</h3>
-            <p>Informe quanto você já possuía quando começou a usar o FINANCE+.</p>
-          </div>
-        </div>
-        <div class="fp-cash-settings-form">
-          <label for="initialCashBalance">Saldo inicial do caixa</label>
-          <div class="fp-money-field"><span>R$</span><input id="initialCashBalance" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></div>
-          <button id="saveInitialCashBtn" class="btn btn-primary" type="button">Salvar saldo inicial</button>
-        </div>
-        <small class="fp-cash-help">Depois disso, receitas recebidas aumentam o caixa e pagamentos realizados diminuem o caixa automaticamente.</small>
-      </section>
 <div class="label">${escapeHtml(card?.name||'Cartão')} • ${formatDateBR(tx.purchase_date)}${Number(tx.installments_total)>1?` • ${tx.installment_number}/${tx.installments_total}`:''}</div></div>
           <strong>${brl.format(Number(tx.amount||0))}</strong>`;
         const actions=document.createElement('div');

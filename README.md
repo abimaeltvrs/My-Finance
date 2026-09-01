@@ -1,18 +1,12 @@
-# FINANCE+ V3.8 — Caixa acumulado
+# FINANCE+ V3.8.1 — Correção do Caixa
 
-O FINANCE+ agora diferencia:
-- Saldo atual: dinheiro acumulado disponível desde o início do uso.
-- Resultado do mês: receitas recebidas no mês menos pagamentos realizados no mês.
+Correção da V3.8:
+- o campo Caixa > Saldo inicial agora aparece corretamente em Configurações;
+- o card principal do Dashboard agora mostra o título `SALDO ATUAL`;
+- o cálculo acumulado da V3.8 foi preservado;
+- Resultado do mês continua separado do saldo atual.
 
-Fórmula do Saldo Atual:
-saldo inicial + todas as receitas recebidas - todos os pagamentos realizados.
-
-Em Configurações existe agora `Caixa > Saldo inicial`.
-Exemplo: saldo inicial R$ 2.000 + receita recebida R$ 1.000 - pagamento R$ 600 = saldo atual R$ 2.400.
-
-Receitas pendentes não aumentam o caixa. Contas/faturas apenas cadastradas também não diminuem o caixa; a saída ocorre quando há pagamento registrado.
-
-Execute uma vez o arquivo `FINANCE_PLUS_V3.8_SQL.sql` no Supabase antes de testar.
+Execute o SQL da V3.8 caso ainda não tenha executado.
 
 Commit changes:
-FINANCE+ V3.8 - adicionar caixa acumulado e saldo inicial
+FINANCE+ V3.8.1 - corrigir exibicao do saldo inicial em configuracoes
