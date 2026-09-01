@@ -1,21 +1,27 @@
-# FINANCE+ V3.3.3 — Correção completa do tema
+# FINANCE+ V3.3.4 — Revisão completa do tema claro
 
-## Corrigido
-- Tema Claro agora é aplicado em todo o aplicativo.
-- Tema Escuro preserva o visual original grafite/verde.
-- Preferência de tema fica salva no dispositivo.
-- Tema é restaurado automaticamente ao abrir o app.
-- Barra do navegador/PWA acompanha o tema.
+Foi feita uma auditoria visual do tema claro para corrigir componentes que ainda herdavam fundos grafite e textos claros do tema escuro.
 
-## Configurações
-Os seletores de:
-- Modo Básico / Avançado
-- Claro / Escuro
+Principais correções:
+- textos e títulos com contraste adequado
+- cabeçalho e wordmark adaptados
+- cartões e painéis do Dashboard claros
+- Contas, Cartões, Receitas e Perfil
+- Calendário
+- Relatórios e tabelas
+- formulários, selects e campos
+- modais
+- menu inferior
+- menu lateral no desktop
+- status, badges e avisos
+- controles Básico/Avançado
+- controles Claro/Escuro
+- área de login
+- avisos offline/PWA
 
-foram refinados para seguir o padrão visual do FINANCE+, com cartões, seleção verde e melhor leitura no celular.
+O card principal verde do Dashboard continua verde por identidade visual, com textos brancos para manter contraste.
 
-## Banco de dados
-Nenhuma alteração SQL é necessária.
+Não há SQL novo.
 
 Commit changes:
-FINANCE+ V3.3.3 - corrigir tema claro escuro e melhorar botoes
+FINANCE+ V3.3.4 - revisar contraste e componentes do tema claro

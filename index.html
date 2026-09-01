@@ -2159,6 +2159,380 @@
       .fp-theme-card{min-height:135px!important;padding:14px!important}
       .fp-choice-icon{width:42px;height:42px;font-size:22px}
     }
+
+    /* =========================================================
+       FINANCE+ V3.3.4 — AUDITORIA COMPLETA DO TEMA CLARO
+       Camada final de contraste e remoção de fundos escuros.
+       ========================================================= */
+
+    html[data-theme="light"] body,
+    html[data-theme="light"] .app-shell,
+    html[data-theme="light"] main,
+    html[data-theme="light"] #appShell,
+    html[data-theme="light"] #homeContent,
+    html[data-theme="light"] #accountsContent,
+    html[data-theme="light"] #cardsContent,
+    html[data-theme="light"] #incomeContent,
+    html[data-theme="light"] #calendarContent,
+    html[data-theme="light"] #reportsContent,
+    html[data-theme="light"] #profileContent,
+    html[data-theme="light"] #settingsContent{
+      background:transparent!important;
+      color:#17201d!important;
+    }
+
+    /* Typography: eliminate inherited white/gray text on light surfaces */
+    html[data-theme="light"] h1,
+    html[data-theme="light"] h2,
+    html[data-theme="light"] h3,
+    html[data-theme="light"] h4,
+    html[data-theme="light"] h5,
+    html[data-theme="light"] h6,
+    html[data-theme="light"] strong,
+    html[data-theme="light"] .bill-title,
+    html[data-theme="light"] .filter-name,
+    html[data-theme="light"] .section-title,
+    html[data-theme="light"] .cards-toolbar,
+    html[data-theme="light"] .fp-dashboard-title,
+    html[data-theme="light"] .fp-detail-top strong,
+    html[data-theme="light"] .fp-metric-card span,
+    html[data-theme="light"] .fp-detail-top span,
+    html[data-theme="light"] .fp-month-summary-copy>strong,
+    html[data-theme="light"] .fp-panel h3,
+    html[data-theme="light"] .fp-panel strong{
+      color:#17201d!important;
+    }
+
+    html[data-theme="light"] p,
+    html[data-theme="light"] small,
+    html[data-theme="light"] .muted,
+    html[data-theme="light"] .label,
+    html[data-theme="light"] .hint,
+    html[data-theme="light"] .bill-meta,
+    html[data-theme="light"] .fp-smart-projection,
+    html[data-theme="light"] .fp-detail-link,
+    html[data-theme="light"] .fp-month-summary-copy>span,
+    html[data-theme="light"] .fp-month-summary-copy div,
+    html[data-theme="light"] .fp-bar-column>span{
+      color:#66756f!important;
+    }
+
+    /* Brand/header */
+    html[data-theme="light"] .fp-wordmark,
+    html[data-theme="light"] .topbar .fp-wordmark,
+    html[data-theme="light"] .app-header .fp-wordmark{
+      color:#17201d!important;
+    }
+    html[data-theme="light"] .fp-wordmark>span{color:#00a86b!important}
+    html[data-theme="light"] .app-header,
+    html[data-theme="light"] .topbar{
+      background:transparent!important;
+      border-color:#dfe7e3!important;
+    }
+    html[data-theme="light"] #openMainMenuBtn,
+    html[data-theme="light"] #notificationBtn,
+    html[data-theme="light"] .icon-btn{
+      background:#ffffff!important;
+      border-color:#dfe7e3!important;
+      color:#24312c!important;
+      box-shadow:0 5px 16px rgba(25,50,40,.07)!important;
+    }
+
+    /* Generic dark surfaces from legacy CSS */
+    html[data-theme="light"] .card,
+    html[data-theme="light"] .dashboard-card,
+    html[data-theme="light"] .fp-panel,
+    html[data-theme="light"] .fp-detail-card,
+    html[data-theme="light"] .fp-metric-card,
+    html[data-theme="light"] .fp-month-summary,
+    html[data-theme="light"] .menu-card,
+    html[data-theme="light"] .finance-box,
+    html[data-theme="light"] .bill,
+    html[data-theme="light"] .invoice-row,
+    html[data-theme="light"] .purchase-row,
+    html[data-theme="light"] .dashboard-list-row,
+    html[data-theme="light"] .day-detail-item,
+    html[data-theme="light"] .setting-option,
+    html[data-theme="light"] .mode-banner,
+    html[data-theme="light"] .filter-strip,
+    html[data-theme="light"] .credit-card-item:not([style*="background"]),
+    html[data-theme="light"] .fp-card-profile-grid .card{
+      background:#ffffff!important;
+      color:#17201d!important;
+      border-color:#dfe7e3!important;
+      box-shadow:0 7px 22px rgba(27,49,41,.05)!important;
+    }
+
+    /* Dashboard blocks that had hard-coded graphite */
+    html[data-theme="light"] .fp-panel,
+    html[data-theme="light"] .fp-dashboard-lower,
+    html[data-theme="light"] .fp-dashboard-duo{
+      color:#17201d!important;
+    }
+    html[data-theme="light"] .fp-detail-split{
+      border-color:#e3eae6!important;
+    }
+    html[data-theme="light"] .fp-month-summary button,
+    html[data-theme="light"] .fp-panel-footer,
+    html[data-theme="light"] .fp-detail-link{
+      background:transparent!important;
+      color:#008f5c!important;
+      border-color:#dfe7e3!important;
+    }
+
+    /* Preserve semantic dashboard colors while improving contrast */
+    html[data-theme="light"] .metric-income strong{color:#008f5c!important}
+    html[data-theme="light"] .metric-paid strong{color:#cf343b!important}
+    html[data-theme="light"] .metric-available strong{color:#276dc7!important}
+    html[data-theme="light"] .metric-income .fp-metric-icon{background:#e4f7ed!important;color:#008f5c!important}
+    html[data-theme="light"] .metric-paid .fp-metric-icon{background:#fdebec!important;color:#cf343b!important}
+    html[data-theme="light"] .metric-available .fp-metric-icon{background:#eaf2fc!important;color:#276dc7!important}
+    html[data-theme="light"] .fp-detail-icon{box-shadow:none!important}
+    html[data-theme="light"] .fp-detail-icon.accounts{background:#fff3df!important;color:#ba6800!important}
+    html[data-theme="light"] .fp-detail-icon.invoices{background:#f1ebfb!important;color:#7044b5!important}
+
+    /* Status chips / badges */
+    html[data-theme="light"] .fp-upcoming-amount small{
+      background:#eef2f0!important;color:#5d6965!important;border:1px solid #e0e7e3!important
+    }
+    html[data-theme="light"] .fp-upcoming-amount .late{
+      background:#fdeaea!important;color:#b92f35!important;border-color:#f3c4c6!important
+    }
+    html[data-theme="light"] .fp-upcoming-amount .soon{
+      background:#fff4dd!important;color:#9c6500!important;border-color:#f0d9a7!important
+    }
+    html[data-theme="light"] .fp-upcoming-amount .ok{
+      background:#e7f7ee!important;color:#087a50!important;border-color:#c8e9d8!important
+    }
+    html[data-theme="light"] .fp-income-status-preview{
+      background:#fff6e7!important;border-color:#efd7a4!important;color:#936000!important
+    }
+    html[data-theme="light"] .fp-income-badge.pending{
+      background:#fff4dc!important;color:#946000!important;border-color:#ead39f!important
+    }
+    html[data-theme="light"] .fp-income-badge.received{
+      background:#e8f8ef!important;color:#087a50!important;border-color:#c3e7d3!important
+    }
+    html[data-theme="light"] .fp-income-badge.cancelled{
+      background:#fdeceb!important;color:#b53c37!important;border-color:#f0c5c2!important
+    }
+
+    /* Inputs, selects and native option popups */
+    html[data-theme="light"] input,
+    html[data-theme="light"] select,
+    html[data-theme="light"] textarea,
+    html[data-theme="light"] .field input,
+    html[data-theme="light"] .field select,
+    html[data-theme="light"] .field textarea{
+      background:#ffffff!important;
+      color:#17201d!important;
+      border-color:#cfd9d4!important;
+      -webkit-text-fill-color:#17201d!important;
+      caret-color:#17201d!important;
+    }
+    html[data-theme="light"] select option{
+      background:#ffffff!important;
+      color:#17201d!important;
+    }
+    html[data-theme="light"] input:disabled,
+    html[data-theme="light"] select:disabled,
+    html[data-theme="light"] textarea:disabled{
+      background:#f1f4f2!important;
+      color:#7c8984!important;
+      -webkit-text-fill-color:#7c8984!important;
+    }
+
+    /* Buttons */
+    html[data-theme="light"] .btn,
+    html[data-theme="light"] .fp-carousel-arrow,
+    html[data-theme="light"] #fpSyncNowBtn{
+      background:#ffffff!important;
+      color:#24312c!important;
+      border-color:#d5dfda!important;
+    }
+    html[data-theme="light"] .btn-primary{
+      background:#00a86b!important;
+      color:#ffffff!important;
+      -webkit-text-fill-color:#ffffff!important;
+      border-color:#00a86b!important;
+    }
+    html[data-theme="light"] .btn-primary strong,
+    html[data-theme="light"] .btn-primary span{color:#ffffff!important}
+    html[data-theme="light"] .btn.danger{
+      background:#fff5f5!important;
+      color:#cf3838!important;
+      border-color:#efbcbc!important;
+    }
+
+    /* App-mode controls */
+    html[data-theme="light"] #modeBasicBtn,
+    html[data-theme="light"] #modeAdvancedBtn{
+      background:#ffffff!important;
+      color:#17201d!important;
+      border-color:#d5dfda!important;
+    }
+    html[data-theme="light"] #modeBasicBtn.active,
+    html[data-theme="light"] #modeAdvancedBtn.active{
+      background:linear-gradient(145deg,#edf9f3,#ffffff)!important;
+      color:#17201d!important;
+      border-color:#00a86b!important;
+    }
+    html[data-theme="light"] #modeBasicBtn strong,
+    html[data-theme="light"] #modeAdvancedBtn strong{color:#17201d!important}
+    html[data-theme="light"] #modeBasicBtn .label,
+    html[data-theme="light"] #modeAdvancedBtn .label{color:#66756f!important}
+
+    /* Theme controls */
+    html[data-theme="light"] .fp-theme-card{
+      background:#ffffff!important;color:#17201d!important;border-color:#d5dfda!important
+    }
+    html[data-theme="light"] .fp-theme-card.active{
+      background:linear-gradient(145deg,#edf9f3,#ffffff)!important;
+      border-color:#00a86b!important
+    }
+
+    /* Calendar */
+    html[data-theme="light"] .calendar-grid{color:#17201d!important}
+    html[data-theme="light"] .calendar-day{
+      background:#ffffff!important;
+      color:#17201d!important;
+      border:1px solid #e0e7e3!important;
+    }
+    html[data-theme="light"] .calendar-day:hover{background:#f7faf8!important}
+    html[data-theme="light"] .calendar-day.today{
+      background:#eaf8f1!important;
+      border-color:#00a86b!important;
+    }
+    html[data-theme="light"] .calendar-date{color:#26342e!important}
+    html[data-theme="light"] .calendar-item{
+      color:#25312d!important;border-color:#dfe7e3!important
+    }
+    html[data-theme="light"] .calendar-item.bill{background:#fff0f0!important}
+    html[data-theme="light"] .calendar-item.income{background:#eaf9f1!important}
+    html[data-theme="light"] .calendar-item.invoice{background:#eef5ff!important}
+
+    /* Reports */
+    html[data-theme="light"] .report-section,
+    html[data-theme="light"] .report-summary .card{
+      background:#ffffff!important;color:#17201d!important;border-color:#dfe7e3!important
+    }
+    html[data-theme="light"] .report-bar-track{background:#e6ece9!important}
+    html[data-theme="light"] .report-table{background:#ffffff!important;color:#17201d!important}
+    html[data-theme="light"] .report-table th{
+      background:#f3f6f4!important;color:#5d6c66!important
+    }
+    html[data-theme="light"] .report-table td{
+      background:#ffffff!important;color:#27332f!important
+    }
+    html[data-theme="light"] .report-table tr:hover td{background:#f7faf8!important}
+    html[data-theme="light"] .report-tabs .active{
+      background:#eaf8f1!important;color:#008f5c!important;border-color:#bfe4d3!important
+    }
+
+    /* Modals */
+    html[data-theme="light"] .modal-backdrop{background:rgba(17,29,24,.32)!important}
+    html[data-theme="light"] .modal,
+    html[data-theme="light"] .modal-card{
+      background:#ffffff!important;color:#17201d!important;border-color:#dfe7e3!important
+    }
+    html[data-theme="light"] .modal-header,
+    html[data-theme="light"] .modal-head{color:#17201d!important}
+
+    /* Profile / settings */
+    html[data-theme="light"] .profile-avatar{background:#e7eee9!important;color:#25322d!important}
+    html[data-theme="light"] .danger-zone{
+      background:#ffffff!important;border-color:#efc4c4!important
+    }
+    html[data-theme="light"] .danger-text{color:#d53c3c!important}
+
+    /* Offline / install */
+    html[data-theme="light"] .fp-offline-box{
+      background:#ffffff!important;border-color:#dfe7e3!important;color:#33423c!important
+    }
+    html[data-theme="light"] #fpOfflineStatus{color:#087a50!important}
+    html[data-theme="light"] #fpOfflineStatus[data-kind="offline"]{color:#a96c00!important}
+    html[data-theme="light"] #fpOfflineStatus[data-kind="pending"]{color:#9a7200!important}
+    html[data-theme="light"] .install-banner{
+      background:#eaf8f1!important;color:#27463a!important;border-color:#c4e7d6!important
+    }
+
+    /* Bottom navigation: remove remaining legacy dark layers */
+    html[data-theme="light"] .mobile-bottom-nav,
+    html[data-theme="light"] #bottomNav{
+      background:rgba(255,255,255,.985)!important;
+      border-top:1px solid #dce5e0!important;
+      border-left:0!important;border-right:0!important;border-bottom:0!important;
+      box-shadow:0 -7px 24px rgba(31,51,43,.08)!important;
+      backdrop-filter:blur(16px)!important;
+      -webkit-backdrop-filter:blur(16px)!important;
+    }
+    html[data-theme="light"] .mobile-bottom-nav button,
+    html[data-theme="light"] #bottomNav button{
+      background:transparent!important;color:#68756f!important
+    }
+    html[data-theme="light"] .mobile-bottom-nav button.active,
+    html[data-theme="light"] #bottomNav button.active{
+      background:transparent!important;color:#00a86b!important
+    }
+    html[data-theme="light"] .mobile-bottom-nav button.active:after,
+    html[data-theme="light"] #bottomNav button.active:after{
+      background:#00a86b!important
+    }
+
+    /* Sidebar on desktop */
+    html[data-theme="light"] .fp-sidebar{
+      background:#ffffff!important;border-color:#dfe7e3!important;color:#17201d!important
+    }
+    html[data-theme="light"] .fp-sidebar-nav button{
+      background:transparent!important;color:#65736d!important
+    }
+    html[data-theme="light"] .fp-sidebar-nav button:hover{
+      background:#f3f7f5!important;color:#17201d!important
+    }
+    html[data-theme="light"] .fp-sidebar-nav button.active{
+      background:#eaf8f1!important;color:#008f5c!important
+    }
+    html[data-theme="light"] .fp-sidebar-footer{border-color:#dfe7e3!important}
+
+    /* Authentication / public cover */
+    html[data-theme="light"] .auth-wrap{color:#17201d!important}
+    html[data-theme="light"] .auth-card{
+      background:#ffffff!important;color:#17201d!important;border-color:#dfe7e3!important
+    }
+    html[data-theme="light"] .auth-card .fp-wordmark,
+    html[data-theme="light"] .auth-shell .fp-wordmark{color:#17201d!important}
+    html[data-theme="light"] .auth-copy h1{color:#17201d!important}
+    html[data-theme="light"] .auth-copy p{color:#5e6e67!important}
+    html[data-theme="light"] .feature{
+      background:#f7faf8!important;color:#31433b!important;border-color:#d8e5de!important
+    }
+
+    /* Keep green hero intentionally colored, with readable white content */
+    html[data-theme="light"] .hero,
+    html[data-theme="light"] .balance-card,
+    html[data-theme="light"] .hero-card,
+    html[data-theme="light"] .fp-smart-balance{
+      background:linear-gradient(135deg,#009f64,#08bd77)!important;
+      color:#ffffff!important;border-color:transparent!important
+    }
+    html[data-theme="light"] .hero *,
+    html[data-theme="light"] .balance-card *,
+    html[data-theme="light"] .hero-card *,
+    html[data-theme="light"] .fp-smart-balance .fp-card-kicker,
+    html[data-theme="light"] .fp-smart-balance .fp-smart-balance-value,
+    html[data-theme="light"] .fp-smart-balance .fp-smart-trend,
+    html[data-theme="light"] .fp-smart-balance .fp-smart-projection{
+      color:#ffffff!important
+    }
+
+    /* Focus states for accessibility */
+    html[data-theme="light"] button:focus-visible,
+    html[data-theme="light"] input:focus-visible,
+    html[data-theme="light"] select:focus-visible,
+    html[data-theme="light"] textarea:focus-visible{
+      outline:2px solid #00a86b!important;
+      outline-offset:2px!important;
+    }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
