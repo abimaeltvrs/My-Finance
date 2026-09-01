@@ -1,27 +1,15 @@
-# FINANCE+ V3.3.4 — Revisão completa do tema claro
+# FINANCE+ V3.4
 
-Foi feita uma auditoria visual do tema claro para corrigir componentes que ainda herdavam fundos grafite e textos claros do tema escuro.
+Menu inferior reorganizado para deixar a navegação mobile mais limpa.
 
-Principais correções:
-- textos e títulos com contraste adequado
-- cabeçalho e wordmark adaptados
-- cartões e painéis do Dashboard claros
-- Contas, Cartões, Receitas e Perfil
-- Calendário
-- Relatórios e tabelas
-- formulários, selects e campos
-- modais
-- menu inferior
-- menu lateral no desktop
-- status, badges e avisos
-- controles Básico/Avançado
-- controles Claro/Escuro
-- área de login
-- avisos offline/PWA
-
-O card principal verde do Dashboard continua verde por identidade visual, com textos brancos para manter contraste.
-
-Não há SQL novo.
+- Primeiras opções: Início, Receitas, Contas e Calendário.
+- Deslizando a barra: Cartões, Relatórios, Perfil e Configurações.
+- O menu inicia sempre nas quatro opções principais.
+- Ícone ativo sobe levemente e recebe indicador verde animado.
+- Ao trocar de área há uma transição curta e suave.
+- Tema claro e escuro preservados.
+- Investimentos ainda não foi incluído: será adicionado quando o módulo for criado.
+- Sem alteração de SQL.
 
 Commit changes:
-FINANCE+ V3.3.4 - revisar contraste e componentes do tema claro
+FINANCE+ V3.4 - reorganizar menu inferior e adicionar animacoes

@@ -2533,6 +2533,49 @@
       outline:2px solid #00a86b!important;
       outline-offset:2px!important;
     }
+
+/* FINANCE+ V3.4 — bottom navigation: 4 primary items + horizontal swipe */
+#bottomNav.fp-bottom-nav{
+  display:flex!important;grid-template-columns:none!important;
+  justify-content:flex-start!important;align-items:stretch!important;
+  gap:0!important;overflow-x:auto!important;overflow-y:hidden!important;
+  scroll-snap-type:x proximity!important;scroll-behavior:smooth!important;
+  overscroll-behavior-x:contain!important;-webkit-overflow-scrolling:touch!important;
+  scrollbar-width:none!important;-ms-overflow-style:none!important;
+}
+#bottomNav.fp-bottom-nav::-webkit-scrollbar{display:none!important}
+#bottomNav.fp-bottom-nav button{
+  flex:0 0 25%!important;min-width:25%!important;max-width:25%!important;
+  scroll-snap-align:start!important;position:relative!important;
+  transition:color .18s ease,background-color .18s ease,opacity .18s ease!important;
+}
+#bottomNav.fp-bottom-nav .fp-nav-icon{
+  transition:transform .18s cubic-bezier(.2,.8,.2,1),opacity .18s ease!important;
+  transform:translateY(0) scale(1)!important;transform-origin:center!important;
+}
+#bottomNav.fp-bottom-nav button.active .fp-nav-icon{
+  transform:translateY(-2px) scale(1.09)!important;
+}
+#bottomNav.fp-bottom-nav button::after{
+  content:""!important;position:absolute!important;left:50%!important;bottom:2px!important;
+  width:0!important;height:3px!important;border-radius:999px!important;
+  background:var(--fp-green,#00c87a)!important;transform:translateX(-50%)!important;
+  opacity:0!important;transition:width .2s cubic-bezier(.2,.8,.2,1),opacity .16s ease!important;
+}
+#bottomNav.fp-bottom-nav button.active::after{width:24px!important;opacity:1!important}
+#bottomNav.fp-nav-more-right{
+  -webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 12px),transparent 100%);
+  mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 12px),transparent 100%);
+}
+@keyframes fpV34EnterR{from{opacity:.45;transform:translateX(8px)}to{opacity:1;transform:none}}
+@keyframes fpV34EnterL{from{opacity:.45;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.fp-v34-enter-r{animation:fpV34EnterR .18s ease-out both}
+.fp-v34-enter-l{animation:fpV34EnterL .18s ease-out both}
+@media(prefers-reduced-motion:reduce){
+  #bottomNav.fp-bottom-nav{scroll-behavior:auto!important}
+  #bottomNav.fp-bottom-nav button,#bottomNav.fp-bottom-nav .fp-nav-icon,#bottomNav.fp-bottom-nav button::after{transition:none!important}
+  .fp-v34-enter-r,.fp-v34-enter-l{animation:none!important}
+}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -3169,32 +3212,30 @@
       </section>
     </div>
 
-    <nav id="bottomNav" class="fp-bottom-nav" aria-label="Navegação principal">
-      <button id="navHome" type="button" data-bottom-view="home" aria-label="Início">
+    <nav id="bottomNav" class="fp-bottom-nav" aria-label="Navegação principal"><button id="navHome" type="button" data-bottom-view="home" aria-label="Início">
         <span class="fp-nav-icon" data-icon="home"></span><span class="fp-nav-label">Início</span>
       </button>
-      <button id="navAccounts" type="button" data-bottom-view="accounts" aria-label="Contas">
-        <span class="fp-nav-icon" data-icon="bills"></span><span class="fp-nav-label">Contas</span>
-      </button>
-      <button id="navCards" type="button" data-bottom-view="cards" aria-label="Cartões">
-        <span class="fp-nav-icon" data-icon="cards"></span><span class="fp-nav-label">Cartões</span>
-      </button>
-      <button id="navMore" type="button" data-bottom-view="income" aria-label="Receitas">
+<button id="navMore" type="button" data-bottom-view="income" aria-label="Receitas">
         <span class="fp-nav-icon" data-icon="income"></span><span class="fp-nav-label">Receitas</span>
       </button>
-      <button id="navCalendar" type="button" data-bottom-view="calendar" aria-label="Calendário">
+<button id="navAccounts" type="button" data-bottom-view="accounts" aria-label="Contas">
+        <span class="fp-nav-icon" data-icon="bills"></span><span class="fp-nav-label">Contas</span>
+      </button>
+<button id="navCalendar" type="button" data-bottom-view="calendar" aria-label="Calendário">
         <span class="fp-nav-icon" data-icon="calendar"></span><span class="fp-nav-label">Calendário</span>
       </button>
-      <button id="navReports" type="button" data-bottom-view="reports" aria-label="Relatórios">
+<button id="navCards" type="button" data-bottom-view="cards" aria-label="Cartões">
+        <span class="fp-nav-icon" data-icon="cards"></span><span class="fp-nav-label">Cartões</span>
+      </button>
+<button id="navReports" type="button" data-bottom-view="reports" aria-label="Relatórios">
         <span class="fp-nav-icon" data-icon="reports"></span><span class="fp-nav-label">Relatórios</span>
       </button>
-      <button id="navProfile" type="button" data-bottom-view="profile" aria-label="Perfil">
+<button id="navProfile" type="button" data-bottom-view="profile" aria-label="Perfil">
         <span class="fp-nav-icon" data-icon="user"></span><span class="fp-nav-label">Perfil</span>
       </button>
-      <button id="navSettings" type="button" data-bottom-view="settings" aria-label="Configurações">
+<button id="navSettings" type="button" data-bottom-view="settings" aria-label="Configurações">
         <span class="fp-nav-icon" data-icon="settings"></span><span class="fp-nav-label">Config.</span>
-      </button>
-    </nav>
+      </button></nav>
   </main>
 
 
@@ -7462,5 +7503,44 @@ document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasi
 </script>
 
   
+
+<script>
+(function financePlusBottomNavV34(){
+  const nav=document.getElementById('bottomNav');
+  if(!nav||nav.dataset.v34==='1')return;
+  nav.dataset.v34='1';
+  const items=Array.from(nav.querySelectorAll('button[data-bottom-view]'));
+  let last=Math.max(0,items.findIndex(x=>x.classList.contains('active')));
+  function edge(){
+    const max=Math.max(0,nav.scrollWidth-nav.clientWidth);
+    nav.classList.toggle('fp-nav-more-right',nav.scrollLeft<max-5);
+  }
+  function visibleView(){
+    const candidates=Array.from(document.querySelectorAll('.view,[data-view],.app-view'));
+    return candidates.find(el=>{
+      const s=getComputedStyle(el);
+      return s.display!=='none'&&s.visibility!=='hidden'&&el.offsetParent!==null;
+    });
+  }
+  items.forEach((btn,i)=>btn.addEventListener('click',()=>{
+    const dir=i<last?'l':'r';
+    setTimeout(()=>{
+      const nr=nav.getBoundingClientRect(),br=btn.getBoundingClientRect();
+      if(br.left<nr.left+2||br.right>nr.right-2)btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});
+      const v=visibleView();
+      if(v){
+        v.classList.remove('fp-v34-enter-r','fp-v34-enter-l');
+        void v.offsetWidth;
+        v.classList.add('fp-v34-enter-'+dir);
+        setTimeout(()=>v.classList.remove('fp-v34-enter-r','fp-v34-enter-l'),220);
+      }
+      last=i;edge();
+    },0);
+  }));
+  nav.addEventListener('scroll',edge,{passive:true});
+  addEventListener('resize',edge,{passive:true});
+  nav.scrollLeft=0;edge();
+})();
+</script>
 </body>
 </html>
