@@ -2771,6 +2771,47 @@ html[data-theme="light"] .fp-ai-footer small{color:#71807a!important}
   .fp-ai-insight-top{grid-column:1/-1}
   .fp-ai-head{align-items:flex-start}
 }
+
+/* FINANCE+ V3.7 — landing pública / proteção visual da área autenticada */
+body.fp-public-mode #appView{display:none!important}
+body.fp-public-mode #bottomNav,
+body.fp-public-mode .fp-bottom-nav,
+body.fp-public-mode .topbar,
+body.fp-public-mode .app-header,
+body.fp-public-mode .fp-fab{display:none!important}
+body.fp-authenticated #authView{display:none!important}
+
+.fp-landing{position:relative;overflow:hidden}
+.fp-landing:before{
+  content:"";position:absolute;width:420px;height:420px;border-radius:50%;
+  right:-230px;top:-210px;background:rgba(18,217,137,.10);filter:blur(15px);pointer-events:none
+}
+.fp-landing-badge{
+  display:inline-flex;padding:7px 10px;border-radius:999px;border:1px solid rgba(22,218,139,.25);
+  background:rgba(18,217,137,.07);color:#23df94;font-size:9px;font-weight:900;letter-spacing:.09em;margin-bottom:13px
+}
+.fp-landing .fp-public-title h2{font-size:clamp(34px,5vw,58px);line-height:.98;letter-spacing:-.045em;margin:6px 0 14px}
+.fp-landing .fp-public-title h2 em{font-style:normal;color:#17dc8e}
+.fp-landing .fp-public-title p{max-width:650px;font-size:14px;line-height:1.65}
+.fp-landing-points{display:grid;gap:8px;margin:18px 0}
+.fp-landing-points>div{
+  display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #24332e;border-radius:13px;background:rgba(10,22,18,.62)
+}
+.fp-landing-points b{color:#18db8e}
+.fp-landing-points span{display:grid;gap:2px}
+.fp-landing-points strong{font-size:11px}
+.fp-landing-points small{color:#8d9c97;font-size:9px;line-height:1.45}
+.fp-landing-trust{margin-top:10px;color:#75847e;font-size:9px;line-height:1.5}
+html[data-theme="light"] .fp-landing-points>div{background:#fff!important;border-color:#dce5e0!important}
+html[data-theme="light"] .fp-landing-points strong{color:#17201d!important}
+html[data-theme="light"] .fp-landing-points small,
+html[data-theme="light"] .fp-landing-trust{color:#66756f!important}
+@media(min-width:900px){
+  #authView.auth-wrap{max-width:1200px!important;grid-template-columns:minmax(0,1.35fr) minmax(330px,.65fr)!important;align-items:start!important}
+  #fpPublicIntro{grid-column:1}
+  #authView .auth-hero{grid-column:1}
+  #authView .auth-card{grid-column:2;grid-row:1 / span 2;position:sticky;top:28px}
+}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -2779,6 +2820,10 @@ html[data-theme="light"] .fp-ai-footer small{color:#71807a!important}
   <link rel="apple-touch-icon" href="./icons/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+/* V3.7: visitante nunca vê a interface privada durante a verificação da sessão. */
+document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('fp-public-mode'));
+</script>
 </head>
 <body>
 
@@ -2820,25 +2865,35 @@ html[data-theme="light"] .fp-ai-footer small{color:#71807a!important}
 
   <main id="authView" class="auth-wrap">
 
-<section id="fpPublicIntro" class="fp-public-intro">
+<section id="fpPublicIntro" class="fp-public-intro fp-landing">
+  <div class="fp-landing-badge">FINANCE+ • CONTROLE FINANCEIRO PESSOAL</div>
   <div class="fp-public-title">
     <span>FINANCE+</span>
-    <h2>Seu dinheiro. Sob controle.</h2>
-    <p>Organize contas, receitas, cartões, vencimentos e acompanhe sua vida financeira em um só lugar.</p>
+    <h2>Seu dinheiro.<br><em>Sob controle.</em></h2>
+    <p>Contas, receitas, cartões, calendário, relatórios, investimentos e inteligência financeira reunidos em uma experiência simples e organizada.</p>
   </div>
+
+  <div class="fp-landing-points">
+    <div><b>✓</b><span><strong>Visão clara do mês</strong><small>Saiba quanto entrou, quanto saiu e o que ainda está por vencer.</small></span></div>
+    <div><b>✓</b><span><strong>Inteligência financeira</strong><small>Receba análises automáticas sobre seus próprios lançamentos.</small></span></div>
+    <div><b>✓</b><span><strong>Planeje antes de gastar</strong><small>Acompanhe projeções, calendário e compromissos futuros.</small></span></div>
+  </div>
+
   <div class="fp-intro-carousel-wrap">
-    <button id="fpIntroPrev" class="fp-carousel-arrow" type="button">‹</button>
+    <button id="fpIntroPrev" class="fp-carousel-arrow" type="button" aria-label="Anterior">‹</button>
     <div id="fpIntroCarousel" class="fp-intro-carousel">
-      <article class="fp-intro-card"><div>💳</div><strong>Contas e cartões</strong><span>Organize contas, faturas e vencimentos.</span></article>
-      <article class="fp-intro-card"><div>📊</div><strong>Dashboard inteligente</strong><span>Acompanhe receitas, despesas, saldo e projeções.</span></article>
-      <article class="fp-intro-card"><div>📅</div><strong>Calendário financeiro</strong><span>Visualize seus compromissos financeiros do mês.</span></article>
-      <article class="fp-intro-card"><div>📴</div><strong>Modo offline</strong><span>Registre lançamentos essenciais sem internet e sincronize depois.</span></article>
-      <article class="fp-intro-card"><div>📱</div><strong>Instale no aparelho</strong><span>Use o FINANCE+ com experiência de aplicativo.</span></article>
+      <article class="fp-intro-card"><div>◫</div><strong>Contas e cartões</strong><span>Organize contas, faturas, compras e vencimentos.</span></article>
+      <article class="fp-intro-card"><div>✦</div><strong>Inteligência financeira</strong><span>Entenda gastos, renda comprometida e projeção do mês.</span></article>
+      <article class="fp-intro-card"><div>▦</div><strong>Calendário financeiro</strong><span>Veja compromissos e valores previstos em cada data.</span></article>
+      <article class="fp-intro-card"><div>↗</div><strong>Investimentos</strong><span>Acompanhe indicadores e simule rendimentos de CDB.</span></article>
+      <article class="fp-intro-card"><div>▥</div><strong>Relatórios</strong><span>Transforme seus lançamentos em uma visão financeira organizada.</span></article>
+      <article class="fp-intro-card"><div>⌁</div><strong>Online e offline</strong><span>Continue registrando e sincronize quando a conexão voltar.</span></article>
     </div>
-    <button id="fpIntroNext" class="fp-carousel-arrow" type="button">›</button>
+    <button id="fpIntroNext" class="fp-carousel-arrow" type="button" aria-label="Próximo">›</button>
   </div>
   <div id="fpIntroDots" class="fp-carousel-dots"></div>
-  <button id="fpPublicInstallBtn" class="fp-public-install-btn" type="button">⬇ Instalar aplicativo</button>
+  <button id="fpPublicInstallBtn" class="fp-public-install-btn" type="button">⬇ Instalar FINANCE+</button>
+  <div class="fp-landing-trust">Seus dados financeiros ficam vinculados à sua conta. A área interna só aparece após autenticação.</div>
   <div class="fp-developer-credit"><span>Desenvolvido por</span><strong>@AB_tvrs</strong><strong>•</strong><strong>Tavaresgamertech</strong></div>
 </section>
 
@@ -2876,8 +2931,8 @@ html[data-theme="light"] .fp-ai-footer small{color:#71807a!important}
           <span>FINANCE<span class="plus">+</span></span>
         </div>
         <div class="auth-copy">
-          <h1>Sua vida financeira organizada.</h1>
-          <p>Controle contas, cartões, vencimentos, receitas, pagamentos e relatórios em um só lugar.</p>
+          <h1>Comece agora.</h1>
+          <p>Entre na sua conta ou crie seu acesso gratuito para abrir o seu painel financeiro.</p>
         </div>
       </div>
       <div class="feature-row">
@@ -4045,6 +4100,8 @@ html[data-theme="light"] .fp-ai-footer small{color:#71807a!important}
       tabLogin.classList.remove('active');
     }
     function enterApp(name){
+      document.body.classList.remove('fp-public-mode');
+      document.body.classList.add('fp-authenticated');
       authView.classList.add('hidden');
       appView.classList.remove('hidden');
       if (name) showToast(`Bem-vindo, ${name}!`);
@@ -4143,6 +4200,8 @@ html[data-theme="light"] .fp-ai-footer small{color:#71807a!important}
       await stopRealtime();
       await supabaseClient.auth.signOut();
       currentUser = null;
+      document.body.classList.remove('fp-authenticated');
+      document.body.classList.add('fp-public-mode');
       appView.classList.add('hidden');
       authView.classList.remove('hidden');
       showLogin();
