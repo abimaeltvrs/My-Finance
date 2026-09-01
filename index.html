@@ -2350,6 +2350,33 @@
             </div>
           </div>
 
+          <div class="setting-option">
+            <h3 style="margin-top:0">Aparência</h3>
+            <div class="label">Escolha o tema visual do FINANCE+. A preferência fica salva neste dispositivo.</div>
+            <div class="fp-theme-choice" style="margin-top:12px">
+              <button id="themeLightBtn" class="fp-theme-card" type="button" aria-pressed="false">
+                <span class="fp-theme-preview light">
+                  <span class="fp-theme-preview-top"></span>
+                  <span class="fp-theme-preview-hero"></span>
+                  <span class="fp-theme-preview-row"></span>
+                  <span class="fp-theme-preview-row short"></span>
+                </span>
+                <span><strong>Claro</strong><small>Visual leve e luminoso</small></span>
+                <span class="fp-theme-check">✓</span>
+              </button>
+              <button id="themeDarkBtn" class="fp-theme-card" type="button" aria-pressed="false">
+                <span class="fp-theme-preview dark">
+                  <span class="fp-theme-preview-top"></span>
+                  <span class="fp-theme-preview-hero"></span>
+                  <span class="fp-theme-preview-row"></span>
+                  <span class="fp-theme-preview-row short"></span>
+                </span>
+                <span><strong>Escuro</strong><small>Visual premium em grafite</small></span>
+                <span class="fp-theme-check">✓</span>
+              </button>
+            </div>
+          </div>
+
           <div class="setting-option danger-zone">
             <h3 class="danger-text" style="margin-top:0">Reset de dados</h3>
             <div class="label">A conta de acesso não será apagada. Apenas os dados financeiros do usuário serão removidos.</div>
@@ -4398,6 +4425,33 @@ function syncModeButtonsV251(){
   if(basic) basic.classList.toggle('active',mode==='basic');
   if(advanced) advanced.classList.toggle('active',mode==='advanced');
 }
+
+    function getFinanceTheme(){
+      try{return localStorage.getItem('financePlusTheme') || 'dark';}catch(e){return 'dark';}
+    }
+    function syncThemeButtons(){
+      const theme=getFinanceTheme();
+      const light=document.getElementById('themeLightBtn');
+      const dark=document.getElementById('themeDarkBtn');
+      light?.classList.toggle('active',theme==='light');
+      dark?.classList.toggle('active',theme==='dark');
+      light?.setAttribute('aria-pressed',theme==='light'?'true':'false');
+      dark?.setAttribute('aria-pressed',theme==='dark'?'true':'false');
+    }
+    function applyFinanceTheme(theme=getFinanceTheme()){
+      const selected=theme==='light'?'light':'dark';
+      document.documentElement.dataset.theme=selected;
+      document.body?.setAttribute('data-theme',selected);
+      const meta=document.querySelector('meta[name="theme-color"]');
+      if(meta)meta.setAttribute('content',selected==='light'?'#f4f7f5':'#0b1713');
+      syncThemeButtons();
+    }
+    function setFinanceTheme(theme){
+      const selected=theme==='light'?'light':'dark';
+      localStorage.setItem('financePlusTheme',selected);
+      applyFinanceTheme(selected);
+      showToast(selected==='light'?'Tema claro ativado.':'Tema escuro ativado.');
+    }
 
     function getAppMode(){
       return localStorage.getItem('financePlusMode') || 'advanced';
@@ -6755,6 +6809,8 @@ document.getElementById('basicNewInvoiceBtn')?.addEventListener('click',openBasi
     document.getElementById('basicInvoiceForm')?.addEventListener('submit',saveBasicInvoice);
     document.getElementById('basicInvoiceCard')?.addEventListener('change',updateBasicInvoiceDueDate);
     document.getElementById('basicInvoiceMonth')?.addEventListener('change',updateBasicInvoiceDueDate);
+    document.getElementById('themeLightBtn')?.addEventListener('click',()=>setFinanceTheme('light'));
+    document.getElementById('themeDarkBtn')?.addEventListener('click',()=>setFinanceTheme('dark'));
     document.getElementById('appModeSettingsBtn')?.addEventListener('click',()=>showView('settings'));
 
     // FINANCE+ V2.2 visual bootstrap

@@ -1,16 +1,22 @@
-# FINANCE+ V3.3.1 — Modo Básico/Avançado em Configurações
+# FINANCE+ V3.3.2 — Correção de Aparência
 
-A seleção entre **Modo Básico** e **Modo Avançado** foi removida do topo do Dashboard.
+Correção da tela Configurações.
 
-Agora essa escolha fica somente em:
+Agora devem aparecer, na mesma tela:
 
-**Configurações → Modo do aplicativo**
+1. Modo do aplicativo
+   - Básico
+   - Avançado
 
-A troca continua funcionando sem apagar dados. O usuário pode alternar entre os modos quando quiser.
+2. Aparência
+   - Claro
+   - Escuro
 
-O tema claro também foi ajustado para exibir corretamente os cartões de seleção Básico/Avançado.
+O seletor Básico/Avançado continua somente em Configurações e não aparece no topo do Dashboard.
+
+A escolha do tema fica salva no dispositivo e não altera nem apaga dados financeiros.
 
 Não há SQL novo nesta versão.
 
 Commit changes:
-FINANCE+ V3.3.1 - mover modo basico e avancado para configuracoes
+FINANCE+ V3.3.2 - corrigir tema claro e escuro nas configuracoes
