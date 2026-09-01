@@ -1899,6 +1899,26 @@
 .fp-dashboard-actions{display:flex;justify-content:flex-end;margin:0 0 10px}
 @media(max-width:520px){.fp-dashboard-period{grid-template-columns:44px minmax(0,1fr) 44px}.fp-period-center{gap:5px}.fp-period-center>span{width:100%}.fp-dashboard-actions .btn{width:100%}}
 
+
+    /* FINANCE+ V3.3.1 — seletor de modo somente em Configurações */
+    .fp-dash-head{justify-content:flex-start!important}
+    html[data-theme="light"] #modeBasicBtn,
+    html[data-theme="light"] #modeAdvancedBtn{
+      background:#ffffff!important;
+      color:var(--fp-text)!important;
+      border-color:var(--fp-border)!important;
+    }
+    html[data-theme="light"] #modeBasicBtn.active,
+    html[data-theme="light"] #modeAdvancedBtn.active{
+      background:#eaf8f1!important;
+      color:#123b2c!important;
+      border-color:var(--fp-green)!important;
+      box-shadow:inset 0 0 0 1px rgba(0,168,107,.08)!important;
+    }
+    html[data-theme="light"] #modeBasicBtn .label,
+    html[data-theme="light"] #modeAdvancedBtn .label{
+      color:#6f7d78!important;
+    }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -2112,10 +2132,6 @@
       <h1 id="dashboardGreeting">Olá! 👋</h1>
       <div class="label">Aqui está o resumo da sua vida financeira.</div>
     </div>
-    <div class="fp-mode-switch" aria-label="Modo do aplicativo">
-      <button id="dashModeBasic" type="button">BÁSICO</button>
-      <button id="dashModeAdvanced" type="button">AVANÇADO</button>
-    </div>
   </section>
 
   <section class="fp-dashboard-period" aria-label="Período do Dashboard">
@@ -2327,7 +2343,7 @@
         <div class="settings-grid">
           <div class="setting-option">
             <h3 style="margin-top:0">Modo do aplicativo</h3>
-            <div class="label">Básico: entradas, saídas e valor total das faturas. Avançado: controle completo com compras, parcelas e detalhes.</div>
+            <div class="label">Escolha como deseja usar o FINANCE+. Esta opção fica somente em Configurações e pode ser alterada a qualquer momento sem apagar seus dados.</div>
             <div class="mode-choice" style="margin-top:12px">
               <button id="modeBasicBtn" class="mode-card" type="button"><strong>Básico</strong><div class="label">Receitas, despesas e faturas mensais</div></button>
               <button id="modeAdvancedBtn" class="mode-card" type="button"><strong>Avançado</strong><div class="label">Compras, parcelas e controle completo</div></button>
